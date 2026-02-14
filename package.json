@@ -1,0 +1,21 @@
+{
+  "name": "tweet2md",
+  "version": "1.0.0",
+  "description": "Chrome extension to convert X.com tweets and articles to Markdown files",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.0",
+    "@types/chrome": "^0.0.287",
+    "@types/turndown": "^5.0.5"
+  },
+  "dependencies": {
+    "turndown": "^7.2.0"
+  }
+}
