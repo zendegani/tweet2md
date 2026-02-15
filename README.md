@@ -1,6 +1,6 @@
 # tweet2md
 
-> Convert X.com (Twitter) posts and articles into clean Markdown files — one click.
+> Convert X.com tweets, threads, and articles into clean Markdown — one click.
 
 <p align="center">
   <img src="src/icons/icon-128.png" alt="tweet2md logo" width="128" />
@@ -8,29 +8,14 @@
 
 ## What it does
 
-**tweet2md** is a lightweight Chrome extension that extracts the content of any tweet or long-form article (X Notes) and downloads it as a well-formatted `.md` Markdown file.
+**tweet2md** is a Chrome extension that extracts tweets, threads, and long-form articles (X Notes) and downloads them as `.md` files.
 
 ### Supports
 
-- **Tweets** — text, media URLs, author info, and timestamps
-- **Articles / Notes** — full rich-text extraction including headings, bold/italic, bullet lists, code blocks, links, and horizontal rules
-- **Clean output** — no UI clutter, engagement buttons, or tracking parameters in the Markdown
-
-### Example output
-
-```markdown
-# Article Title
-
-*By Author Name (@handle)*
-
-Full article content with **bold**, *italic*, [links](https://example.com),
-bullet lists, headings, and code blocks preserved.
-
----
-
-> Source: https://x.com/user/status/1234567890
-> Date: 2026-02-15T10:00:00.000Z
-```
+- **Tweets** — text, images, videos, resolved `t.co` links, inline emojis
+- **Threads** — detects all tweets by the same author on the page, joined with `---` separators
+- **Articles / Notes** — headings, bold/italic, bullet/ordered lists, code blocks, links, horizontal rules
+- **Clean output** — no engagement buttons, follow CTAs, or tracking clutter; @mentions stay inline
 
 ## Install
 
@@ -38,73 +23,61 @@ bullet lists, headings, and code blocks preserved.
 
 *(Coming soon)*
 
-### From source (developer mode)
+### From source
 
-1. Clone this repo:
+1. Clone and build:
 
    ```bash
    git clone https://github.com/zendegani/tweet2md.git
    cd tweet2md
-   ```
-
-2. Install dependencies and build:
-
-   ```bash
    npm install
    npm run build
    ```
 
-3. Open Chrome → `chrome://extensions/`
-4. Enable **Developer mode** (top right)
-5. Click **Load unpacked** → select the `dist/` folder
+2. Open `chrome://extensions/` → enable **Developer mode** → **Load unpacked** → select `dist/`
 
 ## Usage
 
-1. Navigate to any tweet or article on **x.com**
-2. Click the **tweet2md** extension icon in your toolbar
-3. Click **Download .md**
-4. The Markdown file is saved to your Downloads folder
+1. Navigate to a tweet, thread, or article on **x.com**
+2. Click the **tweet2md** icon → click **Download .md**
+3. File saves to your Downloads folder
 
-The filename is generated automatically:
-
-- Tweets → `@handle-tweetId.md`
-- Articles → `@handle-article-slug.md`
+Filenames: `@handle-tweetId.md` (tweets/threads) or `@handle-article-slug.md` (articles).
 
 ## How it works
 
-- **Content script** automatically injects on `x.com/*/status/*` pages
-- Parses the live DOM using X.com's `data-testid` attributes and Draft.js class conventions
-- Converts rich text to Markdown manually (headings, lists, bold/italic, code blocks, links)
-- Uses [Turndown](https://github.com/mixmark-io/turndown) for general HTML-to-Markdown conversion of tweets
-- Downloads via Chrome's `chrome.downloads` API — nothing leaves your browser
+- Content script auto-injects on `x.com/*/status/*` pages
+- **Tweets/threads**: Turndown.js with custom rules (t.co resolution, emoji inlining, @mention cleanup)
+- **Articles**: Manual Draft.js block parsing for precise heading/list/code-block extraction
+- DOM is cloned and cleaned (engagement bars, follow buttons, navigation stripped) before conversion
+- Downloads via `chrome.downloads` API — nothing leaves your browser
 
 ## Permissions
 
-| Permission   | Why                                           |
-|-------------|-----------------------------------------------|
-| `activeTab` | Read the current page's DOM when you click     |
-| `downloads` | Save the `.md` file to your Downloads folder   |
+| Permission   | Why |
+|-------------|-----|
+| `activeTab` | Read the current page's DOM when you click |
+| `downloads` | Save the `.md` file to Downloads |
 
 **No data is collected, transmitted, or stored.** See [PRIVACY.md](PRIVACY.md).
 
 ## Tech stack
 
-- **TypeScript** — type-safe source code
-- **esbuild** — fast bundling (content script as IIFE, background as ESM)
-- **Turndown.js** — HTML → Markdown conversion for tweets
-- **Manifest V3** — modern Chrome extension architecture
+- **TypeScript** + **esbuild** (content IIFE, background ESM)
+- **Turndown.js** — HTML → Markdown for tweets
+- **Manifest V3**
 
 ## Project structure
 
-```
+```text
 tweet2md/
 ├── src/
-│   ├── content/        # Content script (DOM parsing + markdown generation)
-│   ├── background/     # Service worker (handles file downloads)
-│   ├── popup/          # Extension popup (UI + trigger)
-│   ├── types/          # TypeScript interfaces
+│   ├── content/        # DOM extraction + Turndown + Draft.js parsing
+│   ├── background/     # Service worker (chrome.downloads)
+│   ├── popup/          # Extension popup UI + trigger
+│   ├── types/          # Shared TypeScript interfaces
 │   ├── icons/          # Extension icons (16, 32, 48, 128px)
-│   └── manifest.json   # Chrome extension manifest (MV3)
+│   └── manifest.json   # Chrome MV3 manifest
 ├── dist/               # Build output (load this in Chrome)
 ├── build.mjs           # esbuild build script
 ├── package.json
@@ -114,20 +87,11 @@ tweet2md/
 ## Development
 
 ```bash
-# Install dependencies
-npm install
-
-# Build for production
-npm run build
-
-# Build + watch for changes
-npm run watch
-
-# Package for Chrome Web Store (.zip)
-npm run package
-
-# Clean build output
-npm run clean
+npm install        # Install dependencies
+npm run build      # Build for production
+npm run watch      # Build + watch for changes
+npm run package    # Package for Chrome Web Store (.zip)
+npm run clean      # Clean build output
 ```
 
 ## License

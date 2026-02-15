@@ -1,79 +1,103 @@
-# SPEC.md: X-to-Markdown (Dual Mode)
+# SPEC.md: X-to-Markdown
 
 ## 1. Core Objective
 
-A Manifest V3 extension that converts both standard Tweets and the new "Status-based" Articles on X.com into clean Markdown and downloads them as `.md` files.
+A Manifest V3 Chrome extension that converts tweets, threads, and articles (X Notes) on X.com into clean Markdown and downloads them as `.md` files.
 
 ## 2. Technical Stack
 
-- **TypeScript** (High Type Safety for DOM parsing)
-- **Turndown.js** (Standard HTML to MD converter)
-- **esbuild** (Bundler — content script as IIFE, background as ESM)
-- **Architecture**: Content script auto-injected on `x.com/*/status/*`, triggered via Action Popup.
+- **TypeScript** — type-safe DOM parsing
+- **Turndown.js** — HTML → Markdown for tweet text
+- **esbuild** — bundler (content script as IIFE, background as ESM)
+- **Manifest V3** — content script auto-injected on `x.com/*/status/*` and `twitter.com/*/status/*`
 
-## 3. DOM Detection & Parsing (The 2026 Strategy)
+## 3. DOM Detection & Parsing
 
-X uses the `/status/` URL for both short tweets and long-form articles. The script must detect the presence of the "Article Reader" inside the status page.
+X.com uses the `/status/` URL for tweets, threads, and articles. The content script detects which mode to use based on the DOM.
 
 ### A. Detection Logic
 
-1. **Is it an Article?** Look for `[data-testid="article-container"]` or a `div` containing multiple `h1`, `h2`, and structured `p` tags inside the main `article` tag.
-2. **Is it a Tweet?** Default if the above is not found.
+1. **Article?** — Presence of any of these selectors:
+   - `[data-testid="twitter-article-title"]`
+   - `[data-testid="twitterArticleRichTextView"]`
+   - `[data-testid="longformRichTextComponent"]`
+2. **Thread?** — Not an article, and multiple `article[role="article"]` elements exist by the same author.
+3. **Tweet** — Default (single article element, not an article page).
 
-### B. Selector Mapping
+### B. Key Selectors
 
-- **Author/Username**: `[data-testid="User-Name"]`
-- **Main Article Body**: `div[data-testid="article-container"]` or the specific inner wrapper for long-form content.
-- **Tweet Body**: `div[data-testid="tweetText"]`
-- **Media**: All `img` and `video` elements within the content container (included as URLs in output).
+| Element | Selector |
+|---------|----------|
+| Author/Username | `[data-testid="User-Name"]` |
+| Tweet text | `[data-testid="tweetText"]` |
+| Tweet images | `[data-testid="tweetPhoto"] img` |
+| Article title | `[data-testid="twitter-article-title"]` |
+| Article body | `[data-testid="twitterArticleRichTextView"]` |
+| Article Draft.js content | `[data-testid="longformRichTextComponent"]` |
+| Code blocks | `[data-testid="markdown-code-block"]` |
 
-## 4. Functional Requirements
+## 4. Extraction Logic
 
-1. **Format - Article Mode**:
-    - Extract the **Title** (usually the first `h1` or large bold text).
-    - Convert rich text (bold, italics, headers) using Turndown.
-    - Preserve image captions if present.
-    - Include media as image URLs (highest quality).
-2. **Format - Tweet Mode**:
-    - Extract text, handle links (resolve `t.co` to display text / title attribute).
-    - Include media as image/video URLs.
-    - Append the original URL as a reference at the bottom.
-3. **Refined Cleaning**:
-    - Strip "Read more," "Subscribe," "Follow" buttons, and engagement counts from output.
-    - Remove navigation, buttons, and hidden UI elements.
-4. **Output**:
-    - Download as `.md` file (no clipboard, no preview).
-    - Filename: `@handle-tweetId.md` or `@handle-article-slug.md`.
+### Tweet / Thread Mode
 
-## 5. Extension Flow
+- Uses **Turndown.js** with custom rules to convert tweet HTML to Markdown.
+- Custom Turndown rules:
+  - **t.co links** — resolved via `title` attribute or visible text
+  - **Emoji images** — rendered as inline Unicode characters (alt text), not images
+  - **@mentions** — rendered as plain `@handle` text, not markdown links
+  - **Videos** — rendered as poster/thumbnail links
+- Thread detection: collects all `article[role="article"]` elements, filters by the first article's author handle, joins with `---` separators.
+- Post-processing: `cleanupMarkdown()` collapses spurious line breaks around @mentions and punctuation.
 
-1. User navigates to a tweet/article on `x.com` or `twitter.com`.
-2. User clicks the extension icon → Popup opens with a **"Download .md"** button.
-3. Popup validates the URL, sends `EXTRACT` message to the content script.
-4. Content script detects mode (article/tweet), extracts DOM, cleans it, converts to Markdown via Turndown.
-5. Result is sent back to popup, which forwards a `DOWNLOAD_MD` message to the background service worker.
-6. Background uses `chrome.downloads.download()` with a data URI to save the `.md` file.
+### Article Mode
 
-## 6. Project Structure
+- Uses **manual Draft.js block parsing** (not Turndown) for precise control.
+- Supports: headings (h1, h2), paragraphs, unordered/ordered lists, code blocks with language labels, horizontal rules, bold, italic, and inline links.
+- Article Draft.js classes: `.longform-unstyled`, `.longform-header-one`, `.longform-header-two`, `.longform-unordered-list-item`.
 
-```
+### Content Cleaning (shared)
+
+Strips from DOM clones before conversion:
+
+- `[role="group"]` (engagement counts)
+- `[data-testid$="-follow"]` (follow buttons)
+- `[data-testid="caret"]` (more menu)
+- `[data-testid="tweet-text-show-more-link"]` (read more)
+- Share, bookmark, and subscribe elements
+- Buttons, nav, and `[aria-hidden="true"]` elements (except images)
+
+## 5. Output
+
+- **Filename**: `@handle-tweetId.md` (tweets/threads) or `@handle-article-slug.md` (articles)
+- **Footer**: `> Source:` URL and `> Date:` timestamp appended to every file
+
+## 6. Extension Flow
+
+1. Content script auto-injects on `x.com/*/status/*` at `document_idle`.
+2. User clicks extension icon → popup sends `EXTRACT` message to content script.
+3. Content script detects mode → extracts and cleans DOM → returns Markdown.
+4. Popup forwards `DOWNLOAD_MD` message to background service worker.
+5. Background creates a `data:` URI and calls `chrome.downloads.download()`.
+
+## 7. Project Structure
+
+```text
 tweet2md/
-├── build.mjs              # esbuild multi-entry build script
-├── package.json
-├── tsconfig.json
-├── SPEC.md
 ├── src/
 │   ├── manifest.json       # Chrome MV3 manifest
-│   ├── icons/              # Extension icons (16, 48, 128)
-│   ├── background/
-│   │   └── background.ts   # Service worker — handles chrome.downloads
+│   ├── icons/              # Extension icons (16, 32, 48, 128px)
 │   ├── content/
-│   │   └── content.ts      # DOM extraction + Turndown conversion
+│   │   └── content.ts      # DOM extraction + Turndown + Draft.js parsing
+│   ├── background/
+│   │   └── background.ts   # Service worker — chrome.downloads
 │   ├── popup/
 │   │   ├── popup.html
 │   │   ├── popup.css
 │   │   └── popup.ts        # Button logic + message orchestration
 │   └── types/
-│       └── messages.ts      # Shared TypeScript interfaces
-└── dist/                   # Build output → load this in Chrome
+│       └── messages.ts     # Shared TypeScript interfaces
+├── dist/                   # Build output (load this in Chrome)
+├── build.mjs               # esbuild build script
+├── package.json
+└── tsconfig.json
 ```
