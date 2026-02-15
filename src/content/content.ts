@@ -43,6 +43,11 @@ turndown.addRule('xImages', {
     const alt = img.getAttribute('alt') || 'Image';
     let src = img.getAttribute('src') || '';
 
+    // Emoji images → just return the emoji character (alt text)
+    if (src.includes('twimg.com/emoji') || src.includes('abs-0.twimg.com')) {
+      return alt;
+    }
+
     // Use the highest quality version available
     if (src.includes('pbs.twimg.com') && !src.includes('format=')) {
       src = src.replace(/&name=\w+/, '&name=large');
@@ -63,6 +68,42 @@ turndown.addRule('xVideos', {
     return url ? `[🎥 Video](${url})` : '[🎥 Video]';
   },
 });
+
+// Custom rule: handle @mention links inline (no surrounding line breaks)
+turndown.addRule('atMentions', {
+  filter: (node) => {
+    if (node.nodeName !== 'A') return false;
+    const href = (node as HTMLAnchorElement).getAttribute('href') || '';
+    // Match links like /username (internal profile links)
+    return /^\/[A-Za-z0-9_]+$/.test(href);
+  },
+  replacement: (_content, node) => {
+    const anchor = node as HTMLAnchorElement;
+    const text = anchor.textContent?.trim() || '';
+    // Return just @handle with no extra whitespace
+    return text.startsWith('@') ? text : `@${text}`;
+  },
+});
+
+/**
+ * Clean up markdown output:
+ * - Collapse line breaks around @mentions and trailing punctuation
+ * - Remove blank lines between inline elements that should flow together
+ */
+function cleanupMarkdown(md: string): string {
+  // Collapse: "text\n\n@handle\n\n, more text" → "text @handle, more text"
+  // Step 1: Remove leading blank lines before @mentions
+  let result = md.replace(/\n{2,}(@[A-Za-z0-9_]+)/g, ' $1');
+  // Step 2: Remove trailing blank line + punctuation after @mentions  
+  result = result.replace(/(@[A-Za-z0-9_]+)\n{2,}([.,;:!?])/g, '$1$2');
+  // Step 3: Collapse remaining blank lines between @mentions
+  result = result.replace(/(@[A-Za-z0-9_]+[.,;:!?]?)\n{2,}(@[A-Za-z0-9_]+)/g, '$1 $2');
+  // Step 4: Collapse orphaned punctuation on its own line
+  result = result.replace(/\n{2,}([.,;:!?])\s*\n/g, '$1\n');
+  // Step 5: Collapse trailing punctuation (e.g. "." on its own line after a handle)
+  result = result.replace(/(@[A-Za-z0-9_]+)\n{2,}([.,;:!?])\s*$/gm, '$1$2');
+  return result;
+}
 
 // ─── DOM Selectors (2026 X.com) ─────────────────────────────────────
 
@@ -246,7 +287,7 @@ function extractSingleTweetFromArticle(
 
   if (tweetTextEl) {
     const cleaned = cleanContentClone(tweetTextEl);
-    text = turndown.turndown(cleaned.innerHTML).trim();
+    text = cleanupMarkdown(turndown.turndown(cleaned.innerHTML)).trim();
   }
 
   // Extract media
