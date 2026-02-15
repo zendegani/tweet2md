@@ -309,27 +309,27 @@ function extractArticle(): ExtractedContent {
   for (let i = 0; i < blocks.length; i++) {
     const block = blocks[i] as HTMLElement;
 
-    // ── Separator (horizontal rule) ──
-    if (
-      block.querySelector('[role="separator"]') ||
-      block.tagName === 'SECTION'
-    ) {
-      mdParts.push('', '---', '');
-      continue;
-    }
-
-    // ── Code block ──
+    // ── Code block (MUST check before separator — both use <section>) ──
     const codeBlock = block.querySelector('[data-testid="markdown-code-block"]');
     if (codeBlock || block.getAttribute('data-testid') === 'markdown-code-block') {
       const cb = codeBlock || block;
-      const langSpan = cb.querySelector(
-        '.r-1aiqnjv'
-      );
-      const lang = langSpan?.textContent?.trim() || '';
+      // Language label: look for code tag's class or the label span
+      const codeEl = cb.querySelector('code');
+      const langFromClass = codeEl?.className?.match(/language-(\w+)/)?.[1] || '';
+      // Fallback: the small label span above the code block
+      const langLabel = cb.querySelector('[class*="r-1aiqnjv"]');
+      const lang = langFromClass || langLabel?.textContent?.trim() || '';
       const preEl = cb.querySelector('pre');
-      const codeEl = preEl?.querySelector('code') || preEl;
-      const codeText = codeEl?.textContent || '';
+      const codeSource = preEl?.querySelector('code') || preEl;
+      const codeText = codeSource?.textContent || '';
       mdParts.push('', `\`\`\`${lang}`, codeText.trimEnd(), '\`\`\`', '');
+      continue;
+    }
+
+    // ── Separator (horizontal rule) ──
+    // Only match if the block contains [role="separator"] (not just any <section>)
+    if (block.querySelector('[role="separator"]')) {
+      mdParts.push('', '---', '');
       continue;
     }
 
