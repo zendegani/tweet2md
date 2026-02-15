@@ -67,7 +67,12 @@ turndown.addRule('xVideos', {
 // ─── DOM Selectors (2026 X.com) ─────────────────────────────────────
 
 const SELECTORS = {
-  article: '[data-testid="article-container"]',
+  // Article-specific (long-form / Notes)
+  articleTitle: '[data-testid="twitter-article-title"]',
+  articleRichText: '[data-testid="twitterArticleRichTextView"]',
+  articleDraftContent: '[data-testid="longformRichTextComponent"]',
+  articleCodeBlock: '[data-testid="markdown-code-block"]',
+  // Tweet-specific
   tweetText: '[data-testid="tweetText"]',
   userName: '[data-testid="User-Name"]',
   tweetPhoto: '[data-testid="tweetPhoto"]',
@@ -75,25 +80,18 @@ const SELECTORS = {
   engagementGroup: '[role="group"]',
   followButton: '[data-testid$="-follow"]',
   caret: '[data-testid="caret"]',
-  // Additional UI noise
   readMore: '[data-testid="tweet-text-show-more-link"]',
 } as const;
 
 // ─── Detection ──────────────────────────────────────────────────────
 
 function isArticlePage(): boolean {
-  // Primary: look for the explicit article container
-  if (document.querySelector(SELECTORS.article)) return true;
-
-  // Fallback: detect structured long-form content inside the main article
-  const articles = document.querySelectorAll('article[role="article"]');
-  for (const article of articles) {
-    const headings = article.querySelectorAll('h1, h2, h3');
-    const paragraphs = article.querySelectorAll('p');
-    if (headings.length >= 1 && paragraphs.length >= 3) return true;
-  }
-
-  return false;
+  // Check for X.com Article/Notes specific elements
+  return !!(
+    document.querySelector(SELECTORS.articleTitle) ||
+    document.querySelector(SELECTORS.articleRichText) ||
+    document.querySelector(SELECTORS.articleDraftContent)
+  );
 }
 
 // ─── Author Extraction ──────────────────────────────────────────────
@@ -265,36 +263,137 @@ function extractTweet(): ExtractedContent {
 
 // ─── Article Extraction ─────────────────────────────────────────────
 
+/**
+ * X.com Articles ("Notes") use Draft.js for rich text rendering.
+ * Structure:
+ *   [data-testid="twitter-article-title"] → Title
+ *   [data-testid="twitterArticleRichTextView"] → Body container
+ *     └─ [data-testid="longformRichTextComponent"] → Draft.js content
+ *         ├─ .longform-unstyled  → paragraphs
+ *         ├─ .longform-header-one / .longform-header-two → headings
+ *         ├─ .longform-unordered-list-item → bullet lists
+ *         ├─ section[role="separator"] → horizontal rules
+ *         └─ [data-testid="markdown-code-block"] → code blocks
+ */
 function extractArticle(): ExtractedContent {
   const author = extractAuthor();
   const date = extractDate();
   const tweetId = extractTweetId();
   const sourceUrl = window.location.href;
 
-  // Try the article container first, then fall back to first big article
-  let articleContainer =
-    document.querySelector(SELECTORS.article) ||
-    document.querySelector('article[role="article"]');
-
-  if (!articleContainer) {
-    throw new Error('Could not find article content on this page.');
-  }
-
-  const cleaned = cleanContentClone(articleContainer);
-  let bodyMarkdown = turndown.turndown(cleaned.innerHTML).trim();
-
-  // Try to extract a title (first h1 or prominent heading)
+  // ── Extract title ─────────────────────────────────────────────
   let title: string | undefined;
-  const titleMatch = bodyMarkdown.match(/^#\s+(.+)$/m);
-  if (titleMatch) {
-    title = titleMatch[1].trim();
+  const titleEl = document.querySelector(SELECTORS.articleTitle);
+  if (titleEl) {
+    title = titleEl.textContent?.trim();
   }
 
+  // ── Extract rich text body ────────────────────────────────────
+  const richTextView = document.querySelector(SELECTORS.articleRichText);
+  if (!richTextView) {
+    throw new Error(
+      'Could not find the article body. The page may not have fully loaded.'
+    );
+  }
+
+  // Build markdown manually from Draft.js blocks for better control
+  const mdParts: string[] = [];
+  const draftContent =
+    richTextView.querySelector(SELECTORS.articleDraftContent) || richTextView;
+
+  // Get direct children of [data-contents] or the content root
+  const dataContents =
+    draftContent.querySelector('[data-contents]') || draftContent;
+  const blocks = dataContents.children;
+
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i] as HTMLElement;
+
+    // ── Separator (horizontal rule) ──
+    if (
+      block.querySelector('[role="separator"]') ||
+      block.tagName === 'SECTION'
+    ) {
+      mdParts.push('', '---', '');
+      continue;
+    }
+
+    // ── Code block ──
+    const codeBlock = block.querySelector('[data-testid="markdown-code-block"]');
+    if (codeBlock || block.getAttribute('data-testid') === 'markdown-code-block') {
+      const cb = codeBlock || block;
+      const langSpan = cb.querySelector(
+        '.r-1aiqnjv'
+      );
+      const lang = langSpan?.textContent?.trim() || '';
+      const preEl = cb.querySelector('pre');
+      const codeEl = preEl?.querySelector('code') || preEl;
+      const codeText = codeEl?.textContent || '';
+      mdParts.push('', `\`\`\`${lang}`, codeText.trimEnd(), '\`\`\`', '');
+      continue;
+    }
+
+    // ── Header (h1) ──
+    const h1 = block.querySelector('.longform-header-one') || 
+               (block.classList.contains('longform-header-one') ? block : null);
+    if (h1 || block.querySelector('h1.longform-header-one')) {
+      const heading = block.textContent?.trim() || '';
+      if (heading) mdParts.push('', `# ${heading}`, '');
+      continue;
+    }
+
+    // ── Header (h2) ──
+    const h2 = block.querySelector('.longform-header-two') ||
+               (block.classList.contains('longform-header-two') ? block : null);
+    if (h2 || block.querySelector('h2.longform-header-two')) {
+      const heading = block.textContent?.trim() || '';
+      if (heading) mdParts.push('', `## ${heading}`, '');
+      continue;
+    }
+
+    // ── Unordered list ──
+    if (block.tagName === 'UL') {
+      const items = block.querySelectorAll('.longform-unordered-list-item');
+      items.forEach((li) => {
+        const text = extractInlineText(li);
+        if (text) mdParts.push(`- ${text}`);
+      });
+      continue;
+    }
+
+    // ── Single list item (sometimes not wrapped in UL) ──
+    if (block.classList.contains('longform-unordered-list-item')) {
+      const text = extractInlineText(block);
+      if (text) mdParts.push(`- ${text}`);
+      continue;
+    }
+
+    // ── Ordered list ──
+    if (block.tagName === 'OL') {
+      const items = block.querySelectorAll('li');
+      items.forEach((li, idx) => {
+        const text = extractInlineText(li);
+        if (text) mdParts.push(`${idx + 1}. ${text}`);
+      });
+      continue;
+    }
+
+    // ── Regular paragraph (.longform-unstyled or generic div) ──
+    const text = extractInlineText(block);
+    if (text) {
+      mdParts.push(text);
+    } else if (block.textContent?.trim() === '') {
+      // Empty paragraph → blank line
+      mdParts.push('');
+    }
+  }
+
+  let bodyMarkdown = mdParts.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+
+  // ── Compose final markdown ────────────────────────────────────
   const parts: string[] = [];
 
   if (title) {
-    // Remove the title from body since we'll put it as the top heading
-    bodyMarkdown = bodyMarkdown.replace(/^#\s+.+\n*/m, '').trim();
     parts.push(`# ${title}`, '', `*By ${author.name} (${author.handle})*`, '');
   } else {
     parts.push(`# Article by ${author.name} (${author.handle})`, '');
@@ -311,6 +410,71 @@ function extractArticle(): ExtractedContent {
     date,
     tweetId,
   };
+}
+
+/**
+ * Extract inline text from a Draft.js block, preserving bold/italic/links.
+ */
+function extractInlineText(el: Element): string {
+  let result = '';
+
+  for (const child of el.childNodes) {
+    if (child.nodeType === Node.TEXT_NODE) {
+      result += child.textContent || '';
+      continue;
+    }
+
+    if (child.nodeType !== Node.ELEMENT_NODE) continue;
+    const elem = child as HTMLElement;
+
+    // ── Link ──
+    if (elem.tagName === 'A' || elem.querySelector('a')) {
+      const anchor = elem.tagName === 'A' ? elem : elem.querySelector('a')!;
+      const href = anchor.getAttribute('href') || '';
+      const linkText = anchor.textContent?.trim() || '';
+      // Resolve relative hrefs (X sometimes uses //domain)
+      const fullHref = href.startsWith('//')
+        ? `https:${href}`
+        : href.startsWith('/')
+        ? `https://x.com${href}`
+        : href;
+      result += `[${linkText}](${fullHref})`;
+      continue;
+    }
+
+    // ── Inline container (div wrapping a link, etc) ──
+    if (elem.tagName === 'DIV' && elem.querySelector('a')) {
+      const anchor = elem.querySelector('a')!;
+      const href = anchor.getAttribute('href') || '';
+      const linkText = anchor.textContent?.trim() || '';
+      const fullHref = href.startsWith('//')
+        ? `https:${href}`
+        : href.startsWith('/')
+        ? `https://x.com${href}`
+        : href;
+      result += `[${linkText}](${fullHref})`;
+      continue;
+    }
+
+    // ── Bold ──
+    if (elem.style.fontWeight === 'bold' || elem.tagName === 'STRONG' || elem.tagName === 'B') {
+      const inner = extractInlineText(elem);
+      result += `**${inner}**`;
+      continue;
+    }
+
+    // ── Italic ──
+    if (elem.style.fontStyle === 'italic' || elem.tagName === 'EM' || elem.tagName === 'I') {
+      const inner = extractInlineText(elem);
+      result += `*${inner}*`;
+      continue;
+    }
+
+    // ── Recurse into other elements (spans, divs) ──
+    result += extractInlineText(elem);
+  }
+
+  return result;
 }
 
 // ─── Main Extraction Entry Point ────────────────────────────────────
