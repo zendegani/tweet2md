@@ -118,10 +118,12 @@ btnDownload.addEventListener('click', async () => {
           'error'
         );
       } else {
-        const label =
-          response.data!.type === 'article'
-            ? 'Article downloaded!'
-            : 'Tweet downloaded!';
+        const typeLabels: Record<string, string> = {
+          article: 'Article downloaded!',
+          thread: 'Thread downloaded!',
+          tweet: 'Tweet downloaded!',
+        };
+        const label = typeLabels[response.data!.type] || 'Downloaded!';
         showStatus(`✓ ${label}`, 'success');
       }
       setLoading(false);

@@ -4,7 +4,7 @@ export interface AuthorInfo {
 }
 
 export interface ExtractedContent {
-  type: 'tweet' | 'article';
+  type: 'tweet' | 'thread' | 'article';
   author: AuthorInfo;
   title?: string;
   markdown: string;

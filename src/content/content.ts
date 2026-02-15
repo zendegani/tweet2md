@@ -194,66 +194,152 @@ function cleanContentClone(container: Element): Element {
   return clone;
 }
 
-// ─── Tweet Extraction ───────────────────────────────────────────────
+// ─── Per-Article Helpers ────────────────────────────────────────────
+
+/**
+ * Extract author info from a specific article element (not the global page).
+ */
+function extractAuthorFromArticle(
+  article: Element
+): { name: string; handle: string } {
+  const userNameEl = article.querySelector(SELECTORS.userName);
+  if (!userNameEl) return { name: 'Unknown', handle: 'unknown' };
+
+  const links = userNameEl.querySelectorAll('a');
+  let name = 'Unknown';
+  let handle = 'unknown';
+
+  for (const link of links) {
+    const text = link.textContent?.trim() || '';
+    if (text.startsWith('@')) {
+      handle = text;
+    } else if (text && name === 'Unknown') {
+      name = text;
+    }
+  }
+
+  if (handle === 'unknown') {
+    for (const link of links) {
+      const href = link.getAttribute('href') || '';
+      const match = href.match(/^\/([A-Za-z0-9_]+)$/);
+      if (match) {
+        handle = `@${match[1]}`;
+        break;
+      }
+    }
+  }
+
+  return { name, handle };
+}
+
+/**
+ * Extract text + media markdown from a single article element.
+ * Returns { text, media } where text is the tweet body markdown
+ * and media is an array of media markdown strings.
+ */
+function extractSingleTweetFromArticle(
+  article: Element
+): { text: string; media: string[] } {
+  // Extract tweet text
+  const tweetTextEl = article.querySelector(SELECTORS.tweetText);
+  let text = '';
+
+  if (tweetTextEl) {
+    const cleaned = cleanContentClone(tweetTextEl);
+    text = turndown.turndown(cleaned.innerHTML).trim();
+  }
+
+  // Extract media
+  const media: string[] = [];
+
+  // Images
+  const photos = article.querySelectorAll(`${SELECTORS.tweetPhoto} img`);
+  photos.forEach((img) => {
+    let src = (img as HTMLImageElement).src;
+    if (src && !src.includes('emoji') && !src.includes('profile_images')) {
+      if (src.includes('pbs.twimg.com')) {
+        src = src.replace(/&name=\w+/, '&name=large');
+      }
+      media.push(`![Image](${src})`);
+    }
+  });
+
+  // Videos
+  const videos = article.querySelectorAll('video');
+  videos.forEach((video) => {
+    const poster = video.getAttribute('poster');
+    if (poster) {
+      media.push(`[🎥 Video](${poster})`);
+    }
+  });
+
+  return { text, media };
+}
+
+// ─── Tweet / Thread Extraction ──────────────────────────────────────
 
 function extractTweet(): ExtractedContent {
-  const author = extractAuthor();
   const date = extractDate();
   const tweetId = extractTweetId();
   const sourceUrl = window.location.href;
 
-  // Find the main tweet text
-  const tweetTextEl = document.querySelector(SELECTORS.tweetText);
-  let bodyMarkdown = '';
+  // Collect all article elements on the page
+  const allArticles = document.querySelectorAll('article[role="article"]');
 
-  if (tweetTextEl) {
-    const cleaned = cleanContentClone(tweetTextEl);
-    bodyMarkdown = turndown.turndown(cleaned.innerHTML).trim();
+  if (allArticles.length === 0) {
+    // Fallback: no articles found
+    const author = extractAuthor();
+    return {
+      type: 'tweet',
+      author,
+      markdown: `# ${author.name} (${author.handle})\n\n*Could not extract tweet content.*\n\n---\n\n> Source: ${sourceUrl}\n> Date: ${date}`,
+      sourceUrl,
+      date,
+      tweetId,
+    };
   }
 
-  // Find media in the main article
-  const article = document.querySelector('article[role="article"]');
-  const mediaMarkdown: string[] = [];
+  // Determine the thread author from the first article
+  const threadAuthor = extractAuthorFromArticle(allArticles[0]);
 
-  if (article) {
-    // Images
-    const photos = article.querySelectorAll(`${SELECTORS.tweetPhoto} img`);
-    photos.forEach((img) => {
-      let src = (img as HTMLImageElement).src;
-      if (src && !src.includes('emoji') && !src.includes('profile_images')) {
-        if (src.includes('pbs.twimg.com')) {
-          src = src.replace(/&name=\w+/, '&name=large');
-        }
-        mediaMarkdown.push(`![Image](${src})`);
-      }
-    });
+  // Collect tweets from the same author (thread tweets)
+  const threadTweets: { text: string; media: string[] }[] = [];
 
-    // Videos
-    const videos = article.querySelectorAll('video');
-    videos.forEach((video) => {
-      const poster = video.getAttribute('poster');
-      if (poster) {
-        mediaMarkdown.push(`[🎥 Video](${poster})`);
-      }
-    });
+  for (const article of allArticles) {
+    const articleAuthor = extractAuthorFromArticle(article);
+    // Only include tweets by the thread author
+    if (
+      articleAuthor.handle.toLowerCase() ===
+      threadAuthor.handle.toLowerCase()
+    ) {
+      threadTweets.push(extractSingleTweetFromArticle(article));
+    }
   }
 
-  // Compose final markdown
+  // Build the final markdown
+  const isThread = threadTweets.length > 1;
   const parts: string[] = [
-    `# ${author.name} (${author.handle})`,
+    `# ${threadAuthor.name} (${threadAuthor.handle})`,
     '',
-    bodyMarkdown,
   ];
 
-  if (mediaMarkdown.length > 0) {
-    parts.push('', ...mediaMarkdown);
-  }
+  threadTweets.forEach((tweet, idx) => {
+    if (idx > 0) {
+      parts.push('', '---', '');
+    }
+    if (tweet.text) {
+      parts.push(tweet.text);
+    }
+    if (tweet.media.length > 0) {
+      parts.push('', ...tweet.media);
+    }
+  });
 
   parts.push('', '---', '', `> Source: ${sourceUrl}`, `> Date: ${date}`);
 
   return {
-    type: 'tweet',
-    author,
+    type: isThread ? 'thread' : 'tweet',
+    author: threadAuthor,
     markdown: parts.join('\n'),
     sourceUrl,
     date,
