@@ -8,11 +8,12 @@ tweet2md does **not** collect, store, or transmit any user data. Everything happ
 
 ## What this extension does
 
-tweet2md reads the content of the current X.com (Twitter) page when you click the extension icon and press "Download .md". It converts the visible page content (tweet or article text) into a Markdown file, which is saved to your local Downloads folder using Chrome's built-in download API.
+tweet2md accesses the visible content of supported X.com or Twitter.com status pages only after the user explicitly clicks the extension and requests a download. It converts the visible page content (tweet or article text) into a Markdown file, which is saved to your local Downloads folder using Chrome's built-in download API.
 
 ## Data collection
 
 - **No personal data is collected.**
+- The extension accesses website content (text and images on supported X.com/Twitter.com pages) solely to convert it into a Markdown file at the user’s request.
 - **No browsing history is tracked.**
 - **No analytics or telemetry is sent.**
 - **No data is transmitted to any external server.**
@@ -27,7 +28,7 @@ All data processing happens **entirely within your browser**:
 2. The page content is converted to Markdown format in-memory
 3. The resulting Markdown is saved as a local file via `chrome.downloads`
 
-No data leaves your browser at any point during this process.
+No data leaves your browser at any point during this process. The extension does not store extracted content after the download completes.
 
 ## Permissions explained
 
@@ -48,4 +49,4 @@ If this privacy policy changes, the updated version will be published in this re
 
 ## Contact
 
-If you have questions about this privacy policy, please open an issue on the [GitHub repository](https://github.com/YOUR_USERNAME/tweet2md).
+If you have questions about this privacy policy, please open an issue on the [GitHub repository](https://github.com/zendegani/tweet2md).
