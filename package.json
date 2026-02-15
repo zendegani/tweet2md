@@ -7,7 +7,8 @@
   "scripts": {
     "build": "node build.mjs",
     "watch": "node build.mjs --watch",
-    "clean": "rm -rf dist"
+    "package": "npm run build && cd dist && zip -r ../tweet2md.zip . && echo '📦 tweet2md.zip created'",
+    "clean": "rm -rf dist tweet2md.zip"
   },
   "devDependencies": {
     "esbuild": "^0.25.0",

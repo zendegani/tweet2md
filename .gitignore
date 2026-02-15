@@ -1,37 +1,30 @@
-# Generated .gitignore file for: TypeScript, React, Vite, macOS
-# Created with FOSSA's DevOps Tools
-
-# TypeScript
-# Add TypeScript-specific ignores here
-
-# React
+# Dependencies
 node_modules/
-build/
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
 
-# Vite
-# Add Vite-specific ignores here
+# Build output
+dist/
+
+# Packaged extension
+*.zip
+
+# Environment files
+.env
+.env.local
+.env.*.local
 
 # macOS
-# Add macOS-specific ignores here
-
-# Common
 .DS_Store
-Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# Logs and temp files
 *.log
 *.bak
 *.tmp
 *.swp
 *~
 
-# IDE and editor generated files
-.idea/
-*.sublime-*
 
-# Local environment files
-.env
-.env.local
-.env.*.local
