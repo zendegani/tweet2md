@@ -415,6 +415,32 @@ function extractArticle(): ExtractedContent {
     title = titleEl.textContent?.trim();
   }
 
+  // ── Extract banner / header image ─────────────────────────────
+  let bannerImageMd = '';
+  const articleEl = document.querySelector('article[role="article"]');
+  if (articleEl) {
+    // Look for the hero image: typically inside [data-testid="tweetPhoto"]
+    // or a standalone <img> inside the article but outside the Draft.js body
+    const heroImg =
+      articleEl.querySelector(`${SELECTORS.tweetPhoto} img`) ||
+      articleEl.querySelector('[data-testid="card.layoutLarge.media"] img');
+    if (heroImg) {
+      let src = (heroImg as HTMLImageElement).src || '';
+      if (
+        src &&
+        !src.includes('emoji') &&
+        !src.includes('profile_images') &&
+        !src.includes('hashflags')
+      ) {
+        // Request highest quality
+        if (src.includes('pbs.twimg.com')) {
+          src = src.replace(/&name=\w+/, '&name=large');
+        }
+        bannerImageMd = `![Banner](${src})`;
+      }
+    }
+  }
+
   // ── Extract rich text body ────────────────────────────────────
   const richTextView = document.querySelector(SELECTORS.articleRichText);
   if (!richTextView) {
@@ -508,7 +534,7 @@ function extractArticle(): ExtractedContent {
     // ── Regular paragraph (.longform-unstyled or generic div) ──
     const text = extractInlineText(block);
     if (text) {
-      mdParts.push(text);
+      mdParts.push(text, '');
     } else if (block.textContent?.trim() === '') {
       // Empty paragraph → blank line
       mdParts.push('');
@@ -524,6 +550,10 @@ function extractArticle(): ExtractedContent {
     parts.push(`# ${title}`, '', `*By ${author.name} (${author.handle})*`, '');
   } else {
     parts.push(`# Article by ${author.name} (${author.handle})`, '');
+  }
+
+  if (bannerImageMd) {
+    parts.push(bannerImageMd, '');
   }
 
   parts.push(bodyMarkdown, '', '---', '', `> Source: ${sourceUrl}`, `> Date: ${date}`);
