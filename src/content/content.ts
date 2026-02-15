@@ -69,6 +69,13 @@ turndown.addRule('xVideos', {
   },
 });
 
+// Custom rule: convert <br> to markdown hard line break (two trailing spaces)
+// Turndown's default \n doesn't render as a line break in markdown.
+turndown.addRule('lineBreaks', {
+  filter: 'br',
+  replacement: () => '  \n',
+});
+
 // Custom rule: handle @mention links inline (no surrounding line breaks)
 turndown.addRule('atMentions', {
   filter: (node) => {
@@ -287,6 +294,24 @@ function extractSingleTweetFromArticle(
 
   if (tweetTextEl) {
     const cleaned = cleanContentClone(tweetTextEl);
+
+    // X.com uses literal \n inside <span> for tweet line breaks (not <br>).
+    // HTML collapses these to spaces, so convert them to <br> before Turndown.
+    const walker = document.createTreeWalker(cleaned, NodeFilter.SHOW_TEXT);
+    const textNodes: Text[] = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode as Text);
+    for (const tn of textNodes) {
+      if (tn.textContent && tn.textContent.includes('\n')) {
+        const parts = tn.textContent.split('\n');
+        const parent = tn.parentNode!;
+        for (let j = 0; j < parts.length; j++) {
+          if (j > 0) parent.insertBefore(document.createElement('br'), tn);
+          parent.insertBefore(document.createTextNode(parts[j]), tn);
+        }
+        parent.removeChild(tn);
+      }
+    }
+
     text = cleanupMarkdown(turndown.turndown(cleaned.innerHTML)).trim();
   }
 
