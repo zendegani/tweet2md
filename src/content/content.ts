@@ -413,6 +413,39 @@ function extractArticle(): ExtractedContent {
 }
 
 /**
+ * Check if an element is a small inline wrapper for a link (not a content container).
+ * X.com wraps links in <div class="css-175oi2r r-1loqt21 ..."> inline containers.
+ * These only contain the <a> tag. A content container (like DraftStyleDefault-block)
+ * will have multiple children: text spans + link divs + more text spans.
+ */
+function isInlineLinkWrapper(el: HTMLElement): boolean {
+  // If it has a data-offset-key, it's a Draft.js content block, not a link wrapper
+  if (el.hasAttribute('data-offset-key')) return false;
+  // If it has Draft.js block classes, it's a content container
+  if (el.className.includes('DraftStyleDefault')) return false;
+  if (el.className.includes('longform-')) return false;
+
+  // An inline link wrapper typically has only 1 child element (the <a>)
+  // and no direct TEXT_NODE children with meaningful text
+  const childElements = Array.from(el.children);
+  const hasOnlyLink = childElements.length === 1 && childElements[0].tagName === 'A';
+  const hasLink = childElements.some(c => c.tagName === 'A' || c.querySelector('a'));
+
+  // If it only contains a link (no sibling text/span content), it's a wrapper
+  if (hasOnlyLink) return true;
+
+  // Also check: no text-bearing siblings alongside the link
+  let textLen = 0;
+  for (const child of el.childNodes) {
+    if (child.nodeType === Node.TEXT_NODE) {
+      textLen += (child.textContent || '').trim().length;
+    }
+  }
+
+  return hasLink && textLen === 0 && childElements.length <= 2;
+}
+
+/**
  * Extract inline text from a Draft.js block, preserving bold/italic/links.
  */
 function extractInlineText(el: Element): string {
@@ -427,12 +460,10 @@ function extractInlineText(el: Element): string {
     if (child.nodeType !== Node.ELEMENT_NODE) continue;
     const elem = child as HTMLElement;
 
-    // ── Link ──
-    if (elem.tagName === 'A' || elem.querySelector('a')) {
-      const anchor = elem.tagName === 'A' ? elem : elem.querySelector('a')!;
-      const href = anchor.getAttribute('href') || '';
-      const linkText = anchor.textContent?.trim() || '';
-      // Resolve relative hrefs (X sometimes uses //domain)
+    // ── Direct link ──
+    if (elem.tagName === 'A') {
+      const href = elem.getAttribute('href') || '';
+      const linkText = elem.textContent?.trim() || '';
       const fullHref = href.startsWith('//')
         ? `https:${href}`
         : href.startsWith('/')
@@ -442,8 +473,11 @@ function extractInlineText(el: Element): string {
       continue;
     }
 
-    // ── Inline container (div wrapping a link, etc) ──
-    if (elem.tagName === 'DIV' && elem.querySelector('a')) {
+    // ── Inline link wrapper (small div/span wrapping ONLY an <a>) ──
+    // X.com wraps links in a <div class="css-175oi2r r-1loqt21 ..."> container
+    // IMPORTANT: Don't match large container divs (like DraftStyleDefault-block)
+    // that happen to contain a link somewhere deep inside alongside other content.
+    if (elem.querySelector('a') && isInlineLinkWrapper(elem)) {
       const anchor = elem.querySelector('a')!;
       const href = anchor.getAttribute('href') || '';
       const linkText = anchor.textContent?.trim() || '';
@@ -470,7 +504,7 @@ function extractInlineText(el: Element): string {
       continue;
     }
 
-    // ── Recurse into other elements (spans, divs) ──
+    // ── Recurse into other elements (spans, content wrapper divs, etc.) ──
     result += extractInlineText(elem);
   }
 
