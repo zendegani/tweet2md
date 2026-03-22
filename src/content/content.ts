@@ -281,6 +281,32 @@ function extractAuthorFromArticle(
 }
 
 /**
+ * Helper to extract markdown text from a text element.
+ */
+function extractTextFromElement(textEl: Element): string {
+  const cleaned = cleanContentClone(textEl);
+
+  // X.com uses literal \n inside <span> for tweet line breaks (not <br>).
+  // HTML collapses these to spaces, so convert them to <br> before Turndown.
+  const walker = document.createTreeWalker(cleaned, NodeFilter.SHOW_TEXT);
+  const textNodes: Text[] = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode as Text);
+  for (const tn of textNodes) {
+    if (tn.textContent && tn.textContent.includes('\n')) {
+      const parts = tn.textContent.split('\n');
+      const parent = tn.parentNode!;
+      for (let j = 0; j < parts.length; j++) {
+        if (j > 0) parent.insertBefore(document.createElement('br'), tn);
+        parent.insertBefore(document.createTextNode(parts[j]), tn);
+      }
+      parent.removeChild(tn);
+    }
+  }
+
+  return cleanupMarkdown(turndown.turndown(cleaned.innerHTML)).trim();
+}
+
+/**
  * Extract text + media markdown from a single article element.
  * Returns { text, media } where text is the tweet body markdown
  * and media is an array of media markdown strings.
@@ -288,31 +314,34 @@ function extractAuthorFromArticle(
 function extractSingleTweetFromArticle(
   article: Element
 ): { text: string; media: string[] } {
-  // Extract tweet text
-  const tweetTextEl = article.querySelector(SELECTORS.tweetText);
+  // Extract tweet text(s)
+  const tweetTextEls = article.querySelectorAll(SELECTORS.tweetText);
   let text = '';
 
-  if (tweetTextEl) {
-    const cleaned = cleanContentClone(tweetTextEl);
+  if (tweetTextEls.length > 0) {
+    text = extractTextFromElement(tweetTextEls[0]);
+  }
 
-    // X.com uses literal \n inside <span> for tweet line breaks (not <br>).
-    // HTML collapses these to spaces, so convert them to <br> before Turndown.
-    const walker = document.createTreeWalker(cleaned, NodeFilter.SHOW_TEXT);
-    const textNodes: Text[] = [];
-    while (walker.nextNode()) textNodes.push(walker.currentNode as Text);
-    for (const tn of textNodes) {
-      if (tn.textContent && tn.textContent.includes('\n')) {
-        const parts = tn.textContent.split('\n');
-        const parent = tn.parentNode!;
-        for (let j = 0; j < parts.length; j++) {
-          if (j > 0) parent.insertBefore(document.createElement('br'), tn);
-          parent.insertBefore(document.createTextNode(parts[j]), tn);
-        }
-        parent.removeChild(tn);
+  // If there's a second text element, it's typically a Quote Tweet
+  if (tweetTextEls.length > 1) {
+    const quoteEl = tweetTextEls[1];
+    // Find the container for the quote to extract the author
+    // Quotes are usually in a div with role="link"
+    const quoteContainer = quoteEl.closest('div[role="link"]');
+    
+    let quoteAuthorInfo = '';
+    if (quoteContainer) {
+      const qa = extractAuthorFromArticle(quoteContainer);
+      if (qa.name !== 'Unknown') {
+        quoteAuthorInfo = `**${qa.name} (${qa.handle})**\n> \n> `;
       }
     }
 
-    text = cleanupMarkdown(turndown.turndown(cleaned.innerHTML)).trim();
+    const rawQuoteText = extractTextFromElement(quoteEl);
+    if (rawQuoteText) {
+      const blockquotedText = rawQuoteText.split('\n').join('\n> ');
+      text += `\n\n> ${quoteAuthorInfo}${blockquotedText}`;
+    }
   }
 
   // Extract media
