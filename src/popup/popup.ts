@@ -2,6 +2,59 @@ import type { ExtractResponse, DownloadRequest } from '../types/messages';
 
 const btnDownload = document.getElementById('btn-download') as HTMLButtonElement;
 const statusEl = document.getElementById('status') as HTMLDivElement;
+const chkDownloadImages = document.getElementById(
+  'chk-download-images'
+) as HTMLInputElement;
+const chkMetadata = document.getElementById(
+  'chk-include-metadata'
+) as HTMLInputElement;
+
+// ─── Settings Persistence ───────────────────────────────────────────
+
+const SETTINGS_KEY = 'tweet2md_settings';
+
+interface Settings {
+  downloadImages: boolean;
+  includeMetadata: boolean;
+}
+
+const DEFAULT_SETTINGS: Settings = {
+  downloadImages: false,
+  includeMetadata: true, // on by default
+};
+
+async function loadSettings(): Promise<Settings> {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(SETTINGS_KEY, (result) => {
+      const saved = result[SETTINGS_KEY] as Partial<Settings> | undefined;
+      resolve({ ...DEFAULT_SETTINGS, ...saved });
+    });
+  });
+}
+
+function saveSettings(settings: Settings): void {
+  chrome.storage.local.set({ [SETTINGS_KEY]: settings });
+}
+
+// Restore toggle states on popup open
+loadSettings().then((settings) => {
+  chkDownloadImages.checked = settings.downloadImages;
+  chkMetadata.checked = settings.includeMetadata;
+});
+
+// Persist on change
+chkDownloadImages.addEventListener('change', () => {
+  saveSettings({
+    downloadImages: chkDownloadImages.checked,
+    includeMetadata: chkMetadata.checked,
+  });
+});
+chkMetadata.addEventListener('change', () => {
+  saveSettings({
+    downloadImages: chkDownloadImages.checked,
+    includeMetadata: chkMetadata.checked,
+  });
+});
 
 // ─── Helpers ────────────────────────────────────────────────────────
 
@@ -47,6 +100,13 @@ function buildFilename(data: ExtractResponse['data']): string {
   return `${handle}-${id}.md`;
 }
 
+/**
+ * Strip the trailing "> Source: …\n> Date: …" footer block from markdown.
+ */
+function stripSourceFooter(md: string): string {
+  return md.replace(/\n+---\n+> Source:.*\n> Date:.*$/s, '');
+}
+
 // ─── Main Flow ──────────────────────────────────────────────────────
 
 btnDownload.addEventListener('click', async () => {
@@ -89,10 +149,13 @@ btnDownload.addEventListener('click', async () => {
       return;
     }
 
+    const includeMetadata = chkMetadata.checked;
+    const isDownloadLocal = chkDownloadImages.checked;
+
     // 2. Send extraction request to content script
     const response: ExtractResponse = await chrome.tabs.sendMessage(
       tab.id,
-      { action: 'EXTRACT' }
+      { action: 'EXTRACT', includeMetadata }
     );
 
     if (!response.success || !response.data) {
@@ -104,11 +167,80 @@ btnDownload.addEventListener('click', async () => {
       return;
     }
 
+    const baseFilename = buildFilename(response.data);
+
+    // Build markdown: optionally prepend frontmatter and strip footer
+    let finalMarkdown = response.data.markdown;
+
+    if (includeMetadata) {
+      // Strip the "> Source: / > Date:" footer since it's now in frontmatter
+      finalMarkdown = stripSourceFooter(finalMarkdown);
+
+      // Prepend YAML frontmatter
+      const m = response.data.metadata;
+      const lines = ['---'];
+      lines.push(`author: "${response.data.author.name}"`);
+      lines.push(`handle: "${response.data.author.handle}"`);
+      lines.push(`source: "${response.data.sourceUrl}"`);
+      lines.push(`date: ${response.data.date}`);
+      lines.push(`type: ${response.data.type}`);
+      if (m) {
+        if (m.likes !== undefined) lines.push(`likes: ${m.likes}`);
+        if (m.reposts !== undefined) lines.push(`reposts: ${m.reposts}`);
+        if (m.replies !== undefined) lines.push(`replies: ${m.replies}`);
+        if (m.bookmarks !== undefined) lines.push(`bookmarks: ${m.bookmarks}`);
+        if (m.views !== undefined) lines.push(`views: ${m.views}`);
+      }
+      lines.push('---', '');
+      finalMarkdown = lines.join('\n') + finalMarkdown;
+    }
+
+    const imagesToDownload: { url: string; filename: string }[] = [];
+
+    if (isDownloadLocal) {
+      const dirName = baseFilename.replace('.md', '');
+
+      // Match markdown image syntax: ![alt](url)
+      finalMarkdown = finalMarkdown.replace(
+        /!\[(.*?)\]\((https:\/\/[^)]+)\)/g,
+        (match, alt, url) => {
+          try {
+            const urlObj = new URL(url);
+            let fname = urlObj.pathname.split('/').pop() || 'image';
+
+            // Extract format parameter if present (e.g., format=jpg)
+            const formatMatch = url.match(/format=([a-zA-Z0-9]+)/);
+            if (formatMatch && !fname.includes('.')) {
+              fname += `.${formatMatch[1]}`;
+            }
+
+            // Fallback for missing extension
+            if (!fname.includes('.')) {
+              fname += '.jpg';
+            }
+
+            fname = fname.replace(/[^a-zA-Z0-9_.-]/g, '_');
+            const localPath = `${dirName}/${fname}`;
+
+            if (!imagesToDownload.find((i) => i.url === url)) {
+              imagesToDownload.push({ url, filename: localPath });
+            }
+
+            return `![${alt}](${localPath})`;
+          } catch (e) {
+            // URL parsing failed, leave URL as is
+            return match;
+          }
+        }
+      );
+    }
+
     // 3. Send download request to background
     const downloadMsg: DownloadRequest = {
       action: 'DOWNLOAD_MD',
-      content: response.data.markdown,
-      filename: buildFilename(response.data),
+      content: finalMarkdown,
+      filename: baseFilename,
+      images: isDownloadLocal ? imagesToDownload : undefined,
     };
 
     chrome.runtime.sendMessage(downloadMsg, (downloadResponse) => {

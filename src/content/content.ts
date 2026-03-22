@@ -1,5 +1,5 @@
 import TurndownService from 'turndown';
-import type { ExtractedContent, ExtractResponse } from '../types/messages';
+import type { ExtractedContent, ExtractResponse, TweetMetadata } from '../types/messages';
 
 // ─── Turndown Instance ──────────────────────────────────────────────
 const turndown = new TurndownService({
@@ -281,6 +281,32 @@ function extractAuthorFromArticle(
 }
 
 /**
+ * Helper to extract markdown text from a text element.
+ */
+function extractTextFromElement(textEl: Element): string {
+  const cleaned = cleanContentClone(textEl);
+
+  // X.com uses literal \n inside <span> for tweet line breaks (not <br>).
+  // HTML collapses these to spaces, so convert them to <br> before Turndown.
+  const walker = document.createTreeWalker(cleaned, NodeFilter.SHOW_TEXT);
+  const textNodes: Text[] = [];
+  while (walker.nextNode()) textNodes.push(walker.currentNode as Text);
+  for (const tn of textNodes) {
+    if (tn.textContent && tn.textContent.includes('\n')) {
+      const parts = tn.textContent.split('\n');
+      const parent = tn.parentNode!;
+      for (let j = 0; j < parts.length; j++) {
+        if (j > 0) parent.insertBefore(document.createElement('br'), tn);
+        parent.insertBefore(document.createTextNode(parts[j]), tn);
+      }
+      parent.removeChild(tn);
+    }
+  }
+
+  return cleanupMarkdown(turndown.turndown(cleaned.innerHTML)).trim();
+}
+
+/**
  * Extract text + media markdown from a single article element.
  * Returns { text, media } where text is the tweet body markdown
  * and media is an array of media markdown strings.
@@ -288,32 +314,143 @@ function extractAuthorFromArticle(
 function extractSingleTweetFromArticle(
   article: Element
 ): { text: string; media: string[] } {
-  // Extract tweet text
-  const tweetTextEl = article.querySelector(SELECTORS.tweetText);
+  // Extract the main tweet text (first tweetText only — subsequent ones may be
+  // inside a Quote Tweet embed)
+  const tweetTextEls = article.querySelectorAll(SELECTORS.tweetText);
   let text = '';
 
-  if (tweetTextEl) {
-    const cleaned = cleanContentClone(tweetTextEl);
+  if (tweetTextEls.length > 0) {
+    text = extractTextFromElement(tweetTextEls[0]);
+  }
 
-    // X.com uses literal \n inside <span> for tweet line breaks (not <br>).
-    // HTML collapses these to spaces, so convert them to <br> before Turndown.
-    const walker = document.createTreeWalker(cleaned, NodeFilter.SHOW_TEXT);
-    const textNodes: Text[] = [];
-    while (walker.nextNode()) textNodes.push(walker.currentNode as Text);
-    for (const tn of textNodes) {
-      if (tn.textContent && tn.textContent.includes('\n')) {
-        const parts = tn.textContent.split('\n');
-        const parent = tn.parentNode!;
-        for (let j = 0; j < parts.length; j++) {
-          if (j > 0) parent.insertBefore(document.createElement('br'), tn);
-          parent.insertBefore(document.createTextNode(parts[j]), tn);
-        }
-        parent.removeChild(tn);
+  // ── Embedded content: Quote Tweet, Quoted Article, or Link Card ─────
+  // We check for these in order of specificity.
+
+  let embeddedMd = '';
+
+  // 1) Quote Tweet — a second tweetText inside a role="link" container
+  if (tweetTextEls.length > 1) {
+    const quoteEl = tweetTextEls[1];
+    const quoteContainer = quoteEl.closest('div[role="link"]');
+
+    let quoteAuthorInfo = '';
+    if (quoteContainer) {
+      const qa = extractAuthorFromArticle(quoteContainer);
+      if (qa.name !== 'Unknown') {
+        quoteAuthorInfo = `**${qa.name} (${qa.handle})**\n> \n> `;
       }
     }
 
-    text = cleanupMarkdown(turndown.turndown(cleaned.innerHTML)).trim();
+    const rawQuoteText = extractTextFromElement(quoteEl);
+    if (rawQuoteText) {
+      const blockquotedText = rawQuoteText.split('\n').join('\n> ');
+      embeddedMd = `\n\n> ${quoteAuthorInfo}${blockquotedText}`;
+    }
   }
+
+  // 2) Quoted Article (X Notes) — role="link" container with an article-cover-image
+  //    but NO tweetText inside (otherwise it would have been caught above).
+  if (!embeddedMd) {
+    const quoteLinkContainers = article.querySelectorAll('div[role="link"]');
+    for (const container of quoteLinkContainers) {
+      const coverImgContainer = container.querySelector('[data-testid="article-cover-image"]');
+      if (!coverImgContainer) continue;
+
+      // Extract cover image URL
+      const coverImgEl = coverImgContainer.querySelector('img');
+      let coverImgSrc = '';
+      if (coverImgEl) {
+        coverImgSrc = (coverImgEl as HTMLImageElement).src || '';
+        if (coverImgSrc.includes('pbs.twimg.com')) {
+          coverImgSrc = coverImgSrc.replace(/&name=\w+/, '&name=large');
+        }
+      }
+
+      // Extract author
+      const qa = extractAuthorFromArticle(container);
+      let header = '';
+      if (qa.name !== 'Unknown') {
+        header = `**${qa.name} (${qa.handle})**\n> \n> `;
+      }
+
+      // The article card title + description are in div[dir="auto"] elements
+      // that are NOT inside the User-Name or avatar sections.
+      const allTextDivs = container.querySelectorAll('div[dir="auto"]');
+      let title = '';
+      let description = '';
+      for (const d of allTextDivs) {
+        // Skip divs inside author/avatar sections
+        if (d.closest('[data-testid="User-Name"]')) continue;
+        if (d.closest('[data-testid="Tweet-User-Avatar"]')) continue;
+        const t = d.textContent?.trim() || '';
+        if (!t) continue;
+        // Skip the "Article" badge label and timestamps
+        if (t === 'Article' || t === 'Quote') continue;
+        if (!title) {
+          title = t;
+        } else if (!description) {
+          description = t;
+        }
+      }
+
+      if (title) {
+        const parts: string[] = [];
+        if (coverImgSrc) parts.push(`![Article cover](${coverImgSrc})`);
+        parts.push(`📝 **${title}**`);
+        if (description) parts.push(description);
+        const body = parts.join('\n> \n> ');
+        embeddedMd = `\n\n> ${header}${body}`;
+      }
+      break; // only first article quote
+    }
+  }
+
+  // 3) Link Card — data-testid="card.wrapper" with title + description
+  if (!embeddedMd) {
+    const cardWrapper = article.querySelector('[data-testid="card.wrapper"]');
+    if (cardWrapper) {
+      // Extract the link URL
+      const cardLink = cardWrapper.querySelector('a[href]');
+      const href = cardLink?.getAttribute('href') || '';
+
+      // Extract card detail elements
+      const detail = cardWrapper.querySelector(
+        '[data-testid="card.layoutSmall.detail"], [data-testid="card.layoutLarge.detail"]'
+      );
+      const detailDivs = detail
+        ? detail.querySelectorAll('div[dir="auto"]')
+        : cardWrapper.querySelectorAll('div[dir="auto"]');
+
+      let domain = '';
+      let title = '';
+      let description = '';
+      for (const d of detailDivs) {
+        const t = d.textContent?.trim() || '';
+        if (!t) continue;
+        if (!domain) {
+          domain = t;
+        } else if (!title) {
+          title = t;
+        } else if (!description) {
+          description = t;
+        }
+      }
+
+      if (title) {
+        const parts: string[] = [];
+        if (href) {
+          parts.push(`🔗 [**${title}**](${href})`);
+        } else {
+          parts.push(`🔗 **${title}**`);
+        }
+        if (description) parts.push(description);
+        if (domain) parts.push(`_${domain}_`);
+        embeddedMd = `\n\n> ${parts.join('\n> \n> ')}`;
+      }
+    }
+  }
+
+  text += embeddedMd;
 
   // Extract media
   const media: string[] = [];
@@ -344,16 +481,93 @@ function extractSingleTweetFromArticle(
 
 // ─── Tweet / Thread Extraction ──────────────────────────────────────
 
-function extractTweet(): ExtractedContent {
+/**
+ * Extract a stable ID for a tweet article from its timestamp permalink.
+ * Falls back to the tweet text as a last resort (for deduplication).
+ */
+function getTweetStatusId(article: Element): string {
+  // Timestamp links look like /handle/status/<id>
+  const timeLink = article.querySelector('a[href*="/status/"] time');
+  if (timeLink) {
+    const href = timeLink.closest('a')?.getAttribute('href') || '';
+    const m = href.match(/\/status\/(\d+)/);
+    if (m) return m[1];
+  }
+  // Fallback: analytics link
+  const analyticsLink = article.querySelector('a[href*="/analytics"]');
+  if (analyticsLink) {
+    const href = analyticsLink.getAttribute('href') || '';
+    const m = href.match(/\/status\/(\d+)/);
+    if (m) return m[1];
+  }
+  // Last resort: use trimmed tweet text as key
+  const textEl = article.querySelector('[data-testid="tweetText"]');
+  return textEl?.textContent?.trim().slice(0, 80) || Math.random().toString();
+}
+
+/**
+ * Extract engagement metadata from a tweet's role="group" aria-label.
+ * Example: "3 replies, 5 reposts, 152 likes, 175 bookmarks, 45025 views"
+ */
+function extractEngagementMetadata(
+  scope: Element | Document = document
+): TweetMetadata | undefined {
+  // Find all engagement groups; the first one in the first article is the main tweet's
+  const group = scope.querySelector('[role="group"][aria-label]');
+  if (!group) return undefined;
+
+  const label = group.getAttribute('aria-label') || '';
+  if (!label) return undefined;
+
+  const meta: TweetMetadata = {};
+
+  const repliesMatch = label.match(/([\d,]+)\s*repl/i);
+  if (repliesMatch) meta.replies = parseInt(repliesMatch[1].replace(/,/g, ''), 10);
+
+  const repostsMatch = label.match(/([\d,]+)\s*repost/i);
+  if (repostsMatch) meta.reposts = parseInt(repostsMatch[1].replace(/,/g, ''), 10);
+
+  const likesMatch = label.match(/([\d,]+)\s*like/i);
+  if (likesMatch) meta.likes = parseInt(likesMatch[1].replace(/,/g, ''), 10);
+
+  const bookmarksMatch = label.match(/([\d,]+)\s*bookmark/i);
+  if (bookmarksMatch) meta.bookmarks = parseInt(bookmarksMatch[1].replace(/,/g, ''), 10);
+
+  const viewsMatch = label.match(/([\d,]+)\s*view/i);
+  if (viewsMatch) meta.views = parseInt(viewsMatch[1].replace(/,/g, ''), 10);
+
+  return Object.keys(meta).length > 0 ? meta : undefined;
+}
+
+/** Small async delay helper */
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Scroll-aware thread extraction.
+ *
+ * X.com uses a virtualized list — only tweets near the viewport exist in the
+ * DOM at any given moment. To capture a full thread we:
+ *   1. Scroll to the very top of the page.
+ *   2. Collect all visible thread-author tweets (stopping on a different-author
+ *      tweet, which signals the start of the reply section).
+ *   3. Scroll down a step and repeat, deduplicating by status ID.
+ *   4. Stop once no new thread tweets appear after a scroll (thread complete)
+ *      OR we hit a different-author tweet.
+ */
+async function extractTweetAsync(): Promise<ExtractedContent> {
   const date = extractDate();
   const tweetId = extractTweetId();
   const sourceUrl = window.location.href;
 
-  // Collect all article elements on the page
-  const allArticles = document.querySelectorAll('article[role="article"]');
+  // ── Step 1: scroll to top so we start from the first tweet ──────────
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  await delay(600); // wait for virtualized list to settle
 
+  // Determine thread author from whatever is now at the top of the DOM
+  let allArticles = document.querySelectorAll('article[role="article"]');
   if (allArticles.length === 0) {
-    // Fallback: no articles found
     const author = extractAuthor();
     return {
       type: 'tweet',
@@ -365,24 +579,51 @@ function extractTweet(): ExtractedContent {
     };
   }
 
-  // Determine the thread author from the first article
   const threadAuthor = extractAuthorFromArticle(allArticles[0]);
 
-  // Collect tweets from the same author (thread tweets)
-  const threadTweets: { text: string; media: string[] }[] = [];
+  // ── Step 2: scroll loop ──────────────────────────────────────────────
+  // Ordered map: statusId → extracted tweet data (insertion order = thread order)
+  const collected = new Map<string, { text: string; media: string[] }>();
+  let threadDone = false;
 
-  for (const article of allArticles) {
-    const articleAuthor = extractAuthorFromArticle(article);
-    // Only include tweets by the thread author
-    if (
-      articleAuthor.handle.toLowerCase() ===
-      threadAuthor.handle.toLowerCase()
-    ) {
-      threadTweets.push(extractSingleTweetFromArticle(article));
+  const SCROLL_STEP = Math.max(window.innerHeight * 0.6, 400);
+  const MAX_STEPS = 60;
+
+  for (let step = 0; step < MAX_STEPS && !threadDone; step++) {
+    allArticles = document.querySelectorAll('article[role="article"]');
+    const sizeBefore = collected.size;
+
+    for (const article of allArticles) {
+      const articleAuthor = extractAuthorFromArticle(article);
+      if (
+        articleAuthor.handle.toLowerCase() !==
+        threadAuthor.handle.toLowerCase()
+      ) {
+        // First tweet by a different author → reply section, stop collecting.
+        threadDone = true;
+        break;
+      }
+      const sid = getTweetStatusId(article);
+      if (!collected.has(sid)) {
+        collected.set(sid, extractSingleTweetFromArticle(article));
+      }
     }
+
+    if (threadDone) break;
+
+    const atBottom =
+      window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 50;
+    if (atBottom && collected.size === sizeBefore) break;
+
+    window.scrollBy({ top: SCROLL_STEP, behavior: 'instant' });
+    await delay(400);
   }
 
-  // Build the final markdown
+  // ── Step 3: restore scroll position ─────────────────────────────────
+  window.scrollTo({ top: 0, behavior: 'instant' });
+
+  // ── Step 4: build markdown ───────────────────────────────────────────
+  const threadTweets = Array.from(collected.values());
   const isThread = threadTweets.length > 1;
   const parts: string[] = [
     `# ${threadAuthor.name} (${threadAuthor.handle})`,
@@ -695,7 +936,9 @@ function extractInlineText(el: Element): string {
 
 // ─── Main Extraction Entry Point ────────────────────────────────────
 
-function extract(): ExtractResponse {
+async function extract(options?: {
+  includeMetadata?: boolean;
+}): Promise<ExtractResponse> {
   try {
     // Verify we're on a status page
     if (!window.location.pathname.includes('/status/')) {
@@ -706,7 +949,16 @@ function extract(): ExtractResponse {
     }
 
     const isArticle = isArticlePage();
-    const data = isArticle ? extractArticle() : extractTweet();
+    const data = isArticle ? extractArticle() : await extractTweetAsync();
+
+    // Optionally attach engagement metadata
+    if (options?.includeMetadata) {
+      // Extract from the first article on the page (the focused tweet)
+      const firstArticle = document.querySelector('article[role="article"]');
+      if (firstArticle) {
+        data.metadata = extractEngagementMetadata(firstArticle);
+      }
+    }
 
     return { success: true, data };
   } catch (err) {
@@ -721,8 +973,9 @@ function extract(): ExtractResponse {
 
 chrome.runtime.onMessage.addListener((_message, _sender, sendResponse) => {
   if (_message.action === 'EXTRACT') {
-    const result = extract();
-    sendResponse(result);
+    extract({
+      includeMetadata: _message.includeMetadata || false,
+    }).then(sendResponse);
   }
-  return true;
+  return true; // keep channel open for async sendResponse
 });
