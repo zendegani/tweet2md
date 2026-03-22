@@ -21,6 +21,7 @@ export interface DownloadRequest {
   action: 'DOWNLOAD_MD';
   content: string;
   filename: string;
+  images?: { url: string; filename: string }[];
 }
 
 export interface ExtractResponse {

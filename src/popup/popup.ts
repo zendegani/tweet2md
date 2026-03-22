@@ -104,11 +104,59 @@ btnDownload.addEventListener('click', async () => {
       return;
     }
 
+    const chkDownloadImages = document.getElementById(
+      'chk-download-images'
+    ) as HTMLInputElement;
+    const isDownloadLocal = chkDownloadImages?.checked || false;
+
+    const baseFilename = buildFilename(response.data);
+    let finalMarkdown = response.data.markdown;
+    const imagesToDownload: { url: string; filename: string }[] = [];
+
+    if (isDownloadLocal) {
+      const dirName = baseFilename.replace('.md', '');
+
+      // Match markdown image syntax: ![alt](url)
+      finalMarkdown = finalMarkdown.replace(
+        /!\[(.*?)\]\((https:\/\/[^)]+)\)/g,
+        (match, alt, url) => {
+          try {
+            const urlObj = new URL(url);
+            let fname = urlObj.pathname.split('/').pop() || 'image';
+
+            // Extract format parameter if present (e.g., format=jpg)
+            const formatMatch = url.match(/format=([a-zA-Z0-9]+)/);
+            if (formatMatch && !fname.includes('.')) {
+              fname += `.${formatMatch[1]}`;
+            }
+
+            // Fallback for missing extension
+            if (!fname.includes('.')) {
+              fname += '.jpg';
+            }
+
+            fname = fname.replace(/[^a-zA-Z0-9_.-]/g, '_');
+            const localPath = `${dirName}/${fname}`;
+
+            if (!imagesToDownload.find((i) => i.url === url)) {
+              imagesToDownload.push({ url, filename: localPath });
+            }
+
+            return `![${alt}](${localPath})`;
+          } catch (e) {
+            // URL parsing failed, leave URL as is
+            return match;
+          }
+        }
+      );
+    }
+
     // 3. Send download request to background
     const downloadMsg: DownloadRequest = {
       action: 'DOWNLOAD_MD',
-      content: response.data.markdown,
-      filename: buildFilename(response.data),
+      content: finalMarkdown,
+      filename: baseFilename,
+      images: isDownloadLocal ? imagesToDownload : undefined,
     };
 
     chrome.runtime.sendMessage(downloadMsg, (downloadResponse) => {
