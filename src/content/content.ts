@@ -353,8 +353,18 @@ function extractSingleTweetFromArticle(
   if (!embeddedMd) {
     const quoteLinkContainers = article.querySelectorAll('div[role="link"]');
     for (const container of quoteLinkContainers) {
-      const coverImg = container.querySelector('[data-testid="article-cover-image"]');
-      if (!coverImg) continue;
+      const coverImgContainer = container.querySelector('[data-testid="article-cover-image"]');
+      if (!coverImgContainer) continue;
+
+      // Extract cover image URL
+      const coverImgEl = coverImgContainer.querySelector('img');
+      let coverImgSrc = '';
+      if (coverImgEl) {
+        coverImgSrc = (coverImgEl as HTMLImageElement).src || '';
+        if (coverImgSrc.includes('pbs.twimg.com')) {
+          coverImgSrc = coverImgSrc.replace(/&name=\w+/, '&name=large');
+        }
+      }
 
       // Extract author
       const qa = extractAuthorFromArticle(container);
@@ -384,7 +394,9 @@ function extractSingleTweetFromArticle(
       }
 
       if (title) {
-        const parts = [`📝 **${title}**`];
+        const parts: string[] = [];
+        if (coverImgSrc) parts.push(`![Article cover](${coverImgSrc})`);
+        parts.push(`📝 **${title}**`);
         if (description) parts.push(description);
         const body = parts.join('\n> \n> ');
         embeddedMd = `\n\n> ${header}${body}`;
@@ -443,15 +455,11 @@ function extractSingleTweetFromArticle(
   // Extract media
   const media: string[] = [];
 
-  // Images — exclude images inside quote/card containers
+  // Images
   const photos = article.querySelectorAll(`${SELECTORS.tweetPhoto} img`);
   photos.forEach((img) => {
     let src = (img as HTMLImageElement).src;
     if (src && !src.includes('emoji') && !src.includes('profile_images')) {
-      // Skip images that are inside a quote or card embed
-      if (img.closest('div[role="link"]') || img.closest('[data-testid="card.wrapper"]')) {
-        return;
-      }
       if (src.includes('pbs.twimg.com')) {
         src = src.replace(/&name=\w+/, '&name=large');
       }
