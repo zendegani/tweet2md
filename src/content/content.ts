@@ -1,5 +1,5 @@
 import TurndownService from 'turndown';
-import type { ExtractedContent, ExtractResponse } from '../types/messages';
+import type { ExtractedContent, ExtractResponse, TweetMetadata } from '../types/messages';
 
 // ─── Turndown Instance ──────────────────────────────────────────────
 const turndown = new TurndownService({
@@ -505,6 +505,40 @@ function getTweetStatusId(article: Element): string {
   return textEl?.textContent?.trim().slice(0, 80) || Math.random().toString();
 }
 
+/**
+ * Extract engagement metadata from a tweet's role="group" aria-label.
+ * Example: "3 replies, 5 reposts, 152 likes, 175 bookmarks, 45025 views"
+ */
+function extractEngagementMetadata(
+  scope: Element | Document = document
+): TweetMetadata | undefined {
+  // Find all engagement groups; the first one in the first article is the main tweet's
+  const group = scope.querySelector('[role="group"][aria-label]');
+  if (!group) return undefined;
+
+  const label = group.getAttribute('aria-label') || '';
+  if (!label) return undefined;
+
+  const meta: TweetMetadata = {};
+
+  const repliesMatch = label.match(/([\d,]+)\s*repl/i);
+  if (repliesMatch) meta.replies = parseInt(repliesMatch[1].replace(/,/g, ''), 10);
+
+  const repostsMatch = label.match(/([\d,]+)\s*repost/i);
+  if (repostsMatch) meta.reposts = parseInt(repostsMatch[1].replace(/,/g, ''), 10);
+
+  const likesMatch = label.match(/([\d,]+)\s*like/i);
+  if (likesMatch) meta.likes = parseInt(likesMatch[1].replace(/,/g, ''), 10);
+
+  const bookmarksMatch = label.match(/([\d,]+)\s*bookmark/i);
+  if (bookmarksMatch) meta.bookmarks = parseInt(bookmarksMatch[1].replace(/,/g, ''), 10);
+
+  const viewsMatch = label.match(/([\d,]+)\s*view/i);
+  if (viewsMatch) meta.views = parseInt(viewsMatch[1].replace(/,/g, ''), 10);
+
+  return Object.keys(meta).length > 0 ? meta : undefined;
+}
+
 /** Small async delay helper */
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -902,7 +936,9 @@ function extractInlineText(el: Element): string {
 
 // ─── Main Extraction Entry Point ────────────────────────────────────
 
-async function extract(): Promise<ExtractResponse> {
+async function extract(options?: {
+  includeMetadata?: boolean;
+}): Promise<ExtractResponse> {
   try {
     // Verify we're on a status page
     if (!window.location.pathname.includes('/status/')) {
@@ -914,6 +950,15 @@ async function extract(): Promise<ExtractResponse> {
 
     const isArticle = isArticlePage();
     const data = isArticle ? extractArticle() : await extractTweetAsync();
+
+    // Optionally attach engagement metadata
+    if (options?.includeMetadata) {
+      // Extract from the first article on the page (the focused tweet)
+      const firstArticle = document.querySelector('article[role="article"]');
+      if (firstArticle) {
+        data.metadata = extractEngagementMetadata(firstArticle);
+      }
+    }
 
     return { success: true, data };
   } catch (err) {
@@ -928,7 +973,9 @@ async function extract(): Promise<ExtractResponse> {
 
 chrome.runtime.onMessage.addListener((_message, _sender, sendResponse) => {
   if (_message.action === 'EXTRACT') {
-    extract().then(sendResponse);
+    extract({
+      includeMetadata: _message.includeMetadata || false,
+    }).then(sendResponse);
   }
   return true; // keep channel open for async sendResponse
 });

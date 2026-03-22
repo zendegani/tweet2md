@@ -208,6 +208,102 @@ body {
   opacity: 0.7;
 }
 
+/* ─── Options Toggles ───────────────────────────────────────── */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  padding: 4px 0;
+  user-select: none;
+  transition: opacity var(--transition);
+}
+
+.toggle-label:hover {
+  opacity: 0.9;
+}
+
+.toggle-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  transition: color var(--transition);
+}
+
+.toggle-label:has(.toggle-input:checked) .toggle-text {
+  color: var(--text-primary);
+}
+
+.toggle-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: opacity var(--transition);
+}
+
+.toggle-label:has(.toggle-input:checked) .toggle-icon {
+  opacity: 1;
+  stroke: var(--accent);
+}
+
+.toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  flex-shrink: 0;
+  transition:
+    background var(--transition),
+    box-shadow var(--transition);
+}
+
+.toggle-switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: var(--text-secondary);
+  border-radius: 50%;
+  transition:
+    transform var(--transition),
+    background var(--transition);
+}
+
+.toggle-input:checked + .toggle-switch {
+  background: rgba(29, 155, 240, 0.3);
+  box-shadow: 0 0 8px rgba(29, 155, 240, 0.15);
+}
+
+.toggle-input:checked + .toggle-switch::after {
+  transform: translateX(16px);
+  background: var(--accent);
+}
+
 /* ─── Animations ────────────────────────────────────────────── */
 @keyframes fadeIn {
   from {

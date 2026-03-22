@@ -35,9 +35,27 @@
         </button>
 
         <div class="options">
-          <label class="checkbox-label" title="Download images to a folder next to the markdown file">
-            <input type="checkbox" id="chk-download-images" />
-            <span>Download images locally</span>
+          <label class="toggle-label" title="Download images to a folder next to the markdown file">
+            <span class="toggle-text">
+              <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+              Save images locally
+            </span>
+            <input type="checkbox" id="chk-download-images" class="toggle-input" />
+            <span class="toggle-switch"></span>
+          </label>
+          <label class="toggle-label" title="Add likes, reposts, views as YAML frontmatter">
+            <span class="toggle-text">
+              <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+              Include metadata
+            </span>
+            <input type="checkbox" id="chk-include-metadata" class="toggle-input" />
+            <span class="toggle-switch"></span>
           </label>
         </div>
 

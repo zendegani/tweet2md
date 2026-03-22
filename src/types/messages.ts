@@ -3,6 +3,14 @@ export interface AuthorInfo {
   handle: string;
 }
 
+export interface TweetMetadata {
+  replies?: number;
+  reposts?: number;
+  likes?: number;
+  bookmarks?: number;
+  views?: number;
+}
+
 export interface ExtractedContent {
   type: 'tweet' | 'thread' | 'article';
   author: AuthorInfo;
@@ -11,10 +19,12 @@ export interface ExtractedContent {
   sourceUrl: string;
   date: string;
   tweetId: string;
+  metadata?: TweetMetadata;
 }
 
 export interface ExtractRequest {
   action: 'EXTRACT';
+  includeMetadata?: boolean;
 }
 
 export interface DownloadRequest {

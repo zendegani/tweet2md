@@ -3,7 +3,7 @@
   "name": "tweet2md",
   "version": "1.0.0",
   "description": "Convert X.com tweets and articles to clean Markdown files",
-  "permissions": ["activeTab", "downloads"],
+  "permissions": ["activeTab", "downloads", "storage"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
