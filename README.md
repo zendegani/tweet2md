@@ -3,7 +3,7 @@
 > Convert X.com tweets, threads, and articles into clean Markdown — one click.
 
 <p align="center">
-  <img src="src/icons/icon-128.png" alt="tweet2md logo" width="128" />
+  <img src="assets/Extension.png" alt="tweet2md extension UI" width="350" />
 </p>
 
 ## What it does
@@ -14,10 +14,15 @@
 
 - **Tweets** — text, images, videos, resolved `t.co` links, inline emojis
 - **Threads** — detects all tweets by the same author on the page, joined with `---` separators
+- **Complex Content** — gracefully handles nested quote tweets, quoted articles, and mixed media layouts
 - **Articles / Notes** — headings, bold/italic, bullet/ordered lists, code blocks, links, horizontal rules
 - **Metadata** — optionally include metrics (likes, reposts, etc.) as **YAML frontmatter**
 - **Image Downloads** — optionally download all images locally alongside the `.md` file
 - **Clean output** — no engagement buttons, follow CTAs, or tracking clutter; @mentions stay inline
+
+<p align="center">
+  <img src="assets/Nested_Thread.png" alt="Example of Nested Thread output" width="600" />
+</p>
 
 ## Install
 
