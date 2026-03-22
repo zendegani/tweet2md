@@ -368,17 +368,22 @@ function extractTweet(): ExtractedContent {
   // Determine the thread author from the first article
   const threadAuthor = extractAuthorFromArticle(allArticles[0]);
 
-  // Collect tweets from the same author (thread tweets)
+  // Collect tweets from the same author (thread tweets only).
+  // Thread tweets always appear contiguously at the start of the page.
+  // Once we encounter a tweet by a different author, the thread is over —
+  // any subsequent tweets by the original author are replies, not thread parts.
   const threadTweets: { text: string; media: string[] }[] = [];
 
   for (const article of allArticles) {
     const articleAuthor = extractAuthorFromArticle(article);
-    // Only include tweets by the thread author
     if (
       articleAuthor.handle.toLowerCase() ===
       threadAuthor.handle.toLowerCase()
     ) {
       threadTweets.push(extractSingleTweetFromArticle(article));
+    } else {
+      // Hit a reply by a different author — thread is complete
+      break;
     }
   }
 
