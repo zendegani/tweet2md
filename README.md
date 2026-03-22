@@ -15,13 +15,15 @@
 - **Tweets** — text, images, videos, resolved `t.co` links, inline emojis
 - **Threads** — detects all tweets by the same author on the page, joined with `---` separators
 - **Articles / Notes** — headings, bold/italic, bullet/ordered lists, code blocks, links, horizontal rules
+- **Metadata** — optionally include metrics (likes, reposts, etc.) as **YAML frontmatter**
+- **Image Downloads** — optionally download all images locally alongside the `.md` file
 - **Clean output** — no engagement buttons, follow CTAs, or tracking clutter; @mentions stay inline
 
 ## Install
 
 ### From Chrome Web Store
 
-*(Coming soon)*
+Install `tweet2md` from the [Chrome Web Store](https://chromewebstore.google.com/detail/tweet2md/epmmehilhbpkgcjbcohgkmihlalagkho)
 
 ### From source
 
@@ -39,8 +41,10 @@
 ## Usage
 
 1. Navigate to a tweet, thread, or article on **x.com**
-2. Click the **tweet2md** icon → click **Download .md**
-3. File saves to your Downloads folder
+2. Click the **tweet2md** icon
+3. (Optional) Toggle **Save images locally** or **Include metadata**
+4. Click **Download .md**
+5. Files save to your Downloads folder
 
 Filenames: `@handle-tweetId.md` (tweets/threads) or `@handle-article-slug.md` (articles).
 
@@ -57,9 +61,10 @@ Filenames: `@handle-tweetId.md` (tweets/threads) or `@handle-article-slug.md` (a
 | Permission   | Why |
 |-------------|-----|
 | `activeTab` | Read the current page's DOM when you click |
-| `downloads` | Save the `.md` file to Downloads |
+| `downloads` | Save the `.md` file and images to Downloads |
+| `storage`   | Remember your popup toggle preferences |
 
-**No data is collected, transmitted, or stored.** See [PRIVACY.md](PRIVACY.md).
+**Your data never leaves your device. No data is collected, transmitted, or stored externally.** See [PRIVACY.md](PRIVACY.md).
 
 ## Tech stack
 

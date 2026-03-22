@@ -1,10 +1,10 @@
 # Privacy Policy — tweet2md
 
-**Last updated:** February 15, 2026
+**Last updated:** March 22, 2026
 
 ## Summary
 
-tweet2md does **not** collect, store, or transmit any user data. Everything happens locally in your browser.
+tweet2md does **not** collect, store externally, or transmit any user data. Everything happens locally on your device.
 
 ## What this extension does
 
@@ -13,7 +13,7 @@ tweet2md accesses the visible content of supported X.com or Twitter.com status p
 ## Data collection
 
 - **No personal data is collected.**
-- The extension accesses website content (text and images on supported X.com/Twitter.com pages) solely to convert it into a Markdown file at the user’s request.
+- The extension accesses website content (text and images on supported X.com/Twitter.com pages) solely to convert it into Markdown and image files at your request.
 - **No browsing history is tracked.**
 - **No analytics or telemetry is sent.**
 - **No data is transmitted to any external server.**
@@ -35,7 +35,8 @@ No data leaves your browser at any point during this process. The extension does
 | Permission   | Purpose                                              |
 |-------------|------------------------------------------------------|
 | `activeTab` | Allows reading the current tab's page content when you click the extension icon |
-| `downloads` | Allows saving the generated Markdown file to your Downloads folder |
+| `downloads` | Allows saving the generated Markdown file and images to your Downloads folder |
+| `storage`   | Allows saving your popup configuration (toggle switches) locally on your device so settings are remembered between sessions |
 
 These are the minimum permissions required for the extension to function. No additional permissions are requested.
 
