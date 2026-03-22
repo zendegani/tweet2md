@@ -314,7 +314,8 @@ function extractTextFromElement(textEl: Element): string {
 function extractSingleTweetFromArticle(
   article: Element
 ): { text: string; media: string[] } {
-  // Extract tweet text(s)
+  // Extract the main tweet text (first tweetText only — subsequent ones may be
+  // inside a Quote Tweet embed)
   const tweetTextEls = article.querySelectorAll(SELECTORS.tweetText);
   let text = '';
 
@@ -322,13 +323,16 @@ function extractSingleTweetFromArticle(
     text = extractTextFromElement(tweetTextEls[0]);
   }
 
-  // If there's a second text element, it's typically a Quote Tweet
+  // ── Embedded content: Quote Tweet, Quoted Article, or Link Card ─────
+  // We check for these in order of specificity.
+
+  let embeddedMd = '';
+
+  // 1) Quote Tweet — a second tweetText inside a role="link" container
   if (tweetTextEls.length > 1) {
     const quoteEl = tweetTextEls[1];
-    // Find the container for the quote to extract the author
-    // Quotes are usually in a div with role="link"
     const quoteContainer = quoteEl.closest('div[role="link"]');
-    
+
     let quoteAuthorInfo = '';
     if (quoteContainer) {
       const qa = extractAuthorFromArticle(quoteContainer);
@@ -340,18 +344,114 @@ function extractSingleTweetFromArticle(
     const rawQuoteText = extractTextFromElement(quoteEl);
     if (rawQuoteText) {
       const blockquotedText = rawQuoteText.split('\n').join('\n> ');
-      text += `\n\n> ${quoteAuthorInfo}${blockquotedText}`;
+      embeddedMd = `\n\n> ${quoteAuthorInfo}${blockquotedText}`;
     }
   }
+
+  // 2) Quoted Article (X Notes) — role="link" container with an article-cover-image
+  //    but NO tweetText inside (otherwise it would have been caught above).
+  if (!embeddedMd) {
+    const quoteLinkContainers = article.querySelectorAll('div[role="link"]');
+    for (const container of quoteLinkContainers) {
+      const coverImg = container.querySelector('[data-testid="article-cover-image"]');
+      if (!coverImg) continue;
+
+      // Extract author
+      const qa = extractAuthorFromArticle(container);
+      let header = '';
+      if (qa.name !== 'Unknown') {
+        header = `**${qa.name} (${qa.handle})**\n> \n> `;
+      }
+
+      // The article card title + description are in div[dir="auto"] elements
+      // that are NOT inside the User-Name or avatar sections.
+      const allTextDivs = container.querySelectorAll('div[dir="auto"]');
+      let title = '';
+      let description = '';
+      for (const d of allTextDivs) {
+        // Skip divs inside author/avatar sections
+        if (d.closest('[data-testid="User-Name"]')) continue;
+        if (d.closest('[data-testid="Tweet-User-Avatar"]')) continue;
+        const t = d.textContent?.trim() || '';
+        if (!t) continue;
+        // Skip the "Article" badge label and timestamps
+        if (t === 'Article' || t === 'Quote') continue;
+        if (!title) {
+          title = t;
+        } else if (!description) {
+          description = t;
+        }
+      }
+
+      if (title) {
+        const parts = [`📝 **${title}**`];
+        if (description) parts.push(description);
+        const body = parts.join('\n> \n> ');
+        embeddedMd = `\n\n> ${header}${body}`;
+      }
+      break; // only first article quote
+    }
+  }
+
+  // 3) Link Card — data-testid="card.wrapper" with title + description
+  if (!embeddedMd) {
+    const cardWrapper = article.querySelector('[data-testid="card.wrapper"]');
+    if (cardWrapper) {
+      // Extract the link URL
+      const cardLink = cardWrapper.querySelector('a[href]');
+      const href = cardLink?.getAttribute('href') || '';
+
+      // Extract card detail elements
+      const detail = cardWrapper.querySelector(
+        '[data-testid="card.layoutSmall.detail"], [data-testid="card.layoutLarge.detail"]'
+      );
+      const detailDivs = detail
+        ? detail.querySelectorAll('div[dir="auto"]')
+        : cardWrapper.querySelectorAll('div[dir="auto"]');
+
+      let domain = '';
+      let title = '';
+      let description = '';
+      for (const d of detailDivs) {
+        const t = d.textContent?.trim() || '';
+        if (!t) continue;
+        if (!domain) {
+          domain = t;
+        } else if (!title) {
+          title = t;
+        } else if (!description) {
+          description = t;
+        }
+      }
+
+      if (title) {
+        const parts: string[] = [];
+        if (href) {
+          parts.push(`🔗 [**${title}**](${href})`);
+        } else {
+          parts.push(`🔗 **${title}**`);
+        }
+        if (description) parts.push(description);
+        if (domain) parts.push(`_${domain}_`);
+        embeddedMd = `\n\n> ${parts.join('\n> \n> ')}`;
+      }
+    }
+  }
+
+  text += embeddedMd;
 
   // Extract media
   const media: string[] = [];
 
-  // Images
+  // Images — exclude images inside quote/card containers
   const photos = article.querySelectorAll(`${SELECTORS.tweetPhoto} img`);
   photos.forEach((img) => {
     let src = (img as HTMLImageElement).src;
     if (src && !src.includes('emoji') && !src.includes('profile_images')) {
+      // Skip images that are inside a quote or card embed
+      if (img.closest('div[role="link"]') || img.closest('[data-testid="card.wrapper"]')) {
+        return;
+      }
       if (src.includes('pbs.twimg.com')) {
         src = src.replace(/&name=\w+/, '&name=large');
       }
