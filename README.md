@@ -1,6 +1,6 @@
 # tweet2md
 
-> Convert X.com tweets, threads, and articles into clean Markdown — one click.
+> The ultimate Thread Downloader & Post Extractor for X / Twitter. Convert posts, long articles, and complex threads into clean Markdown — one click.
 
 <p align="center">
   <img src="assets/Extension.png" alt="tweet2md extension UI" width="350" />
