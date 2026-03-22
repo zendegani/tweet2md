@@ -344,16 +344,59 @@ function extractSingleTweetFromArticle(
 
 // ─── Tweet / Thread Extraction ──────────────────────────────────────
 
-function extractTweet(): ExtractedContent {
+/**
+ * Extract a stable ID for a tweet article from its timestamp permalink.
+ * Falls back to the tweet text as a last resort (for deduplication).
+ */
+function getTweetStatusId(article: Element): string {
+  // Timestamp links look like /handle/status/<id>
+  const timeLink = article.querySelector('a[href*="/status/"] time');
+  if (timeLink) {
+    const href = timeLink.closest('a')?.getAttribute('href') || '';
+    const m = href.match(/\/status\/(\d+)/);
+    if (m) return m[1];
+  }
+  // Fallback: analytics link
+  const analyticsLink = article.querySelector('a[href*="/analytics"]');
+  if (analyticsLink) {
+    const href = analyticsLink.getAttribute('href') || '';
+    const m = href.match(/\/status\/(\d+)/);
+    if (m) return m[1];
+  }
+  // Last resort: use trimmed tweet text as key
+  const textEl = article.querySelector('[data-testid="tweetText"]');
+  return textEl?.textContent?.trim().slice(0, 80) || Math.random().toString();
+}
+
+/** Small async delay helper */
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Scroll-aware thread extraction.
+ *
+ * X.com uses a virtualized list — only tweets near the viewport exist in the
+ * DOM at any given moment. To capture a full thread we:
+ *   1. Scroll to the very top of the page.
+ *   2. Collect all visible thread-author tweets (stopping on a different-author
+ *      tweet, which signals the start of the reply section).
+ *   3. Scroll down a step and repeat, deduplicating by status ID.
+ *   4. Stop once no new thread tweets appear after a scroll (thread complete)
+ *      OR we hit a different-author tweet.
+ */
+async function extractTweetAsync(): Promise<ExtractedContent> {
   const date = extractDate();
   const tweetId = extractTweetId();
   const sourceUrl = window.location.href;
 
-  // Collect all article elements on the page
-  const allArticles = document.querySelectorAll('article[role="article"]');
+  // ── Step 1: scroll to top so we start from the first tweet ──────────
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  await delay(600); // wait for virtualized list to settle
 
+  // Determine thread author from whatever is now at the top of the DOM
+  let allArticles = document.querySelectorAll('article[role="article"]');
   if (allArticles.length === 0) {
-    // Fallback: no articles found
     const author = extractAuthor();
     return {
       type: 'tweet',
@@ -365,29 +408,51 @@ function extractTweet(): ExtractedContent {
     };
   }
 
-  // Determine the thread author from the first article
   const threadAuthor = extractAuthorFromArticle(allArticles[0]);
 
-  // Collect tweets from the same author (thread tweets only).
-  // Thread tweets always appear contiguously at the start of the page.
-  // Once we encounter a tweet by a different author, the thread is over —
-  // any subsequent tweets by the original author are replies, not thread parts.
-  const threadTweets: { text: string; media: string[] }[] = [];
+  // ── Step 2: scroll loop ──────────────────────────────────────────────
+  // Ordered map: statusId → extracted tweet data (insertion order = thread order)
+  const collected = new Map<string, { text: string; media: string[] }>();
+  let threadDone = false;
 
-  for (const article of allArticles) {
-    const articleAuthor = extractAuthorFromArticle(article);
-    if (
-      articleAuthor.handle.toLowerCase() ===
-      threadAuthor.handle.toLowerCase()
-    ) {
-      threadTweets.push(extractSingleTweetFromArticle(article));
-    } else {
-      // Hit a reply by a different author — thread is complete
-      break;
+  const SCROLL_STEP = Math.max(window.innerHeight * 0.6, 400);
+  const MAX_STEPS = 60;
+
+  for (let step = 0; step < MAX_STEPS && !threadDone; step++) {
+    allArticles = document.querySelectorAll('article[role="article"]');
+    const sizeBefore = collected.size;
+
+    for (const article of allArticles) {
+      const articleAuthor = extractAuthorFromArticle(article);
+      if (
+        articleAuthor.handle.toLowerCase() !==
+        threadAuthor.handle.toLowerCase()
+      ) {
+        // First tweet by a different author → reply section, stop collecting.
+        threadDone = true;
+        break;
+      }
+      const sid = getTweetStatusId(article);
+      if (!collected.has(sid)) {
+        collected.set(sid, extractSingleTweetFromArticle(article));
+      }
     }
+
+    if (threadDone) break;
+
+    const atBottom =
+      window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 50;
+    if (atBottom && collected.size === sizeBefore) break;
+
+    window.scrollBy({ top: SCROLL_STEP, behavior: 'instant' });
+    await delay(400);
   }
 
-  // Build the final markdown
+  // ── Step 3: restore scroll position ─────────────────────────────────
+  window.scrollTo({ top: 0, behavior: 'instant' });
+
+  // ── Step 4: build markdown ───────────────────────────────────────────
+  const threadTweets = Array.from(collected.values());
   const isThread = threadTweets.length > 1;
   const parts: string[] = [
     `# ${threadAuthor.name} (${threadAuthor.handle})`,
@@ -700,7 +765,7 @@ function extractInlineText(el: Element): string {
 
 // ─── Main Extraction Entry Point ────────────────────────────────────
 
-function extract(): ExtractResponse {
+async function extract(): Promise<ExtractResponse> {
   try {
     // Verify we're on a status page
     if (!window.location.pathname.includes('/status/')) {
@@ -711,7 +776,7 @@ function extract(): ExtractResponse {
     }
 
     const isArticle = isArticlePage();
-    const data = isArticle ? extractArticle() : extractTweet();
+    const data = isArticle ? extractArticle() : await extractTweetAsync();
 
     return { success: true, data };
   } catch (err) {
@@ -726,8 +791,7 @@ function extract(): ExtractResponse {
 
 chrome.runtime.onMessage.addListener((_message, _sender, sendResponse) => {
   if (_message.action === 'EXTRACT') {
-    const result = extract();
-    sendResponse(result);
+    extract().then(sendResponse);
   }
-  return true;
+  return true; // keep channel open for async sendResponse
 });
