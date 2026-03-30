@@ -82,20 +82,24 @@ body {
   letter-spacing: 0.02em;
 }
 
-/* ─── Download Button ───────────────────────────────────────── */
-.btn-download {
+/* ─── Button Group ─────────────────────────────────────────── */
+.btn-group {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-action {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  width: 100%;
-  padding: 14px 20px;
+  gap: 8px;
+  flex: 1;
+  padding: 12px 16px;
   border: none;
   border-radius: var(--radius);
-  background: var(--accent);
   color: #ffffff;
   font-family: var(--font);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition:
@@ -106,7 +110,7 @@ body {
   overflow: hidden;
 }
 
-.btn-download::before {
+.btn-action::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -119,26 +123,40 @@ body {
   transition: opacity var(--transition);
 }
 
-.btn-download:hover {
+.btn-action:hover::before {
+  opacity: 1;
+}
+
+.btn-action:active {
+  transform: translateY(0);
+}
+
+.btn-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+}
+
+.btn-primary:hover {
   background: var(--accent-hover);
   box-shadow: 0 4px 20px var(--accent-glow);
   transform: translateY(-1px);
 }
 
-.btn-download:hover::before {
-  opacity: 1;
+.btn-secondary {
+  background: var(--bg-elevated);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.btn-download:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 10px var(--accent-glow);
-}
-
-.btn-download:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
+.btn-secondary:hover {
+  background: var(--bg-hover);
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
+  transform: translateY(-1px);
 }
 
 .btn-icon {
@@ -148,7 +166,7 @@ body {
 }
 
 /* ─── Loading State ─────────────────────────────────────────── */
-.btn-download.loading .btn-icon {
+.btn-action.loading .btn-icon {
   animation: spin 0.8s linear infinite;
 }
 
