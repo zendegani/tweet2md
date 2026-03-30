@@ -1,89 +1,80 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>tweet2md</title>
-    <link rel="stylesheet" href="popup.css" />
-  </head>
-  <body>
-    <div class="popup-container">
-      <header class="popup-header">
-        <div class="logo-row">
-          <img src="icons/icon-48.png" alt="tweet2md" class="logo-icon" />
-          <h1 class="logo-text">tweet<span class="accent">2md</span></h1>
-        </div>
-        <p class="tagline">Convert posts &amp; articles to Markdown</p>
-      </header>
 
-      <main class="popup-main">
-        <div class="btn-group">
-          <button id="btn-download" class="btn-primary btn-action" type="button">
-            <svg
-              class="btn-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-              <polyline points="7 10 12 15 17 10" />
-              <line x1="12" y1="15" x2="12" y2="3" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tweet2md</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+
+<body>
+  <div class="popup-container">
+    <header class="popup-header">
+      <div class="logo-row">
+        <img src="icons/icon-48.png" alt="tweet2md" class="logo-icon" />
+        <h1 class="logo-text">tweet<span class="accent">2md</span></h1>
+      </div>
+      <p class="tagline">Convert threads &amp; articles to Markdown</p>
+    </header>
+
+    <main class="popup-main">
+      <div class="btn-group">
+        <button id="btn-download" class="btn-primary btn-action" type="button">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          <span class="btn-label">Download .md</span>
+        </button>
+        <button id="btn-copy" class="btn-secondary btn-action" type="button">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+          </svg>
+          <span class="btn-label">Copy .md</span>
+        </button>
+      </div>
+
+      <div class="options">
+        <label class="toggle-label" title="Download images to a folder next to the markdown file">
+          <span class="toggle-text">
+            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
             </svg>
-            <span class="btn-label">Download .md</span>
-          </button>
-          <button id="btn-copy" class="btn-secondary btn-action" type="button">
-            <svg
-              class="btn-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            Save images locally
+          </span>
+          <input type="checkbox" id="chk-download-images" class="toggle-input" />
+          <span class="toggle-switch"></span>
+        </label>
+        <label class="toggle-label" title="Add likes, reposts, views as YAML frontmatter">
+          <span class="toggle-text">
+            <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
             </svg>
-            <span class="btn-label">Copy .md</span>
-          </button>
-        </div>
+            Include metadata
+          </span>
+          <input type="checkbox" id="chk-include-metadata" class="toggle-input" />
+          <span class="toggle-switch"></span>
+        </label>
+      </div>
 
-        <div class="options">
-          <label class="toggle-label" title="Download images to a folder next to the markdown file">
-            <span class="toggle-text">
-              <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                <circle cx="8.5" cy="8.5" r="1.5"/>
-                <polyline points="21 15 16 10 5 21"/>
-              </svg>
-              Save images locally
-            </span>
-            <input type="checkbox" id="chk-download-images" class="toggle-input" />
-            <span class="toggle-switch"></span>
-          </label>
-          <label class="toggle-label" title="Add likes, reposts, views as YAML frontmatter">
-            <span class="toggle-text">
-              <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-              </svg>
-              Include metadata
-            </span>
-            <input type="checkbox" id="chk-include-metadata" class="toggle-input" />
-            <span class="toggle-switch"></span>
-          </label>
-        </div>
+      <div id="status" class="status hidden"></div>
+    </main>
 
-        <div id="status" class="status hidden"></div>
-      </main>
+    <footer class="popup-footer">
+      <span class="hint">Navigate to a tweet or article on X.com first</span>
+    </footer>
+  </div>
 
-      <footer class="popup-footer">
-        <span class="hint">Navigate to a tweet or article on X.com first</span>
-      </footer>
-    </div>
+  <script src="popup.js"></script>
+</body>
 
-    <script src="popup.js"></script>
-  </body>
 </html>
