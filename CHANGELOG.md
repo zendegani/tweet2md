@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2026-03-31
+
+### Added
+
+- **Copy to Clipboard**: Added a "Copy .md" button to the popup to copy generated markdown directly to your clipboard instead of downloading.
+- **Dynamic Theming**: Added light and dark mode support to the popup UI, automatically respecting your system preferences.
+
+### Fixed
+
+- **Markdown Formatting**: Fixed a bug causing improper bold and italic rendering when text nodes contained trailing or leading whitespaces.
+
 ## [1.1.0] - 2026-03-22
 
 ### Added

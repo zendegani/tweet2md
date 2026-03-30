@@ -69,6 +69,35 @@ turndown.addRule('xVideos', {
   },
 });
 
+// Custom rule: fix bold/italic with leading/trailing whitespace inside the tag.
+// E.g. <strong>text </strong> → Turndown produces **text ** which is broken markdown.
+// This moves the whitespace outside the delimiter: **text** + space.
+turndown.addRule('fixBoldWhitespace', {
+  filter: (node) =>
+    node.nodeName === 'STRONG' || node.nodeName === 'B' ||
+    (node instanceof HTMLElement && node.style.fontWeight === 'bold'),
+  replacement: (content) => {
+    const trimmed = content.replace(/\s+/g, ' ').trim();
+    if (!trimmed) return content;
+    const leading = /^\s/.test(content) ? ' ' : '';
+    const trailing = /\s$/.test(content) ? ' ' : '';
+    return `${leading}**${trimmed}**${trailing}`;
+  },
+});
+
+turndown.addRule('fixItalicWhitespace', {
+  filter: (node) =>
+    node.nodeName === 'EM' || node.nodeName === 'I' ||
+    (node instanceof HTMLElement && node.style.fontStyle === 'italic'),
+  replacement: (content) => {
+    const trimmed = content.replace(/\s+/g, ' ').trim();
+    if (!trimmed) return content;
+    const leading = /^\s/.test(content) ? ' ' : '';
+    const trailing = /\s$/.test(content) ? ' ' : '';
+    return `${leading}*${trimmed}*${trailing}`;
+  },
+});
+
 // Custom rule: convert <br> to markdown hard line break (two trailing spaces)
 // Turndown's default \n doesn't render as a line break in markdown.
 turndown.addRule('lineBreaks', {
@@ -916,14 +945,24 @@ function extractInlineText(el: Element): string {
     // ── Bold ──
     if (elem.style.fontWeight === 'bold' || elem.tagName === 'STRONG' || elem.tagName === 'B') {
       const inner = extractInlineText(elem);
-      result += `**${inner}**`;
+      const trimmed = inner.replace(/\s+/g, ' ').trim();
+      if (trimmed) {
+        const leading = inner.match(/^(\s*)/)?.[1] ? ' ' : '';
+        const trailing = inner.match(/(\s+)$/)?.[1] ? ' ' : '';
+        result += `${leading}**${trimmed}**${trailing}`;
+      }
       continue;
     }
 
     // ── Italic ──
     if (elem.style.fontStyle === 'italic' || elem.tagName === 'EM' || elem.tagName === 'I') {
       const inner = extractInlineText(elem);
-      result += `*${inner}*`;
+      const trimmed = inner.replace(/\s+/g, ' ').trim();
+      if (trimmed) {
+        const leading = inner.match(/^(\s*)/)?.[1] ? ' ' : '';
+        const trailing = inner.match(/(\s+)$/)?.[1] ? ' ' : '';
+        result += `${leading}*${trimmed}*${trailing}`;
+      }
       continue;
     }
 

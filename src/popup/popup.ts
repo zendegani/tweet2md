@@ -1,6 +1,7 @@
 import type { ExtractResponse, DownloadRequest } from '../types/messages';
 
 const btnDownload = document.getElementById('btn-download') as HTMLButtonElement;
+const btnCopy = document.getElementById('btn-copy') as HTMLButtonElement;
 const statusEl = document.getElementById('status') as HTMLDivElement;
 const chkDownloadImages = document.getElementById(
   'chk-download-images'
@@ -75,11 +76,13 @@ function showStatus(
 
 function setLoading(loading: boolean): void {
   btnDownload.disabled = loading;
+  btnCopy.disabled = loading;
   btnDownload.classList.toggle('loading', loading);
-  const label = btnDownload.querySelector('.btn-label');
-  if (label) {
-    label.textContent = loading ? 'Extracting…' : 'Download .md';
-  }
+  btnCopy.classList.toggle('loading', loading);
+  const dlLabel = btnDownload.querySelector('.btn-label');
+  const cpLabel = btnCopy.querySelector('.btn-label');
+  if (dlLabel) dlLabel.textContent = loading ? 'Extracting…' : 'Download .md';
+  if (cpLabel) cpLabel.textContent = loading ? 'Extracting…' : 'Copy .md';
 }
 
 function buildFilename(data: ExtractResponse['data']): string {
@@ -107,172 +110,183 @@ function stripSourceFooter(md: string): string {
   return md.replace(/\n+---\n+> Source:.*\n> Date:.*$/s, '');
 }
 
-// ─── Main Flow ──────────────────────────────────────────────────────
+// ─── Shared Extraction ──────────────────────────────────────────────
+
+interface ExtractionResult {
+  markdown: string;
+  filename: string;
+  type: string;
+  images: { url: string; filename: string }[];
+}
+
+async function extractMarkdown(): Promise<ExtractionResult> {
+  const [tab] = await chrome.tabs.query({
+    active: true,
+    currentWindow: true,
+  });
+
+  if (!tab?.id) {
+    throw new Error('Unable to access the current tab.');
+  }
+
+  const url = tab.url || '';
+  if (!url.includes('x.com/')) {
+    throw new Error('Navigate to a tweet or article on X.com first.');
+  }
+
+  if (!url.includes('/status/')) {
+    throw new Error(
+      'Open a specific tweet or article page (with /status/ in the URL).'
+    );
+  }
+
+  const includeMetadata = chkMetadata.checked;
+  const isDownloadLocal = chkDownloadImages.checked;
+
+  const response: ExtractResponse = await chrome.tabs.sendMessage(tab.id, {
+    action: 'EXTRACT',
+    includeMetadata,
+  });
+
+  if (!response.success || !response.data) {
+    throw new Error(response.error || 'Failed to extract content.');
+  }
+
+  const baseFilename = buildFilename(response.data);
+  let finalMarkdown = response.data.markdown;
+
+  if (includeMetadata) {
+    finalMarkdown = stripSourceFooter(finalMarkdown);
+
+    const m = response.data.metadata;
+    const lines = ['---'];
+    lines.push(`author: "${response.data.author.name}"`);
+    lines.push(`handle: "${response.data.author.handle}"`);
+    lines.push(`source: "${response.data.sourceUrl}"`);
+    lines.push(`date: ${response.data.date}`);
+    lines.push(`type: ${response.data.type}`);
+    if (m) {
+      if (m.likes !== undefined) lines.push(`likes: ${m.likes}`);
+      if (m.reposts !== undefined) lines.push(`reposts: ${m.reposts}`);
+      if (m.replies !== undefined) lines.push(`replies: ${m.replies}`);
+      if (m.bookmarks !== undefined) lines.push(`bookmarks: ${m.bookmarks}`);
+      if (m.views !== undefined) lines.push(`views: ${m.views}`);
+    }
+    lines.push('---', '');
+    finalMarkdown = lines.join('\n') + finalMarkdown;
+  }
+
+  const imagesToDownload: { url: string; filename: string }[] = [];
+
+  if (isDownloadLocal) {
+    const dirName = baseFilename.replace('.md', '');
+
+    finalMarkdown = finalMarkdown.replace(
+      /!\[(.*?)\]\((https:\/\/[^)]+)\)/g,
+      (match, alt, imgUrl) => {
+        try {
+          const urlObj = new URL(imgUrl);
+          let fname = urlObj.pathname.split('/').pop() || 'image';
+
+          const formatMatch = imgUrl.match(/format=([a-zA-Z0-9]+)/);
+          if (formatMatch && !fname.includes('.')) {
+            fname += `.${formatMatch[1]}`;
+          }
+
+          if (!fname.includes('.')) {
+            fname += '.jpg';
+          }
+
+          fname = fname.replace(/[^a-zA-Z0-9_.-]/g, '_');
+          const localPath = `${dirName}/${fname}`;
+
+          if (!imagesToDownload.find((i) => i.url === imgUrl)) {
+            imagesToDownload.push({ url: imgUrl, filename: localPath });
+          }
+
+          return `![${alt}](${localPath})`;
+        } catch (e) {
+          return match;
+        }
+      }
+    );
+  }
+
+  return {
+    markdown: finalMarkdown,
+    filename: baseFilename,
+    type: response.data.type,
+    images: imagesToDownload,
+  };
+}
+
+function handleExtractionError(err: unknown): void {
+  const message =
+    err instanceof Error ? err.message : 'An unexpected error occurred.';
+
+  if (message.includes('Receiving end does not exist')) {
+    showStatus('Reload the page and try again.', 'error');
+  } else {
+    showStatus(message, 'error');
+  }
+  setLoading(false);
+}
+
+// ─── Download Flow ──────────────────────────────────────────────────
 
 btnDownload.addEventListener('click', async () => {
   setLoading(true);
   statusEl.className = 'status hidden';
 
   try {
-    // 1. Get the active tab
-    const [tab] = await chrome.tabs.query({
-      active: true,
-      currentWindow: true,
-    });
+    const result = await extractMarkdown();
 
-    if (!tab?.id) {
-      showStatus('Unable to access the current tab.', 'error');
-      setLoading(false);
-      return;
-    }
-
-    // Verify URL is X.com or Twitter
-    const url = tab.url || '';
-    if (
-      !url.includes('x.com/') &&
-      !url.includes('twitter.com/')
-    ) {
-      showStatus(
-        'Navigate to a tweet or article on X.com first.',
-        'error'
-      );
-      setLoading(false);
-      return;
-    }
-
-    if (!url.includes('/status/')) {
-      showStatus(
-        'Open a specific tweet or article page (with /status/ in the URL).',
-        'error'
-      );
-      setLoading(false);
-      return;
-    }
-
-    const includeMetadata = chkMetadata.checked;
-    const isDownloadLocal = chkDownloadImages.checked;
-
-    // 2. Send extraction request to content script
-    const response: ExtractResponse = await chrome.tabs.sendMessage(
-      tab.id,
-      { action: 'EXTRACT', includeMetadata }
-    );
-
-    if (!response.success || !response.data) {
-      showStatus(
-        response.error || 'Failed to extract content.',
-        'error'
-      );
-      setLoading(false);
-      return;
-    }
-
-    const baseFilename = buildFilename(response.data);
-
-    // Build markdown: optionally prepend frontmatter and strip footer
-    let finalMarkdown = response.data.markdown;
-
-    if (includeMetadata) {
-      // Strip the "> Source: / > Date:" footer since it's now in frontmatter
-      finalMarkdown = stripSourceFooter(finalMarkdown);
-
-      // Prepend YAML frontmatter
-      const m = response.data.metadata;
-      const lines = ['---'];
-      lines.push(`author: "${response.data.author.name}"`);
-      lines.push(`handle: "${response.data.author.handle}"`);
-      lines.push(`source: "${response.data.sourceUrl}"`);
-      lines.push(`date: ${response.data.date}`);
-      lines.push(`type: ${response.data.type}`);
-      if (m) {
-        if (m.likes !== undefined) lines.push(`likes: ${m.likes}`);
-        if (m.reposts !== undefined) lines.push(`reposts: ${m.reposts}`);
-        if (m.replies !== undefined) lines.push(`replies: ${m.replies}`);
-        if (m.bookmarks !== undefined) lines.push(`bookmarks: ${m.bookmarks}`);
-        if (m.views !== undefined) lines.push(`views: ${m.views}`);
-      }
-      lines.push('---', '');
-      finalMarkdown = lines.join('\n') + finalMarkdown;
-    }
-
-    const imagesToDownload: { url: string; filename: string }[] = [];
-
-    if (isDownloadLocal) {
-      const dirName = baseFilename.replace('.md', '');
-
-      // Match markdown image syntax: ![alt](url)
-      finalMarkdown = finalMarkdown.replace(
-        /!\[(.*?)\]\((https:\/\/[^)]+)\)/g,
-        (match, alt, url) => {
-          try {
-            const urlObj = new URL(url);
-            let fname = urlObj.pathname.split('/').pop() || 'image';
-
-            // Extract format parameter if present (e.g., format=jpg)
-            const formatMatch = url.match(/format=([a-zA-Z0-9]+)/);
-            if (formatMatch && !fname.includes('.')) {
-              fname += `.${formatMatch[1]}`;
-            }
-
-            // Fallback for missing extension
-            if (!fname.includes('.')) {
-              fname += '.jpg';
-            }
-
-            fname = fname.replace(/[^a-zA-Z0-9_.-]/g, '_');
-            const localPath = `${dirName}/${fname}`;
-
-            if (!imagesToDownload.find((i) => i.url === url)) {
-              imagesToDownload.push({ url, filename: localPath });
-            }
-
-            return `![${alt}](${localPath})`;
-          } catch (e) {
-            // URL parsing failed, leave URL as is
-            return match;
-          }
-        }
-      );
-    }
-
-    // 3. Send download request to background
     const downloadMsg: DownloadRequest = {
       action: 'DOWNLOAD_MD',
-      content: finalMarkdown,
-      filename: baseFilename,
-      images: isDownloadLocal ? imagesToDownload : undefined,
+      content: result.markdown,
+      filename: result.filename,
+      images: result.images.length > 0 ? result.images : undefined,
     };
 
     chrome.runtime.sendMessage(downloadMsg, (downloadResponse) => {
       if (chrome.runtime.lastError || !downloadResponse?.success) {
-        showStatus(
-          downloadResponse?.error || 'Download failed.',
-          'error'
-        );
+        showStatus(downloadResponse?.error || 'Download failed.', 'error');
       } else {
         const typeLabels: Record<string, string> = {
           article: 'Article downloaded!',
           thread: 'Thread downloaded!',
           tweet: 'Tweet downloaded!',
         };
-        const label = typeLabels[response.data!.type] || 'Downloaded!';
+        const label = typeLabels[result.type] || 'Downloaded!';
         showStatus(`✓ ${label}`, 'success');
       }
       setLoading(false);
     });
   } catch (err) {
-    const message =
-      err instanceof Error ? err.message : 'An unexpected error occurred.';
+    handleExtractionError(err);
+  }
+});
 
-    // Common case: content script not injected on the page
-    if (message.includes('Receiving end does not exist')) {
-      showStatus(
-        'Reload the page and try again.',
-        'error'
-      );
-    } else {
-      showStatus(message, 'error');
-    }
+// ─── Copy Flow ──────────────────────────────────────────────────────
+
+btnCopy.addEventListener('click', async () => {
+  setLoading(true);
+  statusEl.className = 'status hidden';
+
+  try {
+    const result = await extractMarkdown();
+
+    await navigator.clipboard.writeText(result.markdown);
+
+    const typeLabels: Record<string, string> = {
+      article: 'Article copied!',
+      thread: 'Thread copied!',
+      tweet: 'Tweet copied!',
+    };
+    const label = typeLabels[result.type] || 'Copied!';
+    showStatus(`✓ ${label}`, 'success');
     setLoading(false);
+  } catch (err) {
+    handleExtractionError(err);
   }
 });
