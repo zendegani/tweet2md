@@ -130,7 +130,7 @@ async function extractMarkdown(): Promise<ExtractionResult> {
   }
 
   const url = tab.url || '';
-  if (!url.includes('x.com/') && !url.includes('twitter.com/')) {
+  if (!url.includes('x.com/')) {
     throw new Error('Navigate to a tweet or article on X.com first.');
   }
 
