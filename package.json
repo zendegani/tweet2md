@@ -1,7 +1,7 @@
 {
   "name": "tweet2md",
   "version": "1.1.0",
-  "description": "The ultimate Thread Downloader & Post Extractor for X / Twitter. Convert posts, articles, and complex threads to Markdown.",
+  "description": "Copy or Download Twitter/X Threads and Articles as Markdown",
   "private": true,
   "type": "module",
   "scripts": {

@@ -1,6 +1,6 @@
 # tweet2md
 
-> The ultimate Thread Downloader & Post Extractor for X / Twitter. Convert posts, long articles, and complex threads into clean Markdown — one click.
+> The open-source alternative to broken Twitter clippers. Export X Articles and threads to Markdown for LLMs, Obsidian, and Notion.
 
 <p align="center">
   <img src="assets/Extension.png" alt="tweet2md extension UI" width="350" />
@@ -8,7 +8,13 @@
 
 ## What it does
 
-**tweet2md** is a Chrome extension that extracts tweets, threads, and long-form articles (X Notes) and downloads them as `.md` files.
+**tweet2md** is an open-source Chrome extension for **local scraping** and **No-API Twitter export**. It extracts tweets, threads, and long-form articles (X Notes) and converts them to clean Markdown. You can download them as `.md` files or copy them directly to your clipboard.
+
+### Common Workflows
+
+- **Knowledge Management:** Seamlessly import X content into **Obsidian**, **Notion**, **Logseq**, or your **Second Brain** via clean `.md` files.
+- **AI & LLM Training:** Export high-quality X threads as clean text for RAG (Retrieval-Augmented Generation) or GPT prompts.
+- **Offline Archiving:** Research preservation with local image hosting to prevent link rot.
 
 ### Supports
 
@@ -19,6 +25,14 @@
 - **Metadata** — optionally include metrics (likes, reposts, etc.) as **YAML frontmatter**
 - **Image Downloads** — optionally download all images locally alongside the `.md` file
 - **Clean output** — no engagement buttons, follow CTAs, or tracking clutter; @mentions stay inline
+- **Zero-API Architecture** — no X API key required, works directly in your browser
+
+### Technical Specs
+
+- **Format:** Markdown (.md) with YAML Frontmatter
+- **Requirements:** No X API key required
+- **Privacy:** Local-only execution (No server-side processing)
+- **Compatibility:** Supports X Articles (formerly Notes), nested threads, and media
 
 <p align="center">
   <img src="assets/Nested_Thread.png" alt="Example of Nested Thread output" width="600" />
@@ -48,8 +62,8 @@ Install `tweet2md` from the [Chrome Web Store](https://chromewebstore.google.com
 1. Navigate to a tweet, thread, or article on **x.com**
 2. Click the **tweet2md** icon
 3. (Optional) Toggle **Save images locally** or **Include metadata**
-4. Click **Download .md**
-5. Files save to your Downloads folder
+4. Click **Download .md** to save the file, or **Copy .md** to copy to your clipboard
+5. If downloaded, files save to your Downloads folder
 
 Filenames: `@handle-tweetId.md` (tweets/threads) or `@handle-article-slug.md` (articles).
 
