@@ -1,7 +1,7 @@
 {
   "name": "tweet2md",
-  "version": "1.1.0",
-  "description": "Copy or Download Twitter/X Threads and Articles as Markdown",
+  "version": "1.2.0",
+  "description": "Copy or Download X (Twitter) Articles, threads, and tweets as Markdown.",
   "private": true,
   "type": "module",
   "scripts": {

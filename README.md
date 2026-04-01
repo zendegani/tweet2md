@@ -1,42 +1,45 @@
 # tweet2md
 
-> The open-source alternative to broken Twitter clippers. Export X Articles and threads to Markdown for LLMs, Obsidian, and Notion.
+> Copy or save X (Twitter) Articles, threads, and tweets as Markdown.
 
 <p align="center">
-  <img src="assets/Extension.png" alt="tweet2md extension UI" width="350" />
+  <img src="assets/Extension.png" alt="tweet2md extension UI" width="500" />
 </p>
 
 ## What it does
 
-**tweet2md** is an open-source Chrome extension for **local scraping** and **No-API Twitter export**. It extracts tweets, threads, and long-form articles (X Notes) and converts them to clean Markdown. You can download them as `.md` files or copy them directly to your clipboard.
+**tweet2md** is an open-source Chrome extension that turns x.com content into production-ready Markdown for research, note-taking, AI workflows, and offline archiving. No X API key required.
 
-### Common Workflows
+<p align="center">
+  <img src="assets/Markdown.png" alt="tweet2md converts X content to clean Markdown" width="700" />
+</p>
 
-- **Knowledge Management:** Seamlessly import X content into **Obsidian**, **Notion**, **Logseq**, or your **Second Brain** via clean `.md` files.
-- **AI & LLM Training:** Export high-quality X threads as clean text for RAG (Retrieval-Augmented Generation) or GPT prompts.
-- **Offline Archiving:** Research preservation with local image hosting to prevent link rot.
+### Key Features
 
-### Supports
+- **X Articles** — Full support for long-form Articles (formerly Notes) with headings, lists, and code blocks
+- **Tweets & Threads** — Extract tweets, nested threads, and quote tweets into clean Markdown
+- **Quoted Posts** — Preserve quoted-post structure and context in a reusable format
+- **Local Image Downloads** — Download all embedded images locally alongside your `.md` file to prevent link rot
+- **YAML Frontmatter** — Rich metadata with author, handle, date, source URL, content type, and engagement stats (likes, reposts, replies, bookmarks, views)
+- **Copy or Download** — Copy Markdown to clipboard or download as a file
+- **Clean Output** — Automatically expand truncated posts and strip engagement buttons, follow prompts, and trackers
+- **Light & Dark Mode** — Popup matches your system preferences
 
-- **Tweets** — text, images, videos, resolved `t.co` links, inline emojis
-- **Threads** — detects all tweets by the same author on the page, joined with `---` separators
-- **Complex Content** — gracefully handles nested quote tweets, quoted articles, and mixed media layouts
-- **Articles / Notes** — headings, bold/italic, bullet/ordered lists, code blocks, links, horizontal rules
-- **Metadata** — optionally include metrics (likes, reposts, etc.) as **YAML frontmatter**
-- **Image Downloads** — optionally download all images locally alongside the `.md` file
-- **Clean output** — no engagement buttons, follow CTAs, or tracking clutter; @mentions stay inline
-- **Zero-API Architecture** — no X API key required, works directly in your browser
+### Great For
+
+- Importing X content into **Obsidian**, **Notion**, **Logseq**, **Hugo**, or any Markdown-based PKM system
+- Exporting clean text for **LLM prompts**, **RAG pipelines**, or AI training workflows
+- Archiving research threads, news references, and long-form articles offline
+- Building a searchable **Second Brain** from your Twitter/X activity
+- Preparing source material for writing, translation, or summarization
 
 ### Technical Specs
 
 - **Format:** Markdown (.md) with YAML Frontmatter
 - **Requirements:** No X API key required
-- **Privacy:** Local-only execution (No server-side processing)
+- **Privacy:** Local-only execution (no server-side processing)
+- **Architecture:** Zero-API — works directly in your browser with no API keys or accounts
 - **Compatibility:** Supports X Articles (formerly Notes), nested threads, and media
-
-<p align="center">
-  <img src="assets/Nested_Thread.png" alt="Example of Nested Thread output" width="600" />
-</p>
 
 ## Install
 
@@ -74,6 +77,13 @@ Filenames: `@handle-tweetId.md` (tweets/threads) or `@handle-article-slug.md` (a
 - **Articles**: Manual Draft.js block parsing for precise heading/list/code-block extraction
 - DOM is cloned and cleaned (engagement bars, follow buttons, navigation stripped) before conversion
 - Downloads via `chrome.downloads` API — nothing leaves your browser
+
+## Current Limitations
+
+- Focused on x.com content extraction
+- Videos and GIFs are not exported as playable media files
+- Requires a page reload if the extension was installed or updated after opening the tab
+- Some content may stop working if x.com changes its page structure significantly
 
 ## Permissions
 

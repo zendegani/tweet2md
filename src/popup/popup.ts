@@ -74,15 +74,31 @@ function showStatus(
   }
 }
 
-function setLoading(loading: boolean): void {
+function setLoading(loading: boolean, target?: 'download' | 'copy'): void {
   btnDownload.disabled = loading;
   btnCopy.disabled = loading;
-  btnDownload.classList.toggle('loading', loading);
-  btnCopy.classList.toggle('loading', loading);
-  const dlLabel = btnDownload.querySelector('.btn-label');
-  const cpLabel = btnCopy.querySelector('.btn-label');
-  if (dlLabel) dlLabel.textContent = loading ? 'Extracting…' : 'Download .md';
-  if (cpLabel) cpLabel.textContent = loading ? 'Extracting…' : 'Copy .md';
+
+  // Only animate the button that was actually clicked
+  if (target === 'download' || !target) {
+    btnDownload.classList.toggle('loading', loading);
+    const dlLabel = btnDownload.querySelector('.btn-label');
+    if (dlLabel) dlLabel.textContent = loading ? 'Extracting…' : 'Download .md';
+  }
+  if (target === 'copy' || !target) {
+    btnCopy.classList.toggle('loading', loading);
+    const cpLabel = btnCopy.querySelector('.btn-label');
+    if (cpLabel) cpLabel.textContent = loading ? 'Extracting…' : 'Copy .md';
+  }
+
+  // When stopping, always reset both to default state
+  if (!loading) {
+    btnDownload.classList.remove('loading');
+    btnCopy.classList.remove('loading');
+    const dlLabel = btnDownload.querySelector('.btn-label');
+    const cpLabel = btnCopy.querySelector('.btn-label');
+    if (dlLabel) dlLabel.textContent = 'Download .md';
+    if (cpLabel) cpLabel.textContent = 'Copy .md';
+  }
 }
 
 function buildFilename(data: ExtractResponse['data']): string {
@@ -235,7 +251,7 @@ function handleExtractionError(err: unknown): void {
 // ─── Download Flow ──────────────────────────────────────────────────
 
 btnDownload.addEventListener('click', async () => {
-  setLoading(true);
+  setLoading(true, 'download');
   statusEl.className = 'status hidden';
 
   try {
@@ -270,7 +286,7 @@ btnDownload.addEventListener('click', async () => {
 // ─── Copy Flow ──────────────────────────────────────────────────────
 
 btnCopy.addEventListener('click', async () => {
-  setLoading(true);
+  setLoading(true, 'copy');
   statusEl.className = 'status hidden';
 
   try {
