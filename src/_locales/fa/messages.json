@@ -1,0 +1,74 @@
+{
+  "extensionName": {
+    "message": "tweet2md"
+  },
+  "extensionDescription": {
+    "message": "کپی یا دانلود مقالات، رشته‌ها و توییت‌های X (Twitter) به صورت Markdown."
+  },
+  "tagline": {
+    "message": "تبدیل رشته‌ها و مقالات به Markdown"
+  },
+  "btn_download": {
+    "message": "دانلود .md"
+  },
+  "btn_copy": {
+    "message": "کپی .md"
+  },
+  "extracting": {
+    "message": "در حال استخراج…"
+  },
+  "opt_save_images_title": {
+    "message": "دانلود تصاویر در پوشه‌ای در کنار فایل Markdown"
+  },
+  "opt_save_images": {
+    "message": "ذخیره محلی تصاویر"
+  },
+  "opt_metadata_title": {
+    "message": "افزودن متادیتا به عنوان YAML frontmatter"
+  },
+  "opt_metadata": {
+    "message": "شامل متادیتا"
+  },
+  "footer_hint": {
+    "message": "ابتدا به یک توییت در X.com بروید"
+  },
+  "error_reload": {
+    "message": "صفحه را دوباره بارگذاری کنید و دوباره امتحان کنید."
+  },
+  "error_specific_page": {
+    "message": "یک صفحه خاص (با /status/ در URL) را باز کنید."
+  },
+  "error_failed": {
+    "message": "استخراج محتوا با شکست مواجه شد."
+  },
+  "error_unexpected": {
+    "message": "یک خطای غیرمنتظره رخ داد."
+  },
+  "download_failed": {
+    "message": "دانلود ناموفق بود."
+  },
+  "article_downloaded": {
+    "message": "مقاله دانلود شد!"
+  },
+  "thread_downloaded": {
+    "message": "رشته دانلود شد!"
+  },
+  "tweet_downloaded": {
+    "message": "توییت دانلود شد!"
+  },
+  "downloaded": {
+    "message": "دانلود شد!"
+  },
+  "article_copied": {
+    "message": "مقاله کپی شد!"
+  },
+  "thread_copied": {
+    "message": "رشته کپی شد!"
+  },
+  "tweet_copied": {
+    "message": "توییت کپی شد!"
+  },
+  "copied": {
+    "message": "کپی شد!"
+  }
+}

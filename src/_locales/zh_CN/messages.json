@@ -1,0 +1,74 @@
+{
+  "extensionName": {
+    "message": "tweet2md"
+  },
+  "extensionDescription": {
+    "message": "作为 Markdown 复制或下载 X (Twitter) 上的文章、贴文和推文。"
+  },
+  "tagline": {
+    "message": "将推文和文章转换为 Markdown"
+  },
+  "btn_download": {
+    "message": "下载 .md"
+  },
+  "btn_copy": {
+    "message": "复制 .md"
+  },
+  "extracting": {
+    "message": "提取中…"
+  },
+  "opt_save_images_title": {
+    "message": "将图片下载到 Markdown 文件旁的文件夹中"
+  },
+  "opt_save_images": {
+    "message": "将图片保存到本地"
+  },
+  "opt_metadata_title": {
+    "message": "将点赞、转发、浏览量作为 YAML frontmatter 添加"
+  },
+  "opt_metadata": {
+    "message": "包含元数据"
+  },
+  "footer_hint": {
+    "message": "请先导航到 X.com 上的推文或文章页面"
+  },
+  "error_reload": {
+    "message": "请重新加载页面然后再试。"
+  },
+  "error_specific_page": {
+    "message": "请打开特定的页面（URL中包含 /status/）。"
+  },
+  "error_failed": {
+    "message": "提取内容失败。"
+  },
+  "error_unexpected": {
+    "message": "发生了意外错误。"
+  },
+  "download_failed": {
+    "message": "下载失败。"
+  },
+  "article_downloaded": {
+    "message": "文章已下载！"
+  },
+  "thread_downloaded": {
+    "message": "线程已下载！"
+  },
+  "tweet_downloaded": {
+    "message": "推文已下载！"
+  },
+  "downloaded": {
+    "message": "已下载！"
+  },
+  "article_copied": {
+    "message": "文章已复制！"
+  },
+  "thread_copied": {
+    "message": "线程已复制！"
+  },
+  "tweet_copied": {
+    "message": "推文已复制！"
+  },
+  "copied": {
+    "message": "已复制！"
+  }
+}

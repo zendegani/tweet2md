@@ -23,6 +23,7 @@
 - **YAML Frontmatter** — Rich metadata with author, handle, date, source URL, content type, and engagement stats (likes, reposts, replies, bookmarks, views)
 - **Copy or Download** — Copy Markdown to clipboard or download as a file
 - **Clean Output** — Automatically expand truncated posts and strip engagement buttons, follow prompts, and trackers
+- **Multi-Language UI** — Popup available in English, Spanish, German, French, Japanese, Portuguese (Brazil), Chinese (Simplified), Arabic, and Persian. Content extraction works on any language regardless of UI translation
 - **Light & Dark Mode** — Popup matches your system preferences
 
 ### Great For
@@ -111,6 +112,7 @@ tweet2md/
 │   ├── popup/          # Extension popup UI + trigger
 │   ├── types/          # Shared TypeScript interfaces
 │   ├── icons/          # Extension icons (16, 32, 48, 128px)
+│   ├── _locales/       # i18n translations (en, es, de, fr, ja, pt_BR, zh_CN, ar, fa)
 │   └── manifest.json   # Chrome MV3 manifest
 ├── dist/               # Build output (load this in Chrome)
 ├── build.mjs           # esbuild build script

@@ -57,6 +57,14 @@ async function build() {
     cpSync(iconsDir, distIconsDir, { recursive: true });
   }
 
+  // Copy _locales for i18n
+  const localesDir = resolve(__dirname, 'src/_locales');
+  const distLocalesDir = resolve(__dirname, 'dist/_locales');
+  if (existsSync(localesDir)) {
+    mkdirSync(distLocalesDir, { recursive: true });
+    cpSync(localesDir, distLocalesDir, { recursive: true });
+  }
+
   console.log('✅ Build complete → dist/');
 }
 

@@ -10,6 +10,21 @@ const chkMetadata = document.getElementById(
   'chk-include-metadata'
 ) as HTMLInputElement;
 
+// ─── Initialize i18n ──────────────────────────────────────────────────
+
+document.querySelectorAll('[data-i18n]').forEach((el) => {
+  const key = el.getAttribute('data-i18n');
+  if (key) {
+    el.textContent = chrome.i18n.getMessage(key) || el.textContent;
+  }
+});
+document.querySelectorAll('[data-i18n-title]').forEach((el) => {
+  const key = el.getAttribute('data-i18n-title');
+  if (key) {
+    el.setAttribute('title', chrome.i18n.getMessage(key) || el.getAttribute('title')!);
+  }
+});
+
 // ─── Settings Persistence ───────────────────────────────────────────
 
 const SETTINGS_KEY = 'tweet2md_settings';
@@ -82,12 +97,12 @@ function setLoading(loading: boolean, target?: 'download' | 'copy'): void {
   if (target === 'download' || !target) {
     btnDownload.classList.toggle('loading', loading);
     const dlLabel = btnDownload.querySelector('.btn-label');
-    if (dlLabel) dlLabel.textContent = loading ? 'Extracting…' : 'Download .md';
+    if (dlLabel) dlLabel.textContent = loading ? (chrome.i18n.getMessage('extracting') || 'Extracting…') : (chrome.i18n.getMessage('btn_download') || 'Download .md');
   }
   if (target === 'copy' || !target) {
     btnCopy.classList.toggle('loading', loading);
     const cpLabel = btnCopy.querySelector('.btn-label');
-    if (cpLabel) cpLabel.textContent = loading ? 'Extracting…' : 'Copy .md';
+    if (cpLabel) cpLabel.textContent = loading ? (chrome.i18n.getMessage('extracting') || 'Extracting…') : (chrome.i18n.getMessage('btn_copy') || 'Copy .md');
   }
 
   // When stopping, always reset both to default state
@@ -96,8 +111,8 @@ function setLoading(loading: boolean, target?: 'download' | 'copy'): void {
     btnCopy.classList.remove('loading');
     const dlLabel = btnDownload.querySelector('.btn-label');
     const cpLabel = btnCopy.querySelector('.btn-label');
-    if (dlLabel) dlLabel.textContent = 'Download .md';
-    if (cpLabel) cpLabel.textContent = 'Copy .md';
+    if (dlLabel) dlLabel.textContent = chrome.i18n.getMessage('btn_download') || 'Download .md';
+    if (cpLabel) cpLabel.textContent = chrome.i18n.getMessage('btn_copy') || 'Copy .md';
   }
 }
 
@@ -147,12 +162,12 @@ async function extractMarkdown(): Promise<ExtractionResult> {
 
   const url = tab.url || '';
   if (!url.includes('x.com/')) {
-    throw new Error('Navigate to a tweet or article on X.com first.');
+    throw new Error(chrome.i18n.getMessage('footer_hint') || 'Navigate to a tweet or article on X.com first.');
   }
 
   if (!url.includes('/status/')) {
     throw new Error(
-      'Open a specific tweet or article page (with /status/ in the URL).'
+      chrome.i18n.getMessage('error_specific_page') || 'Open a specific tweet or article page (with /status/ in the URL).'
     );
   }
 
@@ -165,7 +180,7 @@ async function extractMarkdown(): Promise<ExtractionResult> {
   });
 
   if (!response.success || !response.data) {
-    throw new Error(response.error || 'Failed to extract content.');
+    throw new Error(response.error || chrome.i18n.getMessage('error_failed') || 'Failed to extract content.');
   }
 
   const baseFilename = buildFilename(response.data);
@@ -238,10 +253,10 @@ async function extractMarkdown(): Promise<ExtractionResult> {
 
 function handleExtractionError(err: unknown): void {
   const message =
-    err instanceof Error ? err.message : 'An unexpected error occurred.';
+    err instanceof Error ? err.message : (chrome.i18n.getMessage('error_unexpected') || 'An unexpected error occurred.');
 
   if (message.includes('Receiving end does not exist')) {
-    showStatus('Reload the page and try again.', 'error');
+    showStatus(chrome.i18n.getMessage('error_reload') || 'Reload the page and try again.', 'error');
   } else {
     showStatus(message, 'error');
   }
@@ -266,14 +281,14 @@ btnDownload.addEventListener('click', async () => {
 
     chrome.runtime.sendMessage(downloadMsg, (downloadResponse) => {
       if (chrome.runtime.lastError || !downloadResponse?.success) {
-        showStatus(downloadResponse?.error || 'Download failed.', 'error');
+        showStatus(downloadResponse?.error || chrome.i18n.getMessage('download_failed') || 'Download failed.', 'error');
       } else {
         const typeLabels: Record<string, string> = {
-          article: 'Article downloaded!',
-          thread: 'Thread downloaded!',
-          tweet: 'Tweet downloaded!',
+          article: chrome.i18n.getMessage('article_downloaded') || 'Article downloaded!',
+          thread: chrome.i18n.getMessage('thread_downloaded') || 'Thread downloaded!',
+          tweet: chrome.i18n.getMessage('tweet_downloaded') || 'Tweet downloaded!',
         };
-        const label = typeLabels[result.type] || 'Downloaded!';
+        const label = typeLabels[result.type] || chrome.i18n.getMessage('downloaded') || 'Downloaded!';
         showStatus(`✓ ${label}`, 'success');
       }
       setLoading(false);
@@ -295,11 +310,11 @@ btnCopy.addEventListener('click', async () => {
     await navigator.clipboard.writeText(result.markdown);
 
     const typeLabels: Record<string, string> = {
-      article: 'Article copied!',
-      thread: 'Thread copied!',
-      tweet: 'Tweet copied!',
+      article: chrome.i18n.getMessage('article_copied') || 'Article copied!',
+      thread: chrome.i18n.getMessage('thread_copied') || 'Thread copied!',
+      tweet: chrome.i18n.getMessage('tweet_copied') || 'Tweet copied!',
     };
-    const label = typeLabels[result.type] || 'Copied!';
+    const label = typeLabels[result.type] || chrome.i18n.getMessage('copied') || 'Copied!';
     showStatus(`✓ ${label}`, 'success');
     setLoading(false);
   } catch (err) {
