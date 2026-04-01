@@ -1,0 +1,74 @@
+{
+  "extensionName": {
+    "message": "tweet2md"
+  },
+  "extensionDescription": {
+    "message": "نسخ أو تنزيل مقالات وسلاسل وتغريدات X (Twitter) بتنسيق Markdown."
+  },
+  "tagline": {
+    "message": "تحويل السلاسل والمقالات إلى Markdown"
+  },
+  "btn_download": {
+    "message": "تنزيل .md"
+  },
+  "btn_copy": {
+    "message": "نسخ .md"
+  },
+  "extracting": {
+    "message": "جاري الاستخراج…"
+  },
+  "opt_save_images_title": {
+    "message": "تنزيل الصور إلى مجلد بجانب ملف Markdown"
+  },
+  "opt_save_images": {
+    "message": "حفظ الصور محليًا"
+  },
+  "opt_metadata_title": {
+    "message": "إضافة الإعجابات وإعادات النشر والمشاهدات كـ YAML frontmatter"
+  },
+  "opt_metadata": {
+    "message": "تضمين البيانات الوصفية"
+  },
+  "footer_hint": {
+    "message": "انتقل إلى تغريدة أو مقال على X.com أولاً"
+  },
+  "error_reload": {
+    "message": "أعد تحميل الصفحة وحاول مرة أخرى."
+  },
+  "error_specific_page": {
+    "message": "افتح صفحة محددة (تحتوي على /status/ في الرابط)."
+  },
+  "error_failed": {
+    "message": "فشل استخراج المحتوى."
+  },
+  "error_unexpected": {
+    "message": "حدث خطأ غير متوقع."
+  },
+  "download_failed": {
+    "message": "فشل التنزيل."
+  },
+  "article_downloaded": {
+    "message": "تم تنزيل المقال!"
+  },
+  "thread_downloaded": {
+    "message": "تم تنزيل السلسلة!"
+  },
+  "tweet_downloaded": {
+    "message": "تم تنزيل التغريدة!"
+  },
+  "downloaded": {
+    "message": "تم التنزيل!"
+  },
+  "article_copied": {
+    "message": "تم نسخ المقال!"
+  },
+  "thread_copied": {
+    "message": "تم نسخ السلسلة!"
+  },
+  "tweet_copied": {
+    "message": "تم نسخ التغريدة!"
+  },
+  "copied": {
+    "message": "تم النسخ!"
+  }
+}

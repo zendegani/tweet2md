@@ -1,0 +1,74 @@
+{
+  "extensionName": {
+    "message": "tweet2md"
+  },
+  "extensionDescription": {
+    "message": "Copiez ou téléchargez des articles, fils de discussion et tweets X (Twitter) en Markdown."
+  },
+  "tagline": {
+    "message": "Convertir les fils et articles en Markdown"
+  },
+  "btn_download": {
+    "message": "Télécharger .md"
+  },
+  "btn_copy": {
+    "message": "Copier .md"
+  },
+  "extracting": {
+    "message": "Extraction…"
+  },
+  "opt_save_images_title": {
+    "message": "Télécharger les images dans un dossier à côté du fichier Markdown"
+  },
+  "opt_save_images": {
+    "message": "Enregistrer les images localement"
+  },
+  "opt_metadata_title": {
+    "message": "Ajouter les j'aime, reposts, vues en tant que YAML frontmatter"
+  },
+  "opt_metadata": {
+    "message": "Inclure les métadonnées"
+  },
+  "footer_hint": {
+    "message": "Accédez d'abord à un tweet ou un article sur X.com"
+  },
+  "error_reload": {
+    "message": "Rechargez la page et réessayez."
+  },
+  "error_specific_page": {
+    "message": "Ouvrez une page spécifique (avec /status/ dans l'URL)."
+  },
+  "error_failed": {
+    "message": "Échec de l'extraction du contenu."
+  },
+  "error_unexpected": {
+    "message": "Une erreur inattendue s'est produite."
+  },
+  "download_failed": {
+    "message": "Échec du téléchargement."
+  },
+  "article_downloaded": {
+    "message": "Article téléchargé !"
+  },
+  "thread_downloaded": {
+    "message": "Fil téléchargé !"
+  },
+  "tweet_downloaded": {
+    "message": "Tweet téléchargé !"
+  },
+  "downloaded": {
+    "message": "Téléchargé !"
+  },
+  "article_copied": {
+    "message": "Article copié !"
+  },
+  "thread_copied": {
+    "message": "Fil copié !"
+  },
+  "tweet_copied": {
+    "message": "Tweet copié !"
+  },
+  "copied": {
+    "message": "Copié !"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "extensionName": {
+    "message": "tweet2md"
+  },
+  "extensionDescription": {
+    "message": "X (Twitter) の記事、スレッド、ツイートを Markdown としてコピーまたはダウンロード。"
+  },
+  "tagline": {
+    "message": "スレッドや記事をMarkdownに変換"
+  },
+  "btn_download": {
+    "message": ".mdをダウンロード"
+  },
+  "btn_copy": {
+    "message": ".mdをコピー"
+  },
+  "extracting": {
+    "message": "抽出中…"
+  },
+  "opt_save_images_title": {
+    "message": "Markdownファイルと同じフォルダに画像をダウンロードする"
+  },
+  "opt_save_images": {
+    "message": "画像をローカルに保存"
+  },
+  "opt_metadata_title": {
+    "message": "いいね、リポスト、閲覧数をYAMLフロントマターとして追加"
+  },
+  "opt_metadata": {
+    "message": "メタデータを含める"
+  },
+  "footer_hint": {
+    "message": "まずX.comのツイートまたは記事に移動してください"
+  },
+  "error_reload": {
+    "message": "ページを再読み込みして、やり直してください。"
+  },
+  "error_specific_page": {
+    "message": "特定のページ（URLに/status/を含む）を開いてください。"
+  },
+  "error_failed": {
+    "message": "コンテンツの抽出に失敗しました。"
+  },
+  "error_unexpected": {
+    "message": "予期しないエラーが発生しました。"
+  },
+  "download_failed": {
+    "message": "ダウンロードに失敗しました。"
+  },
+  "article_downloaded": {
+    "message": "記事をダウンロードしました！"
+  },
+  "thread_downloaded": {
+    "message": "スレッドをダウンロードしました！"
+  },
+  "tweet_downloaded": {
+    "message": "ツイートをダウンロードしました！"
+  },
+  "downloaded": {
+    "message": "ダウンロード完了！"
+  },
+  "article_copied": {
+    "message": "記事をコピーしました！"
+  },
+  "thread_copied": {
+    "message": "スレッドをコピーしました！"
+  },
+  "tweet_copied": {
+    "message": "ツイートをコピーしました！"
+  },
+  "copied": {
+    "message": "コピー完了！"
+  }
+}

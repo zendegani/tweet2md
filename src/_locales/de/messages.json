@@ -1,0 +1,74 @@
+{
+  "extensionName": {
+    "message": "tweet2md"
+  },
+  "extensionDescription": {
+    "message": "X (Twitter) Artikel, Threads und Tweets als Markdown kopieren oder herunterladen."
+  },
+  "tagline": {
+    "message": "Threads und Artikel in Markdown konvertieren"
+  },
+  "btn_download": {
+    "message": ".md herunterladen"
+  },
+  "btn_copy": {
+    "message": ".md kopieren"
+  },
+  "extracting": {
+    "message": "Wird extrahiert…"
+  },
+  "opt_save_images_title": {
+    "message": "Bilder in einem Ordner neben der Markdown-Datei speichern"
+  },
+  "opt_save_images": {
+    "message": "Bilder lokal speichern"
+  },
+  "opt_metadata_title": {
+    "message": "Likes, Reposts, Aufrufe als YAML-Frontmatter hinzufügen"
+  },
+  "opt_metadata": {
+    "message": "Metadaten einschließen"
+  },
+  "footer_hint": {
+    "message": "Navigiere zuerst zu einem Tweet oder Artikel auf X.com"
+  },
+  "error_reload": {
+    "message": "Lade die Seite neu und versuche es erneut."
+  },
+  "error_specific_page": {
+    "message": "Öffne eine bestimmte Seite (mit /status/ in der URL)."
+  },
+  "error_failed": {
+    "message": "Inhalt konnte nicht extrahiert werden."
+  },
+  "error_unexpected": {
+    "message": "Ein unerwarteter Fehler ist aufgetreten."
+  },
+  "download_failed": {
+    "message": "Fehler beim Herunterladen."
+  },
+  "article_downloaded": {
+    "message": "Artikel heruntergeladen!"
+  },
+  "thread_downloaded": {
+    "message": "Thread heruntergeladen!"
+  },
+  "tweet_downloaded": {
+    "message": "Tweet heruntergeladen!"
+  },
+  "downloaded": {
+    "message": "Heruntergeladen!"
+  },
+  "article_copied": {
+    "message": "Artikel kopiert!"
+  },
+  "thread_copied": {
+    "message": "Thread kopiert!"
+  },
+  "tweet_copied": {
+    "message": "Tweet kopiert!"
+  },
+  "copied": {
+    "message": "Kopiert!"
+  }
+}

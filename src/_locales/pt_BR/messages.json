@@ -1,0 +1,74 @@
+{
+  "extensionName": {
+    "message": "tweet2md"
+  },
+  "extensionDescription": {
+    "message": "Copie ou baixe artigos, threads e tweets do X (Twitter) como Markdown."
+  },
+  "tagline": {
+    "message": "Converta threads e artigos para Markdown"
+  },
+  "btn_download": {
+    "message": "Baixar arquivo .md"
+  },
+  "btn_copy": {
+    "message": "Copiar .md"
+  },
+  "extracting": {
+    "message": "Extraindo…"
+  },
+  "opt_save_images_title": {
+    "message": "Baixar imagens para uma pasta ao lado do arquivo Markdown"
+  },
+  "opt_save_images": {
+    "message": "Salvar imagens localmente"
+  },
+  "opt_metadata_title": {
+    "message": "Adicionar curtidas, reposts, visualizações como YAML frontmatter"
+  },
+  "opt_metadata": {
+    "message": "Incluir metadados"
+  },
+  "footer_hint": {
+    "message": "Navegue primeiro para um tweet ou artigo no X.com"
+  },
+  "error_reload": {
+    "message": "Recarregue a página e tente novamente."
+  },
+  "error_specific_page": {
+    "message": "Abra uma página específica (com /status/ na URL)."
+  },
+  "error_failed": {
+    "message": "Falha ao extrair o conteúdo."
+  },
+  "error_unexpected": {
+    "message": "Ocorreu um erro inesperado."
+  },
+  "download_failed": {
+    "message": "Falha no download."
+  },
+  "article_downloaded": {
+    "message": "Artigo baixado!"
+  },
+  "thread_downloaded": {
+    "message": "Thread baixada!"
+  },
+  "tweet_downloaded": {
+    "message": "Tweet baixado!"
+  },
+  "downloaded": {
+    "message": "Baixado!"
+  },
+  "article_copied": {
+    "message": "Artigo copiado!"
+  },
+  "thread_copied": {
+    "message": "Thread copiada!"
+  },
+  "tweet_copied": {
+    "message": "Tweet copiado!"
+  },
+  "copied": {
+    "message": "Copiado!"
+  }
+}
