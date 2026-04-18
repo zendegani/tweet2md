@@ -1,9 +1,9 @@
 {
   "extensionName": {
-    "message": "tweet2md：一键复制或下载 X (Twitter) 文章、推文和长推为 Markdown"
+    "message": "tweet2md：一键将 X (Twitter) 线程、推文和文章导出为 Markdown"
   },
   "extensionDescription": {
-    "message": "一键将 X (Twitter) 推文、长推和文章导出为干净的带有图片和元数据的 Markdown。完美适用于 Obsidian、Notion 和 AI/RAG 工作流。纯本地运行——无需 API，无跟踪。"
+    "message": "一键将 X (Twitter) 线程、推文和文章导出为包含图片和元数据的干净 Markdown。完美适用于 Obsidian、Notion 和 AI/RAG 工作流。纯本地运行——无需 API，无跟踪。"
   },
   "tagline": {
     "message": "将推文和文章转换为 Markdown"
