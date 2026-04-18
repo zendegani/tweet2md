@@ -1,9 +1,9 @@
 {
   "extensionName": {
-    "message": "tweet2md"
+    "message": "tweet2md: نسخ أو تنزيل مقالات وسلاسل وتغريدات منصة إكس (تويتر) بتنسيق Markdown"
   },
   "extensionDescription": {
-    "message": "نسخ أو تنزيل مقالات وسلاسل وتغريدات X (Twitter) بتنسيق Markdown."
+    "message": "تصدير بنقرة واحدة لسلاسل وتغريدات ومقالات منصة إكس (تويتر) إلى تنسيق Markdown نظيف مع الصور والبيانات الوصفية. مثالي لـ Obsidian و Notion وسير عمل الذكاء الاصطناعي/RAG. يعمل محليًا — بدون واجهة برمجة تطبيقات (API)، بدون تتبع."
   },
   "tagline": {
     "message": "تحويل السلاسل والمقالات إلى Markdown"

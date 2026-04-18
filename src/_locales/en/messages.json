@@ -1,9 +1,9 @@
 {
   "extensionName": {
-    "message": "tweet2md"
+    "message": "tweet2md: Copy or Download X (Twitter) Articles, Threads & Tweets as Markdown"
   },
   "extensionDescription": {
-    "message": "Copy or Download X (Twitter) Articles, threads, and tweets as Markdown."
+    "message": "One-click export of X (Twitter) threads, tweets, and articles to clean Markdown with images and metadata. Perfect for Obsidian, Notion, and AI/RAG workflows. Works locally—no API, no tracking."
   },
   "tagline": {
     "message": "Convert threads & articles to Markdown"

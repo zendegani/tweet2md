@@ -1,9 +1,9 @@
 {
   "extensionName": {
-    "message": "tweet2md"
+    "message": "tweet2md: کپی یا دانلود مقالات، رشته‌ها و توییت‌های ایکس (توییتر) با فرمت Markdown"
   },
   "extensionDescription": {
-    "message": "کپی یا دانلود مقالات، رشته‌ها و توییت‌های X (Twitter) به صورت Markdown."
+    "message": "خروجی گرفتن با یک کلیک از رشته‌ها، توییت‌ها و مقالات ایکس (توییتر) به صورت Markdown تمیز همراه با تصاویر و فراداده. مناسب برای Obsidian, Notion و گردش کارهای هوش مصنوعی/RAG. به صورت محلی کار می‌کند - بدون نیاز به API، بدون ردیابی."
   },
   "tagline": {
     "message": "تبدیل رشته‌ها و مقالات به Markdown"
