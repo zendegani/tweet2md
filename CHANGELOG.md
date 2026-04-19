@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.1] - 2026-04-19
+
+### Added
+
+- Added promotional web store assets to project repository.
+
+### Changed
+
+- **Popup UI**: Relocated the instruction hint to the header and updated the footer to include a direct link to the GitHub repository for issues and suggestions.
+- **Localization**: Polished translations across 9 supported languages to ensure better native phrasing.
+- **Manifest**: Updated extension metadata and localized descriptions for Web Store consistency.
+
 ## [1.2.0] - 2026-04-01
 
 ### Added
