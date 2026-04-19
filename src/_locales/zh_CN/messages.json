@@ -30,7 +30,10 @@
     "message": "包含元数据"
   },
   "footer_hint": {
-    "message": "请先导航到 X.com 上的推文或文章页面"
+    "message": "在 X.com 上打开推文或文章以开始使用"
+  },
+  "footer_feedback": {
+    "message": "有问题或建议？"
   },
   "error_reload": {
     "message": "请重新加载页面然后再试。"

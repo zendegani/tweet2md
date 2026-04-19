@@ -30,7 +30,10 @@
     "message": "Incluir metadados"
   },
   "footer_hint": {
-    "message": "Navegue primeiro para um tweet ou artigo no X.com"
+    "message": "Abra um tweet ou artigo no X.com para começar"
+  },
+  "footer_feedback": {
+    "message": "Problemas ou sugestões?"
   },
   "error_reload": {
     "message": "Recarregue a página e tente novamente."

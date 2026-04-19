@@ -47,7 +47,7 @@ body {
   font-family: var(--font);
   background: var(--bg-primary);
   color: var(--text-primary);
-  width: 320px;
+  width: 352px;
   min-height: 200px;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
@@ -221,15 +221,42 @@ body {
 
 /* ─── Footer ────────────────────────────────────────────────── */
 .popup-footer {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   padding-top: 4px;
   border-top: 1px solid var(--border-subtle);
+}
+
+.footer-feedback {
+  font-size: 11px;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.footer-github {
+  color: var(--text-secondary);
+  opacity: 0.7;
+  transition: opacity var(--transition);
+  display: flex;
+  align-items: center;
+}
+
+.footer-github:hover {
+  opacity: 1;
+}
+
+.footer-github-icon {
+  width: 14px;
+  height: 14px;
 }
 
 .hint {
   font-size: 11px;
   color: var(--text-secondary);
   opacity: 0.7;
+  margin-top: 4px;
 }
 
 /* ─── Options Toggles ───────────────────────────────────────── */

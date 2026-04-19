@@ -30,7 +30,10 @@
     "message": "メタデータを含める"
   },
   "footer_hint": {
-    "message": "まずX.comのツイートまたは記事に移動してください"
+    "message": "X.comでツイートまたは記事を開いて開始してください"
+  },
+  "footer_feedback": {
+    "message": "問題や提案はありますか？"
   },
   "error_reload": {
     "message": "ページを再読み込みして、やり直してください。"
