@@ -93,6 +93,7 @@ Filenames: `@handle-tweetId.md` (tweets/threads) or `@handle-article-slug.md` (a
 | `activeTab` | Read the current page's DOM when you click |
 | `downloads` | Save the `.md` file and images to Downloads |
 | `storage`   | Remember your popup toggle preferences |
+| `host` (X.com) | Inject a content script on `x.com/*/status/*` to extract post or article content locally |
 
 **Your data never leaves your device. No data is collected, transmitted, or stored externally.** See [PRIVACY.md](PRIVACY.md).
 

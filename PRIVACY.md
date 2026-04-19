@@ -37,6 +37,7 @@ No data leaves your browser at any point during this process. The extension does
 | `activeTab` | Allows reading the current tab's page content when you click the extension icon |
 | `downloads` | Allows saving the generated Markdown file and images to your Downloads folder |
 | `storage`   | Allows saving your popup configuration (toggle switches) locally on your device so settings are remembered between sessions |
+| `host` (X.com) | The content script is injected on `x.com/*/status/*` pages to extract the visible post or article content. This conversion happens entirely in the browser when you initiate an action. No data is transmitted externally. |
 
 These are the minimum permissions required for the extension to function. No additional permissions are requested.
 
