@@ -3,7 +3,7 @@
     "message": "tweet2md: Exporter les threads, tweets et articles de X (Twitter) en Markdown"
   },
   "extensionDescription": {
-    "message": "Exportez en un clic des threads, tweets et articles de X (Twitter) en Markdown propre avec images et métadonnées. Parfait pour Obsidian, Notion et les workflows IA/RAG. Fonctionne localement — aucune API, aucun pistage."
+    "message": "Exportez les threads, tweets et articles de X (Twitter) en Markdown propre avec images et métadonnées. Aucune API requise."
   },
   "tagline": {
     "message": "Convertir les fils et articles en Markdown"

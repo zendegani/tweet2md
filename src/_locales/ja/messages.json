@@ -3,7 +3,7 @@
     "message": "tweet2md: X (Twitter) の記事、スレッド、ツイートをMarkdownにエクスポート"
   },
   "extensionDescription": {
-    "message": "X (Twitter) のスレッド、ツイート、記事を画像やメタデータ付きのクリーンなMarkdownにワンクリックでエクスポート。Obsidian、Notion、AI/RAGワークフローに最適です。ローカルで動作します — API不要、トラッキングなし。"
+    "message": "X (Twitter) のスレッド、ツイート、記事を画像とメタデータ付きのクリーンなMarkdownにエクスポート。API不要。"
   },
   "tagline": {
     "message": "スレッドや記事をMarkdownに変換"
