@@ -1,5 +1,6 @@
 import TurndownService from 'turndown';
-import type { ExtractedContent, ExtractResponse, TweetMetadata } from '../types/messages';
+import type { DownloadRequest, ExtractedContent, ExtractResponse, TweetMetadata } from '../types/messages';
+import { postProcess } from '../shared/post-process';
 
 // ─── Turndown Instance ──────────────────────────────────────────────
 const turndown = new TurndownService({
@@ -1018,3 +1019,78 @@ chrome.runtime.onMessage.addListener((_message, _sender, sendResponse) => {
   }
   return true; // keep channel open for async sendResponse
 });
+
+// ─── Auto-extract bootstrap (#tweet2md=1) ───────────────────────────
+// Triggered when the page is opened from the inline button or context menu.
+
+const AUTO_MARKER = 'tweet2md=1';
+
+interface StoredSettings {
+  downloadImages?: boolean;
+  includeMetadata?: boolean;
+  closeTabAfterExport?: boolean;
+}
+
+function loadStoredSettings(): Promise<StoredSettings> {
+  return new Promise((resolve) => {
+    chrome.storage.local.get('tweet2md_settings', (result) => {
+      resolve((result['tweet2md_settings'] as StoredSettings) || {});
+    });
+  });
+}
+
+async function waitForArticle(timeoutMs = 15000): Promise<Element | null> {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    const a = document.querySelector('article[role="article"]');
+    if (a) return a;
+    await delay(200);
+  }
+  return null;
+}
+
+async function autoExtractAndDownload(): Promise<void> {
+  // Strip the marker from the URL so refreshes don't re-trigger.
+  try {
+    const cleanHash = window.location.hash
+      .replace(/[#&]?tweet2md=1/g, '')
+      .replace(/^#$/, '');
+    history.replaceState(null, '', window.location.pathname + window.location.search + (cleanHash || ''));
+  } catch {
+    // history API may be unavailable in some contexts; ignore
+  }
+
+  const article = await waitForArticle();
+  if (!article) return;
+
+  const settings = await loadStoredSettings();
+  const includeMetadata = settings.includeMetadata !== false; // default on
+  const downloadImages = settings.downloadImages === true;
+  const shouldClose = settings.closeTabAfterExport !== false; // default on
+
+  const response = await extract({ includeMetadata });
+  if (!response.success || !response.data) return;
+
+  const result = postProcess(response.data, { includeMetadata, downloadImages });
+
+  const downloadMsg: DownloadRequest = {
+    action: 'DOWNLOAD_MD',
+    content: result.markdown,
+    filename: result.filename,
+    images: result.images.length > 0 ? result.images : undefined,
+  };
+
+  await new Promise<void>((resolve) => {
+    chrome.runtime.sendMessage(downloadMsg, () => resolve());
+  });
+
+  if (shouldClose) {
+    // Small delay so the download dialog/notification can register first.
+    await delay(400);
+    window.close();
+  }
+}
+
+if (window.location.hash.includes(AUTO_MARKER)) {
+  autoExtractAndDownload();
+}

@@ -26,6 +26,14 @@ async function build() {
     format: 'iife',
   });
 
+  // Build injector content script (IIFE)
+  const injectorBuild = esbuild.build({
+    ...commonOptions,
+    entryPoints: [resolve(__dirname, 'src/content/injector.ts')],
+    outfile: resolve(__dirname, 'dist/injector.js'),
+    format: 'iife',
+  });
+
   // Build background service worker (ESM for MV3)
   const backgroundBuild = esbuild.build({
     ...commonOptions,
@@ -42,7 +50,7 @@ async function build() {
     format: 'iife',
   });
 
-  await Promise.all([contentBuild, backgroundBuild, popupBuild]);
+  await Promise.all([contentBuild, injectorBuild, backgroundBuild, popupBuild]);
 
   // Copy static assets
   cpSync(resolve(__dirname, 'src/manifest.json'), resolve(__dirname, 'dist/manifest.json'));

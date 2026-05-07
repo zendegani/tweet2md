@@ -1,4 +1,5 @@
 import type { ExtractResponse, DownloadRequest } from '../types/messages';
+import { postProcess, type PostProcessResult } from '../shared/post-process';
 
 const btnDownload = document.getElementById('btn-download') as HTMLButtonElement;
 const btnCopy = document.getElementById('btn-copy') as HTMLButtonElement;
@@ -8,6 +9,9 @@ const chkDownloadImages = document.getElementById(
 ) as HTMLInputElement;
 const chkMetadata = document.getElementById(
   'chk-include-metadata'
+) as HTMLInputElement;
+const chkCloseTab = document.getElementById(
+  'chk-close-tab'
 ) as HTMLInputElement;
 
 // ─── Initialize i18n ──────────────────────────────────────────────────
@@ -32,11 +36,13 @@ const SETTINGS_KEY = 'tweet2md_settings';
 interface Settings {
   downloadImages: boolean;
   includeMetadata: boolean;
+  closeTabAfterExport: boolean;
 }
 
 const DEFAULT_SETTINGS: Settings = {
   downloadImages: false,
   includeMetadata: true, // on by default
+  closeTabAfterExport: true, // on by default for inline/context-menu flow
 };
 
 async function loadSettings(): Promise<Settings> {
@@ -56,21 +62,20 @@ function saveSettings(settings: Settings): void {
 loadSettings().then((settings) => {
   chkDownloadImages.checked = settings.downloadImages;
   chkMetadata.checked = settings.includeMetadata;
+  chkCloseTab.checked = settings.closeTabAfterExport;
 });
 
-// Persist on change
-chkDownloadImages.addEventListener('change', () => {
+function persistAll(): void {
   saveSettings({
     downloadImages: chkDownloadImages.checked,
     includeMetadata: chkMetadata.checked,
+    closeTabAfterExport: chkCloseTab.checked,
   });
-});
-chkMetadata.addEventListener('change', () => {
-  saveSettings({
-    downloadImages: chkDownloadImages.checked,
-    includeMetadata: chkMetadata.checked,
-  });
-});
+}
+
+chkDownloadImages.addEventListener('change', persistAll);
+chkMetadata.addEventListener('change', persistAll);
+chkCloseTab.addEventListener('change', persistAll);
 
 // ─── Helpers ────────────────────────────────────────────────────────
 
@@ -116,41 +121,9 @@ function setLoading(loading: boolean, target?: 'download' | 'copy'): void {
   }
 }
 
-function buildFilename(data: ExtractResponse['data']): string {
-  if (!data) return 'tweet.md';
-
-  const handle = data.author.handle.replace('@', '');
-  const id = data.tweetId;
-
-  if (data.type === 'article' && data.title) {
-    const slug = data.title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '')
-      .slice(0, 60);
-    return `${handle}-${slug}.md`;
-  }
-
-  return `${handle}-${id}.md`;
-}
-
-/**
- * Strip the trailing "> Source: …\n> Date: …" footer block from markdown.
- */
-function stripSourceFooter(md: string): string {
-  return md.replace(/\n+---\n+> Source:.*\n> Date:.*$/s, '');
-}
-
 // ─── Shared Extraction ──────────────────────────────────────────────
 
-interface ExtractionResult {
-  markdown: string;
-  filename: string;
-  type: string;
-  images: { url: string; filename: string }[];
-}
-
-async function extractMarkdown(): Promise<ExtractionResult> {
+async function extractMarkdown(): Promise<PostProcessResult> {
   const [tab] = await chrome.tabs.query({
     active: true,
     currentWindow: true,
@@ -172,7 +145,7 @@ async function extractMarkdown(): Promise<ExtractionResult> {
   }
 
   const includeMetadata = chkMetadata.checked;
-  const isDownloadLocal = chkDownloadImages.checked;
+  const downloadImages = chkDownloadImages.checked;
 
   const response: ExtractResponse = await chrome.tabs.sendMessage(tab.id, {
     action: 'EXTRACT',
@@ -183,72 +156,7 @@ async function extractMarkdown(): Promise<ExtractionResult> {
     throw new Error(response.error || chrome.i18n.getMessage('error_failed') || 'Failed to extract content.');
   }
 
-  const baseFilename = buildFilename(response.data);
-  let finalMarkdown = response.data.markdown;
-
-  if (includeMetadata) {
-    finalMarkdown = stripSourceFooter(finalMarkdown);
-
-    const m = response.data.metadata;
-    const lines = ['---'];
-    lines.push(`author: "${response.data.author.name}"`);
-    lines.push(`handle: "${response.data.author.handle}"`);
-    lines.push(`source: "${response.data.sourceUrl}"`);
-    lines.push(`date: ${response.data.date}`);
-    lines.push(`type: ${response.data.type}`);
-    if (m) {
-      if (m.likes !== undefined) lines.push(`likes: ${m.likes}`);
-      if (m.reposts !== undefined) lines.push(`reposts: ${m.reposts}`);
-      if (m.replies !== undefined) lines.push(`replies: ${m.replies}`);
-      if (m.bookmarks !== undefined) lines.push(`bookmarks: ${m.bookmarks}`);
-      if (m.views !== undefined) lines.push(`views: ${m.views}`);
-    }
-    lines.push('---', '');
-    finalMarkdown = lines.join('\n') + finalMarkdown;
-  }
-
-  const imagesToDownload: { url: string; filename: string }[] = [];
-
-  if (isDownloadLocal) {
-    const dirName = baseFilename.replace('.md', '');
-
-    finalMarkdown = finalMarkdown.replace(
-      /!\[(.*?)\]\((https:\/\/[^)]+)\)/g,
-      (match, alt, imgUrl) => {
-        try {
-          const urlObj = new URL(imgUrl);
-          let fname = urlObj.pathname.split('/').pop() || 'image';
-
-          const formatMatch = imgUrl.match(/format=([a-zA-Z0-9]+)/);
-          if (formatMatch && !fname.includes('.')) {
-            fname += `.${formatMatch[1]}`;
-          }
-
-          if (!fname.includes('.')) {
-            fname += '.jpg';
-          }
-
-          fname = fname.replace(/[^a-zA-Z0-9_.-]/g, '_');
-          const localPath = `${dirName}/${fname}`;
-
-          if (!imagesToDownload.find((i) => i.url === imgUrl)) {
-            imagesToDownload.push({ url: imgUrl, filename: localPath });
-          }
-
-          return `![${alt}](${localPath})`;
-        } catch (e) {
-          return match;
-        }
-      }
-    );
-  }
-
-  return {
-    markdown: finalMarkdown,
-    filename: baseFilename,
-    type: response.data.type,
-    images: imagesToDownload,
-  };
+  return postProcess(response.data, { includeMetadata, downloadImages });
 }
 
 function handleExtractionError(err: unknown): void {

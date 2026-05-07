@@ -1,5 +1,37 @@
 import type { DownloadRequest } from '../types/messages';
 
+// ─── Context menu: "Save tweet as Markdown" ─────────────────────────
+
+const MENU_ID = 'tweet2md-save';
+const MARKER = 'tweet2md=1';
+const STATUS_URL_PATTERN = /^https?:\/\/(?:www\.)?x\.com\/[^/]+\/status\/\d+/;
+
+function registerContextMenu(): void {
+  chrome.contextMenus.create(
+    {
+      id: MENU_ID,
+      title: chrome.i18n.getMessage('ctx_save_tweet') || 'Save tweet as Markdown',
+      contexts: ['link', 'page'],
+      targetUrlPatterns: ['*://x.com/*/status/*'],
+      documentUrlPatterns: ['*://x.com/*'],
+    },
+    () => void chrome.runtime.lastError, // ignore duplicate-id errors on reload
+  );
+}
+
+chrome.runtime.onInstalled.addListener(registerContextMenu);
+chrome.runtime.onStartup.addListener(registerContextMenu);
+
+chrome.contextMenus.onClicked.addListener((info) => {
+  if (info.menuItemId !== MENU_ID) return;
+  const target = info.linkUrl || info.pageUrl || '';
+  if (!STATUS_URL_PATTERN.test(target)) return;
+  const sep = target.includes('#') ? '&' : '#';
+  chrome.tabs.create({ url: target + sep + MARKER });
+});
+
+// ─── Download handler ───────────────────────────────────────────────
+
 chrome.runtime.onMessage.addListener(
   (message: DownloadRequest, _sender, sendResponse) => {
     if (message.action !== 'DOWNLOAD_MD') return false;
