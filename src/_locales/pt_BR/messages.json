@@ -73,5 +73,23 @@
   },
   "copied": {
     "message": "Copiado!"
+  },
+  "opt_close_tab": {
+    "message": "Fechar aba após exportar"
+  },
+  "opt_close_tab_title": {
+    "message": "Quando ativado, a aba é fechada automaticamente após o tweet ser baixado ou copiado."
+  },
+  "opt_inline_copies": {
+    "message": "Botão inline copia em vez disso"
+  },
+  "opt_inline_copies_title": {
+    "message": "Quando ativado, o ícone inline copia o Markdown para a área de transferência em vez de baixar um arquivo."
+  },
+  "ctx_save_tweet": {
+    "message": "Salvar tweet como Markdown"
+  },
+  "ctx_copy_tweet": {
+    "message": "Copiar tweet como Markdown"
   }
 }

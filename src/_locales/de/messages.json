@@ -73,5 +73,23 @@
   },
   "copied": {
     "message": "Kopiert!"
+  },
+  "opt_close_tab": {
+    "message": "Tab nach dem Export schließen"
+  },
+  "opt_close_tab_title": {
+    "message": "Wenn aktiviert, wird der Tab automatisch geschlossen, nachdem der Tweet heruntergeladen oder kopiert wurde."
+  },
+  "opt_inline_copies": {
+    "message": "Inline-Schaltfläche kopiert stattdessen"
+  },
+  "opt_inline_copies_title": {
+    "message": "Wenn aktiviert, kopiert das Inline-Downloadsymbol das Markdown in die Zwischenablage, anstatt eine Datei herunterzuladen."
+  },
+  "ctx_save_tweet": {
+    "message": "Tweet als Markdown speichern"
+  },
+  "ctx_copy_tweet": {
+    "message": "Tweet als Markdown kopieren"
   }
 }

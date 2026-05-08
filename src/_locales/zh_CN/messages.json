@@ -73,5 +73,23 @@
   },
   "copied": {
     "message": "已复制！"
+  },
+  "opt_close_tab": {
+    "message": "导出后关闭标签页"
+  },
+  "opt_close_tab_title": {
+    "message": "启用后，下载或复制推文后会自动关闭当前标签页。"
+  },
+  "opt_inline_copies": {
+    "message": "内联按钮改为复制"
+  },
+  "opt_inline_copies_title": {
+    "message": "启用后，内联下载图标会将 Markdown 复制到剪贴板，而不是下载文件。"
+  },
+  "ctx_save_tweet": {
+    "message": "将推文保存为 Markdown"
+  },
+  "ctx_copy_tweet": {
+    "message": "将推文复制为 Markdown"
   }
 }

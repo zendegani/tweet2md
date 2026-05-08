@@ -73,5 +73,23 @@
   },
   "copied": {
     "message": "コピー完了！"
+  },
+  "opt_close_tab": {
+    "message": "エクスポート後にタブを閉じる"
+  },
+  "opt_close_tab_title": {
+    "message": "有効にすると、ツイートのダウンロードまたはコピー後にタブが自動的に閉じられます。"
+  },
+  "opt_inline_copies": {
+    "message": "インラインボタンでコピーする"
+  },
+  "opt_inline_copies_title": {
+    "message": "有効にすると、インラインのダウンロードアイコンはファイルをダウンロードする代わりにMarkdownをクリップボードへコピーします。"
+  },
+  "ctx_save_tweet": {
+    "message": "ツイートをMarkdownとして保存"
+  },
+  "ctx_copy_tweet": {
+    "message": "ツイートをMarkdownとしてコピー"
   }
 }

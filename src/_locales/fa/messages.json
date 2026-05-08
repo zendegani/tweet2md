@@ -73,5 +73,23 @@
   },
   "copied": {
     "message": "کپی شد!"
+  },
+  "opt_close_tab": {
+    "message": "بستن تب پس از خروجی گرفتن"
+  },
+  "opt_close_tab_title": {
+    "message": "در صورت فعال بودن، پس از دانلود یا کپی شدن توییت، تب به‌صورت خودکار بسته می‌شود."
+  },
+  "opt_inline_copies": {
+    "message": "دکمه درون‌خطی به‌جای دانلود کپی می‌کند"
+  },
+  "opt_inline_copies_title": {
+    "message": "در صورت فعال بودن، آیکون دانلود درون‌خطی به‌جای دانلود فایل، Markdown را در کلیپ‌بورد کپی می‌کند."
+  },
+  "ctx_save_tweet": {
+    "message": "ذخیره توییت به‌صورت Markdown"
+  },
+  "ctx_copy_tweet": {
+    "message": "کپی توییت به‌صورت Markdown"
   }
 }

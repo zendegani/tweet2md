@@ -73,5 +73,23 @@
   },
   "copied": {
     "message": "¡Copiado!"
+  },
+  "opt_close_tab": {
+    "message": "Cerrar pestaña después de exportar"
+  },
+  "opt_close_tab_title": {
+    "message": "Cuando está activado, la pestaña se cierra automáticamente después de descargar o copiar el tweet."
+  },
+  "opt_inline_copies": {
+    "message": "El botón inline copia en su lugar"
+  },
+  "opt_inline_copies_title": {
+    "message": "Cuando está activado, el icono inline copia el Markdown al portapapeles en lugar de descargar un archivo."
+  },
+  "ctx_save_tweet": {
+    "message": "Guardar tweet como Markdown"
+  },
+  "ctx_copy_tweet": {
+    "message": "Copiar tweet como Markdown"
   }
 }

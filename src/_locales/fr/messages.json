@@ -73,5 +73,23 @@
   },
   "copied": {
     "message": "Copié !"
+  },
+  "opt_close_tab": {
+    "message": "Fermer l’onglet après l’export"
+  },
+  "opt_close_tab_title": {
+    "message": "Lorsque cette option est activée, l’onglet se ferme automatiquement après le téléchargement ou la copie du tweet."
+  },
+  "opt_inline_copies": {
+    "message": "Le bouton inline copie à la place"
+  },
+  "opt_inline_copies_title": {
+    "message": "Lorsque cette option est activée, l’icône de téléchargement inline copie le Markdown dans le presse-papiers au lieu de télécharger un fichier."
+  },
+  "ctx_save_tweet": {
+    "message": "Enregistrer le tweet en Markdown"
+  },
+  "ctx_copy_tweet": {
+    "message": "Copier le tweet en Markdown"
   }
 }
