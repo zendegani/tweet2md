@@ -1,6 +1,6 @@
 {
   "extensionName": {
-    "message": "tweet2md: تصدير مقالات وسلاسل وتغريدات منصة إكس (تويتر) إلى Markdown"
+    "message": "tweet2md: تحويل سلاسل ومقالات X إلى Markdown"
   },
   "extensionDescription": {
     "message": "تصدير سلاسل وتغريدات ومقالات X (تويتر) إلى Markdown نظيف مع الصور والبيانات التعريفية. بدون API."

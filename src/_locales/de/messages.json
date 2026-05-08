@@ -1,6 +1,6 @@
 {
   "extensionName": {
-    "message": "tweet2md: X (Twitter) Threads, Tweets & Artikel als Markdown exportieren"
+    "message": "tweet2md: X-Threads und Artikel zu Markdown"
   },
   "extensionDescription": {
     "message": "Exportiere X (Twitter) Threads, Tweets und Artikel als sauberes Markdown mit Bildern und Metadaten. Keine API erforderlich."

@@ -1,6 +1,6 @@
 {
   "extensionName": {
-    "message": "tweet2md: X (Twitter) の記事、スレッド、ツイートをMarkdownにエクスポート"
+    "message": "tweet2md: Xスレッド・記事をMarkdownへ変換"
   },
   "extensionDescription": {
     "message": "X (Twitter) のスレッド、ツイート、記事を画像とメタデータ付きのクリーンなMarkdownにエクスポート。API不要。"
