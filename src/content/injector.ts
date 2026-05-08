@@ -7,17 +7,37 @@ const decorated = new WeakSet<Element>();
 
 let inlineButtonCopies = false;
 
+// True until the extension is disabled/reloaded. After that, chrome.* calls
+// from this orphaned content script throw "Extension context invalidated".
+function extensionAlive(): boolean {
+  try {
+    return !!chrome.runtime?.id;
+  } catch {
+    return false;
+  }
+}
+
 function loadInlineMode(): void {
-  chrome.storage.local.get('tweet2md_settings', (result) => {
-    const s = (result['tweet2md_settings'] || {}) as { inlineButtonCopies?: boolean };
-    inlineButtonCopies = s.inlineButtonCopies === true;
-  });
+  if (!extensionAlive()) return;
+  try {
+    chrome.storage.local.get('tweet2md_settings', (result) => {
+      if (chrome.runtime.lastError) return;
+      const s = (result['tweet2md_settings'] || {}) as { inlineButtonCopies?: boolean };
+      inlineButtonCopies = s.inlineButtonCopies === true;
+    });
+  } catch {
+    /* extension context gone */
+  }
 }
 loadInlineMode();
-chrome.storage.onChanged.addListener((changes, area) => {
-  if (area !== 'local' || !changes['tweet2md_settings']) return;
-  loadInlineMode();
-});
+try {
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== 'local' || !changes['tweet2md_settings']) return;
+    loadInlineMode();
+  });
+} catch {
+  /* extension context gone */
+}
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -183,6 +203,10 @@ function scan(): void {
 }
 
 const observer = new MutationObserver(() => {
+  if (!extensionAlive()) {
+    observer.disconnect();
+    return;
+  }
   if (scanScheduled) return;
   scanScheduled = true;
   requestAnimationFrame(() => {
@@ -200,6 +224,7 @@ scan();
 // when the user picks the menu item over an area that isn't a status link.
 
 document.addEventListener('contextmenu', (e) => {
+  if (!extensionAlive()) return;
   const target = e.target as Element | null;
   const article = target?.closest?.('article[role="article"]') as Element | null;
   let url: string | null = null;
@@ -210,5 +235,13 @@ document.addEventListener('contextmenu', (e) => {
     // the page URL itself.
     url = window.location.href;
   }
-  chrome.runtime.sendMessage({ action: 'TWEET2MD_CTX_URL', url });
+  try {
+    chrome.runtime.sendMessage({ action: 'TWEET2MD_CTX_URL', url }, () => {
+      // Read lastError to suppress "Unchecked runtime.lastError" log when the
+      // background hasn't registered the listener yet or context is gone.
+      void chrome.runtime.lastError;
+    });
+  } catch {
+    /* extension context gone */
+  }
 }, true);
