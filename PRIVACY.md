@@ -1,6 +1,6 @@
 # Privacy Policy — tweet2md
 
-**Last updated:** April 1, 2026
+**Last updated:** May 9, 2026
 
 ## Summary
 
@@ -8,7 +8,7 @@ tweet2md does **not** collect, store externally, or transmit any user data. Ever
 
 ## What this extension does
 
-tweet2md accesses the visible content of supported X.com status pages only after the user explicitly clicks the extension and requests an action. It converts the visible page content (tweet, thread, or article text) into Markdown, which can be copied to your clipboard or saved to your local Downloads folder using Chrome's built-in download API.
+tweet2md accesses the visible content of supported X.com status pages only after the user explicitly requests an action — by clicking the toolbar icon, by clicking the inline download button on a tweet, or by selecting one of the **Save / Copy tweet as Markdown** items in the right-click menu. It converts the visible page content (tweet, thread, or article text) into Markdown, which can be copied to your clipboard or saved to your local Downloads folder using Chrome's built-in download API.
 
 ## Data collection
 
@@ -32,14 +32,19 @@ No data leaves your browser at any point during this process. The extension does
 
 ## Permissions explained
 
-| Permission   | Purpose                                              |
-|-------------|------------------------------------------------------|
-| `activeTab` | Allows reading the current tab's page content when you click the extension icon |
-| `downloads` | Allows saving the generated Markdown file and images to your Downloads folder |
-| `storage`   | Allows saving your popup configuration (toggle switches) locally on your device so settings are remembered between sessions |
-| `host` (X.com) | The content script is injected on `x.com/*/status/*` pages to extract the visible post or article content. This conversion happens entirely in the browser when you initiate an action. No data is transmitted externally. |
+| Permission     | Purpose                                              |
+|----------------|------------------------------------------------------|
+| `activeTab`    | Allows reading the current tab's page content when you click the extension icon |
+| `downloads`    | Allows saving the generated Markdown file and images to your Downloads folder |
+| `storage`      | Allows saving your popup configuration (toggle switches) locally on your device so settings are remembered between sessions |
+| `contextMenus` | Adds the **Save tweet as Markdown** and **Copy tweet as Markdown** items to the browser's right-click menu, scoped to X.com pages. The menu only fires when you click an item; no page content is read otherwise. |
+| `host` (X.com) | A content script is injected on X.com pages to (a) extract the visible post or article content when you trigger an action, and (b) draw the inline download button on tweet action bars. The script reads the DOM locally and never transmits data externally. |
 
 These are the minimum permissions required for the extension to function. No additional permissions are requested.
+
+### About the new entry points (v1.3.0)
+
+The inline download button and right-click context menu introduced in v1.3.0 are convenience triggers — they perform the **same local extraction** as the popup. They do not collect, transmit, or store anything beyond what the popup already does. When you activate one of them, tweet2md opens the tweet's permalink in a new tab, runs the extractor, then saves to Downloads or copies to your clipboard, all inside your browser.
 
 ## Third-party services
 

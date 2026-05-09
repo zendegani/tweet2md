@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2026-05-09
+
+### Added
+
+- **Inline Save Button**: A download icon now sits next to the share button on every tweet's action bar. One click opens the tweet's permalink in a new tab and exports it automatically — no popup required. Long-form articles also get a button at the top so you don't have to scroll.
+- **Right-Click Context Menu**: Right-click any tweet (body, image, or timestamp) and pick **Save tweet as Markdown** or **Copy tweet as Markdown**. Works across timeline, profile, and search pages.
+- **Two New Toggles**: *Close tab after export* (auto-closes the new tab once extraction completes) and *Inline button copies instead* (makes the inline icon copy to clipboard rather than download).
+- **Author Attribution on Quoted Tweets**: Quoted-tweet blocks now lead with the original author's name and handle (e.g., `**Spicy (@spicyofc)**`).
+- **Automated Test Suite**: Vitest + JSDOM snapshot tests against saved HTML fixtures cover article, tweet, quoted-tweet, and thread cases — locking the extractor's output against regressions.
+
+### Fixed
+
+- **Article Image Extraction**: Long-form article body images (not just the banner) now extract reliably, including via inline button / context menu where image hydration was previously racing the extractor.
+- **Right-Click on Permalink Pages**: Resolved a bug where right-clicking a long-form article that contained a quoted tweet would open the *quoted* tweet instead of the page's main one.
+- **Article List Continuation**: Fixed bullet/numbered lists where the next paragraph was incorrectly folded into the last list item.
+- **Copy vs. Save Image Settings**: The "Save images locally" toggle no longer rewrites image URLs to nonexistent local paths when copying to clipboard — copy now always emits absolute URLs.
+- **Orphaned Script Errors**: Inline-button injector now silently disconnects when the extension is reloaded or disabled, eliminating "Extension context invalidated" console noise.
+
+### Changed
+
+- **Permission Added**: New `contextMenus` permission required for the right-click menu. No data collection, telemetry, or external requests are introduced — see [PRIVACY.md](PRIVACY.md).
+- **Localization**: Added translations for the new settings and context-menu items across all 9 supported languages.
+
 ## [1.2.1] - 2026-04-19
 
 ### Added

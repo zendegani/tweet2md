@@ -18,13 +18,30 @@
 
 - **X Articles** — Full support for long-form Articles (formerly Notes) with headings, lists, and code blocks
 - **Tweets & Threads** — Extract tweets, nested threads, and quote tweets into clean Markdown
-- **Quoted Posts** — Preserve quoted-post structure and context in a reusable format
+- **Quoted Posts** — Preserve quoted-post structure and context in a reusable format, with the original author's name and handle
+- **Three Ways to Trigger** — Toolbar popup, inline button on every tweet's action bar, or the right-click context menu
 - **Local Image Downloads** — Download all embedded images locally alongside your `.md` file to prevent link rot
 - **YAML Frontmatter** — Rich metadata with author, handle, date, source URL, content type, and engagement stats (likes, reposts, replies, bookmarks, views)
 - **Copy or Download** — Copy Markdown to clipboard or download as a file
 - **Clean Output** — Automatically expand truncated posts and strip engagement buttons, follow prompts, and trackers
 - **Multi-Language UI** — Popup available in English, Spanish, German, French, Japanese, Portuguese (Brazil), Chinese (Simplified), Arabic, and Persian. Content extraction works on any language regardless of UI translation
 - **Light & Dark Mode** — Popup matches your system preferences
+
+### Inline button — one click on any tweet
+
+<p align="center">
+  <img src="assets/feature-inline-button.png" alt="Inline download button on a tweet's action bar" width="700" />
+</p>
+
+Skip the popup. The download icon sits next to share on every tweet. One click opens the tweet's permalink in a new tab and exports it automatically. Toggle in the popup to make it copy to clipboard instead, and optionally close the tab once the export is done.
+
+### Right-click context menu
+
+<p align="center">
+  <img src="assets/feature-context-menu.png" alt="Right-click context menu with Save and Copy as Markdown items" width="700" />
+</p>
+
+Right-click anywhere on a tweet — the body, an image, or the timestamp — and pick **Save tweet as Markdown** or **Copy tweet as Markdown**. tweet2md figures out which tweet you meant.
 
 ### Great For
 
@@ -63,11 +80,18 @@ Install `tweet2md` from the [Chrome Web Store](https://chromewebstore.google.com
 
 ## Usage
 
-1. Navigate to a tweet, thread, or article on **x.com**
-2. Click the **tweet2md** icon
-3. (Optional) Toggle **Save images locally** or **Include metadata**
-4. Click **Download .md** to save the file, or **Copy .md** to copy to your clipboard
-5. If downloaded, files save to your Downloads folder
+Pick whichever entry point you prefer — they all run the same extractor and respect the same toggles:
+
+- **Toolbar popup** — Click the tweet2md icon, then **Download .md** or **Copy .md**.
+- **Inline button** — Click the download icon at the right of any tweet's action bar (and at the top of long-form articles). Opens the tweet in a new tab and exports automatically.
+- **Right-click menu** — Right-click any tweet and pick **Save tweet as Markdown** or **Copy tweet as Markdown**.
+
+Toggles available in the popup:
+
+- **Save images locally** — downloads embedded images alongside the `.md` file in a sibling folder
+- **Include metadata** — adds YAML frontmatter (likes, reposts, replies, bookmarks, views, date)
+- **Close tab after export** — auto-closes tabs opened by the inline button / context menu once extraction completes
+- **Inline button copies instead** — makes the inline icon copy to clipboard rather than download
 
 Filenames: `@handle-tweetId.md` (tweets/threads) or `@handle-article-slug.md` (articles).
 
@@ -88,12 +112,13 @@ Filenames: `@handle-tweetId.md` (tweets/threads) or `@handle-article-slug.md` (a
 
 ## Permissions
 
-| Permission   | Why |
-|-------------|-----|
-| `activeTab` | Read the current page's DOM when you click |
-| `downloads` | Save the `.md` file and images to Downloads |
-| `storage`   | Remember your popup toggle preferences |
-| `host` (X.com) | Inject a content script on `x.com/*/status/*` to extract post or article content locally |
+| Permission     | Why                                                  |
+|----------------|------------------------------------------------------|
+| `activeTab`    | Read the current page's DOM when you click           |
+| `downloads`    | Save the `.md` file and images to Downloads          |
+| `storage`      | Remember your popup toggle preferences               |
+| `contextMenus` | Add **Save / Copy tweet as Markdown** to the right-click menu (X.com only) |
+| `host` (X.com) | Inject a content script on X.com to extract post / article content and draw the inline download button |
 
 **Your data never leaves your device. No data is collected, transmitted, or stored externally.** See [PRIVACY.md](PRIVACY.md).
 
@@ -127,9 +152,14 @@ tweet2md/
 npm install        # Install dependencies
 npm run build      # Build for production
 npm run watch      # Build + watch for changes
+npm test           # Run extractor snapshot tests (Vitest + JSDOM)
 npm run package    # Package for Chrome Web Store (.zip)
 npm run clean      # Clean build output
 ```
+
+### Tests
+
+`tests/extractor.test.ts` runs the extractor against saved HTML fixtures and compares output against versioned `.md` snapshots (volatile frontmatter fields like `likes` and `date` are normalized). HTML fixtures are gitignored — capture them locally via `copy(document.documentElement.outerHTML)` in DevTools after the page is fully loaded.
 
 ## License
 
