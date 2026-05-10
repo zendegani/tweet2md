@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 - **Inline Save Button**: A download icon now sits next to the share button on every tweet's action bar. One click opens the tweet's permalink in a new tab and exports it automatically — no popup required. Long-form articles also get a button at the top so you don't have to scroll.
 - **Right-Click Context Menu**: Right-click any tweet (body, image, or timestamp) and pick **Save tweet as Markdown** or **Copy tweet as Markdown**. Works across timeline, profile, and search pages.
 - **Two New Toggles**: *Close tab after export* (auto-closes the new tab once extraction completes) and *Inline button copies instead* (makes the inline icon copy to clipboard rather than download).
-- **Author Attribution on Quoted Tweets**: Quoted-tweet blocks now lead with the original author's name and handle (e.g., `**Spicy (@spicyofc)**`).
+- **Author Attribution on Quoted Tweets**: Quoted-tweet blocks now lead with the original author's name and handle.
 - **Automated Test Suite**: Vitest + JSDOM snapshot tests against saved HTML fixtures cover article, tweet, quoted-tweet, and thread cases — locking the extractor's output against regressions.
 
 ### Fixed
