@@ -47,7 +47,7 @@ function appendMarker(url: string, action: 'download' | 'copy'): string {
   return cleaned + sep + 'tweet2md=' + action;
 }
 
-chrome.contextMenus.onClicked.addListener((info) => {
+chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId !== MENU_SAVE && info.menuItemId !== MENU_COPY) return;
 
   // Prefer an explicit link the user right-clicked on, then the URL the
@@ -62,6 +62,19 @@ chrome.contextMenus.onClicked.addListener((info) => {
   if (!target) return;
 
   const action = info.menuItemId === MENU_COPY ? 'copy' : 'download';
+  const pageNormalized = info.pageUrl ? normalizeStatusUrl(info.pageUrl) : null;
+
+  // If the target tweet IS the current page, extract in place. Right-clicking
+  // a reply's timestamp on a permalink page still opens a new tab because the
+  // link URL points to a different status id than the page URL.
+  if (pageNormalized && pageNormalized === target && tab?.id !== undefined) {
+    chrome.tabs.sendMessage(tab.id, {
+      action: 'TWEET2MD_AUTOEXTRACT',
+      subAction: action,
+    });
+    return;
+  }
+
   chrome.tabs.create({ url: appendMarker(target, action) });
 });
 

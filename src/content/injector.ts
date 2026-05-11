@@ -107,6 +107,20 @@ function openWithMarker(url: string, action: 'download' | 'copy'): void {
   window.open(url + sep + 'tweet2md=' + action, '_blank', 'noopener');
 }
 
+// If the target tweet is the current page, extract in place rather than
+// opening a duplicate tab. Otherwise fall through to the new-tab flow.
+function triggerExtract(url: string, action: 'download' | 'copy'): void {
+  const target = normalizeStatusUrl(url);
+  const page = normalizeStatusUrl(window.location.href);
+  if (target && page && target === page) {
+    window.dispatchEvent(
+      new CustomEvent('tweet2md:autoextract', { detail: { action } })
+    );
+    return;
+  }
+  openWithMarker(url, action);
+}
+
 function makeButton(onClick: (e: Event) => void): HTMLElement {
   const wrapper = document.createElement('div');
   wrapper.setAttribute(BUTTON_ATTR, '1');
@@ -165,7 +179,7 @@ function decorateArticleActionBar(article: Element): void {
 
   const btn = makeButton(() => {
     const fresh = getStatusUrl(article) || url;
-    openWithMarker(fresh, inlineButtonCopies ? 'copy' : 'download');
+    triggerExtract(fresh, inlineButtonCopies ? 'copy' : 'download');
   });
   const container = document.createElement('div');
   container.style.cssText = 'display:flex;align-items:center;';
@@ -201,7 +215,7 @@ function decorateArticleTopBar(): void {
     return;
   }
 
-  const btn = makeButton(() => openWithMarker(window.location.href, inlineButtonCopies ? 'copy' : 'download'));
+  const btn = makeButton(() => triggerExtract(window.location.href, inlineButtonCopies ? 'copy' : 'download'));
   const container = document.createElement('div');
   container.style.cssText = 'display:flex;align-items:center;';
   container.appendChild(btn);

@@ -67,7 +67,27 @@ function loadStoredSettings(): Promise<StoredSettings> {
   });
 }
 
-async function autoExtract(action: 'download' | 'copy'): Promise<void> {
+let autoExtractInFlight = false;
+
+async function autoExtract(
+  action: 'download' | 'copy',
+  opts: { allowClose?: boolean } = {}
+): Promise<void> {
+  if (autoExtractInFlight) return;
+  autoExtractInFlight = true;
+  try {
+    await runAutoExtract(action, opts);
+  } finally {
+    autoExtractInFlight = false;
+  }
+}
+
+async function runAutoExtract(
+  action: 'download' | 'copy',
+  opts: { allowClose?: boolean }
+): Promise<void> {
+  const allowClose = opts.allowClose !== false;
+
   // Strip the marker from the URL so refreshes don't re-trigger.
   try {
     const cleanHash = window.location.hash
@@ -84,7 +104,7 @@ async function autoExtract(action: 'download' | 'copy'): Promise<void> {
   const settings = await loadStoredSettings();
   const includeMetadata = settings.includeMetadata !== false; // default on
   const downloadImages = resolveDownloadImages(action, settings.downloadImages === true);
-  const shouldClose = settings.closeTabAfterExport === true; // default off
+  const shouldClose = allowClose && settings.closeTabAfterExport === true;
 
   const response = await extract({ includeMetadata });
   if (!response.success || !response.data) return;
@@ -129,3 +149,22 @@ if (autoMatch) {
   const action = autoMatch[1] === 'copy' ? 'copy' : 'download';
   autoExtract(action);
 }
+
+// ─── In-place triggers (same-tab extraction) ────────────────────────
+// Used when the user clicks the inline button or context menu while
+// already on the tweet's permalink page — no point opening a new tab.
+
+window.addEventListener('tweet2md:autoextract', (e: Event) => {
+  const detail = (e as CustomEvent).detail as { action?: string } | undefined;
+  const action = detail?.action === 'copy' ? 'copy' : 'download';
+  autoExtract(action, { allowClose: false });
+});
+
+chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  if (msg && msg.action === 'TWEET2MD_AUTOEXTRACT') {
+    const action = msg.subAction === 'copy' ? 'copy' : 'download';
+    autoExtract(action, { allowClose: false }).then(() => sendResponse({ ok: true }));
+    return true;
+  }
+  return false;
+});
