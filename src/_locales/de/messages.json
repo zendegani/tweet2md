@@ -77,6 +77,12 @@
   "opt_close_tab": {
     "message": "Neuen Tab nach dem Export schließen"
   },
+  "opt_inline_stats_title": {
+    "message": "Likes, Reposts, Antworten, Lesezeichen und Aufrufe als Zeile im Markdown-Text einfügen"
+  },
+  "opt_inline_stats": {
+    "message": "Engagement-Statistiken inline anzeigen"
+  },
   "opt_close_tab_title": {
     "message": "Wenn aktiviert, wird der Tab automatisch geschlossen, nachdem der Tweet heruntergeladen oder kopiert wurde."
   },

@@ -57,6 +57,7 @@ interface StoredSettings {
   downloadImages?: boolean;
   includeMetadata?: boolean;
   closeTabAfterExport?: boolean;
+  inlineStats?: boolean;
 }
 
 function loadStoredSettings(): Promise<StoredSettings> {
@@ -103,13 +104,15 @@ async function runAutoExtract(
 
   const settings = await loadStoredSettings();
   const includeMetadata = settings.includeMetadata !== false; // default on
+  const inlineStats = settings.inlineStats === true;
   const downloadImages = resolveDownloadImages(action, settings.downloadImages === true);
   const shouldClose = allowClose && settings.closeTabAfterExport === true;
 
-  const response = await extract({ includeMetadata });
+  // Need engagement data if either renderer wants it.
+  const response = await extract({ includeMetadata: includeMetadata || inlineStats });
   if (!response.success || !response.data) return;
 
-  const result = postProcess(response.data, { includeMetadata, downloadImages });
+  const result = postProcess(response.data, { includeMetadata, downloadImages, inlineStats });
 
   if (action === 'copy') {
     try {

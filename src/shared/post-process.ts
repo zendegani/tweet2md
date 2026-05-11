@@ -1,8 +1,29 @@
-import type { ExtractedContent } from '../types/messages';
+import type { ExtractedContent, TweetMetadata } from '../types/messages';
 
 export interface PostProcessOptions {
   includeMetadata: boolean;
   downloadImages: boolean;
+  inlineStats?: boolean;
+}
+
+function formatCount(n: number): string {
+  if (n < 1000) return String(n);
+  if (n < 1_000_000) {
+    const k = n / 1000;
+    return (k < 10 ? k.toFixed(1) : Math.round(k).toString()) + 'K';
+  }
+  const m = n / 1_000_000;
+  return (m < 10 ? m.toFixed(1) : Math.round(m).toString()) + 'M';
+}
+
+function buildStatsLine(m: TweetMetadata): string {
+  const parts: string[] = [];
+  if (m.replies !== undefined) parts.push(`💬 ${formatCount(m.replies)}`);
+  if (m.reposts !== undefined) parts.push(`🔁 ${formatCount(m.reposts)}`);
+  if (m.likes !== undefined) parts.push(`❤️ ${formatCount(m.likes)}`);
+  if (m.bookmarks !== undefined) parts.push(`🔖 ${formatCount(m.bookmarks)}`);
+  if (m.views !== undefined) parts.push(`👁 ${formatCount(m.views)}`);
+  return parts.join(' · ');
 }
 
 export interface PostProcessResult {
@@ -68,6 +89,18 @@ export function postProcess(
     }
     lines.push('---', '');
     finalMarkdown = lines.join('\n') + finalMarkdown;
+  }
+
+  if (opts.inlineStats && data.metadata) {
+    const line = buildStatsLine(data.metadata);
+    if (line) {
+      const footerRe = /\n+---\n+> Source:/;
+      if (footerRe.test(finalMarkdown)) {
+        finalMarkdown = finalMarkdown.replace(footerRe, `\n\n${line}\n\n---\n> Source:`);
+      } else {
+        finalMarkdown = finalMarkdown.replace(/\s*$/, '') + `\n\n${line}\n`;
+      }
+    }
   }
 
   const imagesToDownload: { url: string; filename: string }[] = [];

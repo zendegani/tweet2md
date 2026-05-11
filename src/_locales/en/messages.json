@@ -29,6 +29,12 @@
   "opt_metadata": {
     "message": "Include metadata"
   },
+  "opt_inline_stats_title": {
+    "message": "Render likes, reposts, replies, bookmarks, and views as a row in the Markdown body"
+  },
+  "opt_inline_stats": {
+    "message": "Show engagement stats inline"
+  },
   "opt_close_tab_title": {
     "message": "Close the tab automatically after exporting from a tweet's inline button or right-click menu"
   },

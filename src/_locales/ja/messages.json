@@ -77,6 +77,12 @@
   "opt_close_tab": {
     "message": "エクスポート後に新しいタブを閉じる"
   },
+  "opt_inline_stats_title": {
+    "message": "いいね、リポスト、返信、ブックマーク、表示回数を Markdown 本文に1行で表示します"
+  },
+  "opt_inline_stats": {
+    "message": "エンゲージメント数を本文に表示"
+  },
   "opt_close_tab_title": {
     "message": "有効にすると、ツイートのダウンロードまたはコピー後にタブが自動的に閉じられます。"
   },

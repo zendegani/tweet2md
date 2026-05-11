@@ -77,6 +77,12 @@
   "opt_close_tab": {
     "message": "导出后关闭新标签页"
   },
+  "opt_inline_stats_title": {
+    "message": "将点赞、转发、回复、书签和浏览量作为一行渲染在 Markdown 正文中"
+  },
+  "opt_inline_stats": {
+    "message": "在正文中显示互动数据"
+  },
   "opt_close_tab_title": {
     "message": "启用后，下载或复制推文后会自动关闭当前标签页。"
   },

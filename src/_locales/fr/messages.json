@@ -77,6 +77,12 @@
   "opt_close_tab": {
     "message": "Fermer le nouvel onglet après l’export"
   },
+  "opt_inline_stats_title": {
+    "message": "Afficher likes, partages, réponses, favoris et vues sur une ligne dans le corps Markdown"
+  },
+  "opt_inline_stats": {
+    "message": "Afficher les statistiques d’engagement en ligne"
+  },
   "opt_close_tab_title": {
     "message": "Lorsque cette option est activée, l’onglet se ferme automatiquement après le téléchargement ou la copie du tweet."
   },

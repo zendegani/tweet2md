@@ -77,6 +77,12 @@
   "opt_close_tab": {
     "message": "Cerrar la nueva pestaña después de exportar"
   },
+  "opt_inline_stats_title": {
+    "message": "Renderizar likes, retweets, respuestas, marcadores y vistas como una fila dentro del Markdown"
+  },
+  "opt_inline_stats": {
+    "message": "Mostrar estadísticas de interacción en línea"
+  },
   "opt_close_tab_title": {
     "message": "Cuando está activado, la pestaña se cierra automáticamente después de descargar o copiar el tweet."
   },

@@ -77,6 +77,12 @@
   "opt_close_tab": {
     "message": "Fechar a nova aba após exportar"
   },
+  "opt_inline_stats_title": {
+    "message": "Renderizar curtidas, reposts, respostas, marcadores e visualizações como uma linha no Markdown"
+  },
+  "opt_inline_stats": {
+    "message": "Mostrar estatísticas de engajamento no texto"
+  },
   "opt_close_tab_title": {
     "message": "Quando ativado, a aba é fechada automaticamente após o tweet ser baixado ou copiado."
   },

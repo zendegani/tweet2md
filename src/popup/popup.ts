@@ -19,6 +19,9 @@ const chkInlineCopies = document.getElementById(
 const chkShowInline = document.getElementById(
   'chk-show-inline'
 ) as HTMLInputElement;
+const chkInlineStats = document.getElementById(
+  'chk-inline-stats'
+) as HTMLInputElement;
 
 // ─── Initialize i18n ──────────────────────────────────────────────────
 
@@ -45,6 +48,7 @@ interface Settings {
   closeTabAfterExport: boolean;
   inlineButtonCopies: boolean;
   showInlineButton: boolean;
+  inlineStats: boolean;
 }
 
 const DEFAULT_SETTINGS: Settings = {
@@ -53,6 +57,7 @@ const DEFAULT_SETTINGS: Settings = {
   closeTabAfterExport: false,
   inlineButtonCopies: false, // inline button downloads by default
   showInlineButton: true, // inline button visible by default
+  inlineStats: false, // off — changes visible content, opt-in
 };
 
 async function loadSettings(): Promise<Settings> {
@@ -81,6 +86,7 @@ loadSettings().then((settings) => {
   chkCloseTab.checked = settings.closeTabAfterExport;
   chkInlineCopies.checked = settings.inlineButtonCopies;
   chkShowInline.checked = settings.showInlineButton;
+  chkInlineStats.checked = settings.inlineStats;
   updateInlineCopiesEnabled();
 });
 
@@ -91,6 +97,7 @@ function persistAll(): void {
     closeTabAfterExport: chkCloseTab.checked,
     inlineButtonCopies: chkInlineCopies.checked,
     showInlineButton: chkShowInline.checked,
+    inlineStats: chkInlineStats.checked,
   });
 }
 
@@ -102,6 +109,7 @@ chkShowInline.addEventListener('change', () => {
   updateInlineCopiesEnabled();
   persistAll();
 });
+chkInlineStats.addEventListener('change', persistAll);
 
 // ─── Helpers ────────────────────────────────────────────────────────
 
@@ -171,18 +179,20 @@ async function extractMarkdown(forAction: 'download' | 'copy' = 'download'): Pro
   }
 
   const includeMetadata = chkMetadata.checked;
+  const inlineStats = chkInlineStats.checked;
   const downloadImages = resolveDownloadImages(forAction, chkDownloadImages.checked);
 
   const response: ExtractResponse = await chrome.tabs.sendMessage(tab.id, {
     action: 'EXTRACT',
-    includeMetadata,
+    // Need engagement data if either renderer wants it.
+    includeMetadata: includeMetadata || inlineStats,
   });
 
   if (!response.success || !response.data) {
     throw new Error(response.error || chrome.i18n.getMessage('error_failed') || 'Failed to extract content.');
   }
 
-  return postProcess(response.data, { includeMetadata, downloadImages });
+  return postProcess(response.data, { includeMetadata, downloadImages, inlineStats });
 }
 
 function handleExtractionError(err: unknown): void {
