@@ -1,4 +1,10 @@
 import type { DownloadRequest } from '../types/messages';
+import {
+  isAllowedImageUrl,
+  isTrustedDownloadSender,
+  isTrustedXContentSender,
+  sanitizeFilePath,
+} from './security';
 
 // ─── Context menu: Save / Copy tweet as Markdown ────────────────────
 
@@ -89,22 +95,32 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   chrome.tabs.create({ url: appendMarker(target, action) });
 });
 
-chrome.runtime.onMessage.addListener((msg, _sender, _sendResponse) => {
-  if (msg && msg.action === 'TWEET2MD_CTX_URL') {
-    lastContextUrl = typeof msg.url === 'string' ? msg.url : null;
-  }
+chrome.runtime.onMessage.addListener((msg, sender, _sendResponse) => {
+  if (!msg || msg.action !== 'TWEET2MD_CTX_URL') return false;
+  if (!isTrustedXContentSender(sender)) return false;
+
+  lastContextUrl = typeof msg.url === 'string' ? msg.url : null;
   return false;
 });
 
 // ─── Download handler ───────────────────────────────────────────────
 
 chrome.runtime.onMessage.addListener(
-  (message: DownloadRequest, _sender, sendResponse) => {
-    if (message.action !== 'DOWNLOAD_MD') return false;
+  (message: DownloadRequest, sender, sendResponse) => {
+    if (!message || message.action !== 'DOWNLOAD_MD') return false;
+
+    if (!isTrustedDownloadSender(sender, chrome.runtime.id)) {
+      sendResponse({ success: false, error: 'Untrusted sender' });
+      return false;
+    }
 
     // First download any required images
     if (message.images && message.images.length > 0) {
       for (const img of message.images) {
+        if (!img || typeof img.url !== 'string' || !isAllowedImageUrl(img.url)) {
+          continue;
+        }
+
         chrome.downloads.download({
           url: img.url,
           filename: sanitizeFilePath(img.filename),
@@ -138,16 +154,3 @@ chrome.runtime.onMessage.addListener(
     return true; // keep channel open for async sendResponse
   }
 );
-
-/**
- * Remove characters that are invalid in filenames/paths.
- * Allows '/' to organize images into a folder next to markdown.
- */
-function sanitizeFilePath(name: string): string {
-  return name
-    .replace(/[<>:"\\|?*\x00-\x1f]/g, '_') // removed '/' from invalid chars
-    .replace(/\s+/g, '-')
-    .replace(/-{2,}/g, '-')
-    // don't drop leading/trailing slash handling because we want folder structure
-    .slice(0, 200); // Keep path length reasonable
-}
