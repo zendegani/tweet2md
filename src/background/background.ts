@@ -2,6 +2,7 @@ import type { DownloadRequest } from '../types/messages';
 
 // ─── Context menu: Save / Copy tweet as Markdown ────────────────────
 
+const MENU_PARENT = 'tweet2md-root';
 const MENU_SAVE = 'tweet2md-save';
 const MENU_COPY = 'tweet2md-copy';
 
@@ -18,9 +19,19 @@ function normalizeStatusUrl(url: string): string | null {
 let lastContextUrl: string | null = null;
 
 function registerContextMenus(): void {
+  // Explicit parent suppresses Chrome's auto-group label (which would use
+  // the full extension name "tweet2md: X Threads Articles to Markdown").
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
+      id: MENU_PARENT,
+      title: 'tweet2md',
+      contexts: ['link', 'page'],
+      targetUrlPatterns: ['*://x.com/*/status/*'],
+      documentUrlPatterns: ['*://x.com/*'],
+    });
+    chrome.contextMenus.create({
       id: MENU_SAVE,
+      parentId: MENU_PARENT,
       title: chrome.i18n.getMessage('ctx_save_tweet') || 'Save tweet as Markdown',
       contexts: ['link', 'page'],
       targetUrlPatterns: ['*://x.com/*/status/*'],
@@ -28,6 +39,7 @@ function registerContextMenus(): void {
     });
     chrome.contextMenus.create({
       id: MENU_COPY,
+      parentId: MENU_PARENT,
       title: chrome.i18n.getMessage('ctx_copy_tweet') || 'Copy tweet as Markdown',
       contexts: ['link', 'page'],
       targetUrlPatterns: ['*://x.com/*/status/*'],
