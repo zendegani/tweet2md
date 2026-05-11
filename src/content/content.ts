@@ -141,7 +141,9 @@ async function runAutoExtract(
   // In-place runs (inline button / context menu on the current page) get a
   // brief toast since there's no popup UI or new tab to provide feedback.
   if (!allowClose) {
-    showInPlaceToast(action === 'copy' ? 'Copied to clipboard' : 'Saved as Markdown');
+    const key = action === 'copy' ? 'copied' : 'downloaded';
+    const fallback = action === 'copy' ? 'Copied!' : 'Downloaded!';
+    showInPlaceToast(chrome.i18n.getMessage(key) || fallback);
   }
 
   if (shouldClose) {
