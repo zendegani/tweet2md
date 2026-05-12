@@ -67,6 +67,45 @@ function extractTextFromElement(textEl: Element): string {
   return cleanupMarkdown(turndown.turndown(cleaned.innerHTML)).trim();
 }
 
+function collectMediaFrom(
+  scope: Element,
+  excludeContainers: Element[] = []
+): string[] {
+  const out: string[] = [];
+  const inExcluded = (el: Element) =>
+    excludeContainers.some((c) => c.contains(el));
+
+  const videos = Array.from(scope.querySelectorAll('video')).filter(
+    (v) => !inExcluded(v)
+  );
+  // X often renders BOTH a poster <img> inside tweetPhoto and a hydrated
+  // <video poster=…> for the same content — dedupe by poster URL.
+  const videoPosters = new Set(
+    videos.map((v) => v.getAttribute('poster')).filter((p): p is string => !!p)
+  );
+
+  const photos = scope.querySelectorAll(`${SELECTORS.tweetPhoto} img`);
+  photos.forEach((img) => {
+    if (inExcluded(img)) return;
+    let src = (img as HTMLImageElement).src;
+    if (!src || src.includes('emoji') || src.includes('profile_images')) return;
+    if (videoPosters.has(src)) return;
+    if (src.includes('pbs.twimg.com')) {
+      src = src.replace(/&name=\w+/, '&name=large');
+    }
+    out.push(`![Image](${src})`);
+  });
+
+  videos.forEach((video) => {
+    const poster = video.getAttribute('poster');
+    if (poster) {
+      out.push(`![🎥 Video](${poster})`);
+    }
+  });
+
+  return out;
+}
+
 function extractSingleTweetFromArticle(
   article: Element
 ): { text: string; media: string[] } {
@@ -79,6 +118,10 @@ function extractSingleTweetFromArticle(
 
   // ── Embedded content: Quote Tweet, Quoted Article, or Link Card ─────
   let embeddedMd = '';
+  // Containers whose media is owned by the embed, not the main tweet —
+  // their media is rendered inside the blockquote (or by the embed itself),
+  // and must be excluded from the top-level media list.
+  const embedContainers: Element[] = [];
 
   // 1) Quote Tweet — a second tweetText inside a role="link" container
   if (tweetTextEls.length > 1) {
@@ -91,12 +134,22 @@ function extractSingleTweetFromArticle(
       if (qa.name !== 'Unknown') {
         quoteAuthorInfo = `**${qa.name} (${qa.handle})**\n> \n> `;
       }
+      embedContainers.push(quoteContainer);
     }
 
     const rawQuoteText = extractTextFromElement(quoteEl);
     if (rawQuoteText) {
       const blockquotedText = rawQuoteText.split('\n').join('\n> ');
       embeddedMd = `\n\n> ${quoteAuthorInfo}${blockquotedText}`;
+    }
+
+    // Nest quoted-tweet media inside the blockquote so reading order matches X.
+    if (quoteContainer) {
+      const quotedMedia = collectMediaFrom(quoteContainer);
+      if (quotedMedia.length > 0) {
+        const nested = quotedMedia.map((m) => `> ${m}`).join('\n> \n');
+        embeddedMd += `\n> \n${nested}`;
+      }
     }
   }
 
@@ -145,6 +198,7 @@ function extractSingleTweetFromArticle(
         if (description) parts.push(description);
         const body = parts.join('\n> \n> ');
         embeddedMd = `\n\n> ${header}${body}`;
+        embedContainers.push(container);
       }
       break;
     }
@@ -189,44 +243,21 @@ function extractSingleTweetFromArticle(
         if (description) parts.push(description);
         if (domain) parts.push(`_${domain}_`);
         embeddedMd = `\n\n> ${parts.join('\n> \n> ')}`;
+        embedContainers.push(cardWrapper);
       }
     }
   }
 
+  const media = collectMediaFrom(article, embedContainers);
+
+  // Place main-tweet media BEFORE the embed so reading order matches X:
+  // [main text] → [main media] → [quoted/article/card embed].
+  if (embeddedMd && media.length > 0) {
+    text += '\n\n' + media.join('\n') + embeddedMd;
+    return { text, media: [] };
+  }
+
   text += embeddedMd;
-
-  // Media
-  const media: string[] = [];
-  const videos = Array.from(article.querySelectorAll('video'));
-  // Collect video poster URLs first so we can skip duplicate <img> entries —
-  // X often renders BOTH a poster <img> inside tweetPhoto and a hydrated
-  // <video poster=...> for the same content, especially in quoted tweets.
-  const videoPosters = new Set(
-    videos
-      .map((v) => v.getAttribute('poster'))
-      .filter((p): p is string => !!p)
-  );
-
-  const photos = article.querySelectorAll(`${SELECTORS.tweetPhoto} img`);
-  photos.forEach((img) => {
-    let src = (img as HTMLImageElement).src;
-    if (!src || src.includes('emoji') || src.includes('profile_images')) return;
-    if (videoPosters.has(src)) return; // covered by the video branch below
-    if (src.includes('pbs.twimg.com')) {
-      src = src.replace(/&name=\w+/, '&name=large');
-    }
-    media.push(`![Image](${src})`);
-  });
-
-  videos.forEach((video) => {
-    const poster = video.getAttribute('poster');
-    if (poster) {
-      // Use image markdown so the poster renders as a preview in viewers
-      // (Obsidian, GitHub, etc.). The 🎥 in alt-text signals it's video.
-      media.push(`![🎥 Video](${poster})`);
-    }
-  });
-
   return { text, media };
 }
 
