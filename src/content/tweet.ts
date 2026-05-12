@@ -26,22 +26,73 @@ export function extractEngagementMetadata(
 
   const meta: TweetMetadata = {};
 
-  const repliesMatch = label.match(/([\d,]+)\s*repl/i);
-  if (repliesMatch) meta.replies = parseInt(repliesMatch[1].replace(/,/g, ''), 10);
+  const replies = extractCount(label, 'repl');
+  if (replies !== undefined) meta.replies = replies;
 
-  const repostsMatch = label.match(/([\d,]+)\s*repost/i);
-  if (repostsMatch) meta.reposts = parseInt(repostsMatch[1].replace(/,/g, ''), 10);
+  const reposts = extractCount(label, 'repost');
+  if (reposts !== undefined) meta.reposts = reposts;
 
-  const likesMatch = label.match(/([\d,]+)\s*like/i);
-  if (likesMatch) meta.likes = parseInt(likesMatch[1].replace(/,/g, ''), 10);
+  const likes = extractCount(label, 'like');
+  if (likes !== undefined) meta.likes = likes;
 
-  const bookmarksMatch = label.match(/([\d,]+)\s*bookmark/i);
-  if (bookmarksMatch) meta.bookmarks = parseInt(bookmarksMatch[1].replace(/,/g, ''), 10);
+  const bookmarks = extractCount(label, 'bookmark');
+  if (bookmarks !== undefined) meta.bookmarks = bookmarks;
 
-  const viewsMatch = label.match(/([\d,]+)\s*view/i);
-  if (viewsMatch) meta.views = parseInt(viewsMatch[1].replace(/,/g, ''), 10);
+  const views = extractCount(label, 'view');
+  if (views !== undefined) meta.views = views;
 
   return Object.keys(meta).length > 0 ? meta : undefined;
+}
+
+// Parses counts from X's aria-labels, handling K/M/B suffixes ("1.5K likes").
+function extractCount(label: string, metricPrefix: string): number | undefined {
+  const match = label.match(new RegExp(`([\\d,.]+\\s*[kmb]?)\\s*${metricPrefix}`, 'i'));
+  if (!match) return undefined;
+
+  const normalized = match[1].replace(/,/g, '').replace(/\s+/g, '').toLowerCase();
+  const countMatch = normalized.match(/^(\d+(?:\.\d+)?)([kmb])?$/);
+  if (!countMatch) return undefined;
+
+  const value = Number(countMatch[1]);
+  const suffix = countMatch[2];
+  const multiplier = suffix === 'b' ? 1_000_000_000 : suffix === 'm' ? 1_000_000 : suffix === 'k' ? 1_000 : 1;
+  return Math.round(value * multiplier);
+}
+
+// Detect promoted ("Ad" / "Promoted") tweets so thread collection can skip
+// them without treating them as the reply boundary. The label lives inside
+// the article's User-Name header area (sibling to name/handle/timestamp).
+const PROMOTED_LABELS = new Set(
+  [
+    'promoted',
+    'ad',
+    'promoted tweet',
+    '広告',
+    'プロモーション',
+    'プロモツイート',
+    'werbung',
+    'anuncio',
+    'patrocinado',
+    'promu',
+    '广告',
+    'إعلان',
+    'تبلیغ',
+  ].map((l) => l.toLowerCase())
+);
+
+export function isPromotedArticle(article: Element): boolean {
+  if (article.querySelector('[data-testid="promotedIndicator"]')) return true;
+  const userNames = article.querySelectorAll('[data-testid="User-Name"]');
+  for (const un of userNames) {
+    // Only consider the outer article's header, not a quoted tweet's.
+    if (un.closest('[role="link"]')) continue;
+    const spans = un.querySelectorAll('span, div');
+    for (const el of spans) {
+      const text = (el.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase();
+      if (PROMOTED_LABELS.has(text)) return true;
+    }
+  }
+  return false;
 }
 
 function extractTextFromElement(textEl: Element): string {
@@ -294,7 +345,9 @@ export async function extractTweetAsync(): Promise<ExtractedContent> {
     };
   }
 
-  const threadAuthor = extractAuthorFromArticle(allArticles[0]);
+  const firstNonAd =
+    Array.from(allArticles).find((a) => !isPromotedArticle(a)) || allArticles[0];
+  const threadAuthor = extractAuthorFromArticle(firstNonAd);
 
   const collected = new Map<string, { text: string; media: string[] }>();
   let threadDone = false;
@@ -307,6 +360,7 @@ export async function extractTweetAsync(): Promise<ExtractedContent> {
     const sizeBefore = collected.size;
 
     for (const article of allArticles) {
+      if (isPromotedArticle(article)) continue;
       const articleAuthor = extractAuthorFromArticle(article);
       if (
         articleAuthor.handle.toLowerCase() !==
