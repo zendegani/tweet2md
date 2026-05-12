@@ -1,5 +1,9 @@
 # tweet2md
 
+[![CI](https://github.com/zendegani/tweet2md/actions/workflows/ci.yml/badge.svg)](https://github.com/zendegani/tweet2md/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/epmmehilhbpkgcjbcohgkmihlalagkho?label=Chrome%20Web%20Store)](https://chromewebstore.google.com/detail/tweet2md/epmmehilhbpkgcjbcohgkmihlalagkho)
+
 > Copy or save X (Twitter) Articles, threads, and tweets as Markdown.
 
 <p align="center">
