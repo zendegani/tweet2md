@@ -29,6 +29,24 @@
   "nav_back": {
     "message": "Back"
   },
+  "group_obsidian": {
+    "message": "Obsidian"
+  },
+  "opt_obsidian_friendly": {
+    "message": "Obsidian-friendly frontmatter"
+  },
+  "opt_obsidian_friendly_title": {
+    "message": "Emit frontmatter optimized for Obsidian: wikilink author, tags, published/created dates"
+  },
+  "opt_obsidian_vault": {
+    "message": "Vault name"
+  },
+  "opt_obsidian_vault_title": {
+    "message": "Used by the 'Add to Obsidian' button. Leave blank to let Obsidian pick the last-used vault."
+  },
+  "opt_obsidian_vault_placeholder": {
+    "message": "(optional)"
+  },
   "opt_save_images_title": {
     "message": "Download images to a folder next to the Markdown file"
   },

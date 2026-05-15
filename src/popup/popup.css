@@ -438,6 +438,40 @@ body {
   background: var(--accent);
 }
 
+/* ─── Text-field option (Obsidian vault, etc.) ──────────────── */
+.field-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.field-text {
+  flex-shrink: 0;
+}
+
+.field-input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  font-family: var(--font);
+  font-size: 12px;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
 /* ─── Animations ────────────────────────────────────────────── */
 @keyframes fadeIn {
   from {
