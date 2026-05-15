@@ -5,6 +5,58 @@ export interface PostProcessOptions {
   includeMetadata: boolean;
   downloadImages: boolean;
   inlineStats?: boolean;
+  obsidianFriendly?: boolean;
+}
+
+const DESCRIPTION_MAX_CHARS = 200;
+
+function todayISODate(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function isoToDateOnly(iso: string): string {
+  const m = iso.match(/^(\d{4}-\d{2}-\d{2})/);
+  return m ? m[1] : iso;
+}
+
+// Pull a short, plain-text preview from the markdown body. Drops the
+// author H1, frontmatter, blockquotes, list bullets, link/image syntax,
+// and emoji-prefixed UI lines so the description reads like prose.
+function buildDescription(markdown: string): string {
+  let body = markdown.replace(/^---[\s\S]*?---\s*/m, '');
+  body = body.replace(/^# .*$/m, '');
+  const lines = body.split('\n');
+  const kept: string[] = [];
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (!line) continue;
+    if (line.startsWith('>')) continue;
+    if (line.startsWith('---')) continue;
+    if (/^!\[/.test(line)) continue;
+    kept.push(line);
+    if (kept.join(' ').length >= DESCRIPTION_MAX_CHARS + 80) break;
+  }
+  let text = kept.join(' ');
+  text = text.replace(/!\[[^\]]*\]\([^)]+\)/g, '');
+  text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+  text = text.replace(/[*_`]/g, '');
+  text = text.replace(/\s+/g, ' ').trim();
+  if (text.length <= DESCRIPTION_MAX_CHARS) return text;
+  return text.slice(0, DESCRIPTION_MAX_CHARS).replace(/\s+\S*$/, '') + '…';
+}
+
+function buildTitle(data: ExtractedContent): string {
+  if (data.type === 'article' && data.title) return data.title;
+  const noun = data.type === 'thread' ? 'Thread' : 'Post';
+  return `${noun} by ${data.author.handle} on X`;
+}
+
+function yamlEscape(value: string): string {
+  // Quote when the value contains characters that would break a bare scalar.
+  if (/[:#\n"'\\]/.test(value) || /^[\s-]/.test(value) || /\s$/.test(value)) {
+    return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+  }
+  return `"${value}"`;
 }
 
 function formatCount(n: number): string {
@@ -76,11 +128,30 @@ export function postProcess(
 
     const m = data.metadata;
     const lines = ['---'];
-    lines.push(`author: "${data.author.name}"`);
-    lines.push(`handle: "${data.author.handle}"`);
-    lines.push(`source: "${data.sourceUrl}"`);
-    lines.push(`date: ${data.date}`);
-    lines.push(`type: ${data.type}`);
+
+    if (opts.obsidianFriendly) {
+      // Obsidian-friendly schema: wikilink author for backlinks, split
+      // published/created dates, synthesized title, tags array. Engagement
+      // metrics still emitted at the bottom for Dataview queries.
+      lines.push(`title: ${yamlEscape(buildTitle(data))}`);
+      lines.push(`source: "${data.sourceUrl}"`);
+      lines.push(`author: "[[${data.author.handle}]]"`);
+      lines.push(`author_name: ${yamlEscape(data.author.name)}`);
+      lines.push(`handle: "${data.author.handle}"`);
+      lines.push(`published: ${isoToDateOnly(data.date)}`);
+      lines.push(`created: ${todayISODate()}`);
+      lines.push(`type: ${data.type}`);
+      const desc = buildDescription(finalMarkdown);
+      if (desc) lines.push(`description: ${yamlEscape(desc)}`);
+      lines.push(`tags: [clippings, x, ${data.type}]`);
+    } else {
+      lines.push(`author: "${data.author.name}"`);
+      lines.push(`handle: "${data.author.handle}"`);
+      lines.push(`source: "${data.sourceUrl}"`);
+      lines.push(`date: ${data.date}`);
+      lines.push(`type: ${data.type}`);
+    }
+
     if (m) {
       if (m.likes !== undefined) lines.push(`likes: ${m.likes}`);
       if (m.reposts !== undefined) lines.push(`reposts: ${m.reposts}`);

@@ -22,6 +22,12 @@ const chkShowInline = document.getElementById(
 const chkInlineStats = document.getElementById(
   'chk-inline-stats'
 ) as HTMLInputElement;
+const chkObsidianFriendly = document.getElementById(
+  'chk-obsidian-friendly'
+) as HTMLInputElement;
+const txtObsidianVault = document.getElementById(
+  'txt-obsidian-vault'
+) as HTMLInputElement;
 
 // ─── Initialize i18n ──────────────────────────────────────────────────
 
@@ -35,6 +41,13 @@ document.querySelectorAll('[data-i18n-title]').forEach((el) => {
   const key = el.getAttribute('data-i18n-title');
   if (key) {
     el.setAttribute('title', chrome.i18n.getMessage(key) || el.getAttribute('title')!);
+  }
+});
+document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+  const key = el.getAttribute('data-i18n-placeholder');
+  if (key) {
+    const msg = chrome.i18n.getMessage(key);
+    if (msg) el.setAttribute('placeholder', msg);
   }
 });
 
@@ -65,6 +78,8 @@ interface Settings {
   inlineButtonCopies: boolean;
   showInlineButton: boolean;
   inlineStats: boolean;
+  obsidianFriendly: boolean;
+  obsidianVault: string;
 }
 
 const DEFAULT_SETTINGS: Settings = {
@@ -74,6 +89,8 @@ const DEFAULT_SETTINGS: Settings = {
   inlineButtonCopies: false, // inline button downloads by default
   showInlineButton: true, // inline button visible by default
   inlineStats: false, // off — changes visible content, opt-in
+  obsidianFriendly: false, // off — changes frontmatter shape, opt-in
+  obsidianVault: '', // empty → let Obsidian pick the last-used vault
 };
 
 async function loadSettings(): Promise<Settings> {
@@ -103,6 +120,8 @@ loadSettings().then((settings) => {
   chkInlineCopies.checked = settings.inlineButtonCopies;
   chkShowInline.checked = settings.showInlineButton;
   chkInlineStats.checked = settings.inlineStats;
+  chkObsidianFriendly.checked = settings.obsidianFriendly;
+  txtObsidianVault.value = settings.obsidianVault;
   updateInlineCopiesEnabled();
 });
 
@@ -114,6 +133,8 @@ function persistAll(): void {
     inlineButtonCopies: chkInlineCopies.checked,
     showInlineButton: chkShowInline.checked,
     inlineStats: chkInlineStats.checked,
+    obsidianFriendly: chkObsidianFriendly.checked,
+    obsidianVault: txtObsidianVault.value.trim(),
   });
 }
 
@@ -126,6 +147,9 @@ chkShowInline.addEventListener('change', () => {
   persistAll();
 });
 chkInlineStats.addEventListener('change', persistAll);
+chkObsidianFriendly.addEventListener('change', persistAll);
+txtObsidianVault.addEventListener('change', persistAll);
+txtObsidianVault.addEventListener('blur', persistAll);
 
 // ─── Helpers ────────────────────────────────────────────────────────
 
@@ -196,6 +220,7 @@ async function extractMarkdown(forAction: 'download' | 'copy' = 'download'): Pro
 
   const includeMetadata = chkMetadata.checked;
   const inlineStats = chkInlineStats.checked;
+  const obsidianFriendly = chkObsidianFriendly.checked;
   const downloadImages = resolveDownloadImages(forAction, chkDownloadImages.checked);
 
   const response: ExtractResponse = await chrome.tabs.sendMessage(tab.id, {
@@ -208,7 +233,7 @@ async function extractMarkdown(forAction: 'download' | 'copy' = 'download'): Pro
     throw new Error(response.error || chrome.i18n.getMessage('error_failed') || 'Failed to extract content.');
   }
 
-  return postProcess(response.data, { includeMetadata, downloadImages, inlineStats });
+  return postProcess(response.data, { includeMetadata, downloadImages, inlineStats, obsidianFriendly });
 }
 
 function handleExtractionError(err: unknown): void {

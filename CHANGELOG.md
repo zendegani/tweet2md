@@ -7,6 +7,13 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - **Link Cards**: External link previews in tweets are now captured. Extracts the title, description, and source domain, and embeds the Open Graph preview image (which is intentionally kept as a remote URL to prevent downloading third-party thumbnails locally).
+- **Multi-View Popup**: The popup interface now separates the primary download/copy actions from configuration. A new "Settings" navigation flow keeps the main interface focused and uncluttered.
+- **Obsidian-friendly Frontmatter**: Added a new export option to generate Markdown frontmatter optimized for Obsidian. This includes wikilinked author handles (e.g. `[[@username]]`) for easy backlinking, a synthetic title, tags, and a prose description snippet extracted from the body.
+- **Obsidian Vault Setting**: Users can now specify their Obsidian vault name in settings to facilitate deeper integration (laying groundwork for URI-based interactions).
+
+### Changed
+
+- **Grouped Settings**: Relocated all configuration toggles to a dedicated settings view within the popup.
 
 ## [1.4.1] - 2026-05-12
 

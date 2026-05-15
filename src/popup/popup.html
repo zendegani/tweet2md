@@ -102,6 +102,27 @@
 
       <div class="options">
         <div class="option-group">
+          <div class="option-group-label" data-i18n="group_obsidian">Obsidian</div>
+          <label class="toggle-label" title="Emit frontmatter optimized for Obsidian: wikilink author, tags, published/created dates" data-i18n-title="opt_obsidian_friendly_title">
+            <span class="toggle-text">
+              <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2 2 7l10 5 10-5-10-5z" />
+                <path d="m2 17 10 5 10-5" />
+                <path d="m2 12 10 5 10-5" />
+              </svg>
+              <span data-i18n="opt_obsidian_friendly">Obsidian-friendly frontmatter</span>
+            </span>
+            <input type="checkbox" id="chk-obsidian-friendly" class="toggle-input" />
+            <span class="toggle-switch"></span>
+          </label>
+          <label class="field-label" title="Used by the 'Add to Obsidian' button. Leave blank to let Obsidian pick the last-used vault." data-i18n-title="opt_obsidian_vault_title">
+            <span class="field-text" data-i18n="opt_obsidian_vault">Vault name</span>
+            <input type="text" id="txt-obsidian-vault" class="field-input" autocomplete="off" spellcheck="false" placeholder="(optional)" data-i18n-placeholder="opt_obsidian_vault_placeholder" />
+          </label>
+        </div>
+
+        <div class="option-group">
           <div class="option-group-label" data-i18n="group_inline">Inline button &amp; context menu</div>
           <label class="toggle-label" title="Add a download button next to share on each tweet's action bar" data-i18n-title="opt_show_inline_title">
             <span class="toggle-text">
