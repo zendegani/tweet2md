@@ -171,19 +171,22 @@ body {
 
 /* Tertiary "send elsewhere" action — purple outline matches Obsidian's
  * brand and signals a different category from the primary blue Download
- * / Copy buttons (which save content locally). The hint lives *inside*
- * the button so it can't be mistaken for help text about another action. */
+ * / Copy buttons (which save content locally). Lives in a half-width row
+ * with its hint on the right so the disclaimer is spatially attached to
+ * the button without making the button itself visually heavier. */
+.obsidian-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .btn-obsidian {
   --obsidian: #7C3AED;
   --obsidian-glow: rgba(124, 58, 237, 0.18);
-  width: 100%;
+  flex: 1;
   background: transparent;
   color: var(--obsidian);
   border: 1px solid var(--obsidian);
-  white-space: normal;
-  text-align: left;
-  padding: 10px 14px;
-  gap: 10px;
 }
 
 .btn-obsidian:hover {
@@ -200,26 +203,13 @@ body {
   color: var(--obsidian);
 }
 
-.btn-text-stack {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
+.btn-hint {
   flex: 1;
-  min-width: 0;
-}
-
-.btn-obsidian .btn-label {
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-.btn-obsidian .btn-sub {
   font-size: 11px;
-  font-weight: 400;
-  line-height: 1.35;
-  opacity: 0.7;
+  line-height: 1.4;
+  color: var(--text-secondary);
+  opacity: 0.8;
+  padding: 0 2px;
 }
 
 /* ─── Loading State ─────────────────────────────────────────── */
