@@ -5,6 +5,7 @@ import {
   extractDate,
   extractTweetId,
 } from './dom';
+import { hostMatches } from '../shared/media';
 
 function isInlineLinkWrapper(el: HTMLElement): boolean {
   // Draft.js content blocks are NOT inline link wrappers
@@ -36,12 +37,12 @@ function extractImageMd(img: HTMLImageElement): string {
   // images live on pbs.twimg.com and are never .svg.
   if (
     src.includes('twimg.com/emoji') ||
-    src.includes('abs-0.twimg.com') ||
+    hostMatches(src, 'abs-0.twimg.com') ||
     /\.svg($|\?)/.test(src)
   ) {
     return alt;
   }
-  if (src.includes('pbs.twimg.com')) {
+  if (hostMatches(src, 'pbs.twimg.com')) {
     src = src.replace(/&name=\w+/, '&name=large');
   }
   return `![${alt}](${src})`;
@@ -171,7 +172,7 @@ export function extractArticle(): ExtractedContent {
         !src.includes('profile_images') &&
         !src.includes('hashflags')
       ) {
-        if (src.includes('pbs.twimg.com')) {
+        if (hostMatches(src, 'pbs.twimg.com')) {
           src = src.replace(/&name=\w+/, '&name=large');
         }
         bannerImageMd = `![Banner](${src})`;

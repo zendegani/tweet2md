@@ -1,6 +1,7 @@
 import type { ExtractResponse, DownloadRequest } from '../types/messages';
 import { postProcess, resolveDownloadImages, type PostProcessResult } from '../shared/post-process';
 import { buildObsidianUrl } from '../shared/obsidian';
+import { hostMatches } from '../shared/media';
 
 const btnDownload = document.getElementById('btn-download') as HTMLButtonElement;
 const btnCopy = document.getElementById('btn-copy') as HTMLButtonElement;
@@ -223,7 +224,7 @@ async function extractMarkdown(
   }
 
   const url = tab.url || '';
-  if (!url.includes('x.com/')) {
+  if (!hostMatches(url, 'x.com', 'www.x.com')) {
     throw new Error(chrome.i18n.getMessage('footer_hint') || 'Navigate to a tweet or article on X.com first.');
   }
 

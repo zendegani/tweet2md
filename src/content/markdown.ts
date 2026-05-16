@@ -1,4 +1,5 @@
 import TurndownService from 'turndown';
+import { hostMatches } from '../shared/media';
 
 export const turndown = new TurndownService({
   headingStyle: 'atx',
@@ -42,13 +43,13 @@ turndown.addRule('xImages', {
     // images live on pbs.twimg.com and are never .svg. Hashflags are PNG.
     if (
       src.includes('twimg.com/emoji') ||
-      src.includes('abs-0.twimg.com') ||
+      hostMatches(src, 'abs-0.twimg.com') ||
       /\.svg($|\?)/.test(src)
     ) {
       return alt;
     }
 
-    if (src.includes('pbs.twimg.com') && !src.includes('format=')) {
+    if (hostMatches(src, 'pbs.twimg.com') && !src.includes('format=')) {
       src = src.replace(/&name=\w+/, '&name=large');
     }
 
