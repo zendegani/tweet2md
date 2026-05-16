@@ -10,6 +10,7 @@ import {
   getTweetStatusId,
   cleanContentClone,
 } from './dom';
+import { hostMatches } from '../shared/media';
 
 /**
  * Extract engagement metadata from a tweet's role="group" aria-label.
@@ -141,7 +142,7 @@ function collectMediaFrom(
     let src = (img as HTMLImageElement).src;
     if (!src || src.includes('emoji') || src.includes('profile_images')) return;
     if (videoPosters.has(src)) return;
-    if (src.includes('pbs.twimg.com')) {
+    if (hostMatches(src, 'pbs.twimg.com')) {
       src = src.replace(/&name=\w+/, '&name=large');
     }
     out.push(`![Image](${src})`);
@@ -215,7 +216,7 @@ function extractSingleTweetFromArticle(
       let coverImgSrc = '';
       if (coverImgEl) {
         coverImgSrc = (coverImgEl as HTMLImageElement).src || '';
-        if (coverImgSrc.includes('pbs.twimg.com')) {
+        if (hostMatches(coverImgSrc, 'pbs.twimg.com')) {
           coverImgSrc = coverImgSrc.replace(/&name=\w+/, '&name=large');
         }
       }
@@ -306,7 +307,7 @@ function extractSingleTweetFromArticle(
       const previewImgEl = mediaBlock?.querySelector('img');
       if (previewImgEl) {
         let src = (previewImgEl as HTMLImageElement).src || '';
-        if (src.includes('pbs.twimg.com')) {
+        if (hostMatches(src, 'pbs.twimg.com')) {
           src = src.replace(/&name=\w+/, '&name=large');
         }
         if (src) previewImg = `![Link card preview](${src})`;
