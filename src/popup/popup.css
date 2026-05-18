@@ -99,6 +99,19 @@ body {
   letter-spacing: 0.02em;
 }
 
+/* Settings view is a focused config panel — drop the intro copy so the box
+   stays compact. `:has()` is fine for an extension targeting modern Chrome. */
+.popup-container:has(#view-settings:not(.hidden)) .tagline,
+.popup-container:has(#view-settings:not(.hidden)) .hint {
+  display: none;
+}
+
+/* The 6px under the logo-row is breathing room for the tagline (which is
+   hidden on this view), so pull the rest of the panel closer to the header. */
+.popup-container:has(#view-settings:not(.hidden)) .logo-row {
+  margin-bottom: 0;
+}
+
 /* ─── Button Group ─────────────────────────────────────────── */
 .btn-group {
   display: flex;
