@@ -596,6 +596,7 @@ body {
 }
 
 .field-label-stacked {
+  position: relative;
   flex-direction: column;
   align-items: stretch;
   gap: 4px;
@@ -612,7 +613,6 @@ body {
 }
 
 .field-info-wrap {
-  position: relative;
   display: inline-flex;
   align-items: center;
 }
@@ -648,11 +648,12 @@ body {
 
 .field-hint {
   position: absolute;
-  top: calc(100% + 6px);
-  left: -8px;
+  top: 22px;
+  right: 0;
+  left: auto;
   z-index: 10;
-  min-width: 230px;
-  max-width: 280px;
+  width: max-content;
+  max-width: 100%;
   padding: 10px 12px;
   background: var(--bg-primary);
   border: 1px solid var(--border-subtle);
