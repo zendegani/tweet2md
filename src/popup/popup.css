@@ -379,14 +379,14 @@ body {
 }
 
 .nav-link {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  align-self: flex-start;
   gap: 8px;
-  width: 100%;
   /* Vertical padding is intentionally small — the popup-main flex `gap`
    * handles inter-row spacing; padding only needs to provide a clickable
    * hit area around the text. */
-  padding: 4px 12px;
+  padding: 4px 10px;
   border: none;
   background: transparent;
   color: var(--text-secondary);
