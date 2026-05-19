@@ -22,6 +22,7 @@ Fonctionnalités principales :
 - Fermeture automatique optionnelle des onglets après export
 - Téléchargement local des médias intégrés
 - Sous-dossier de téléchargements optionnel : les fichiers Markdown et images sont enregistrés dans un sous-dossier choisi au lieu d'encombrer la racine
+- Modèle de nom de fichier personnalisable : composez le nom du fichier exporté avec des placeholders comme {date}, {datetime}, {handle}, {author}, {id}, {slug} et {type}, avec aperçu en direct dans les paramètres — laissez vide pour conserver le format par défaut
 - YAML frontmatter enrichi avec métadonnées et statistiques
 - Ligne d’engagement optionnelle dans le corps Markdown
 - Expansion automatique des publications tronquées

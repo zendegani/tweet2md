@@ -22,6 +22,7 @@ https://github.com/zendegani/tweet2md/blob/main/CHANGELOG.md
 - エクスポート後に新規タブを自動クローズ可能
 - 埋め込み画像やメディアをローカル保存
 - ダウンロード用サブフォルダ（任意）: Markdown ファイルや画像をダウンロードフォルダ内の指定サブフォルダに保存
+- ファイル名テンプレートのカスタマイズ: {date}、{datetime}、{handle}、{author}、{id}、{slug}、{type} などのプレースホルダーで出力ファイル名を構成。設定でライブプレビュー — 空欄にすればデフォルトのまま
 - YAML frontmatter に各種メタデータを追加
 - Markdown 本文に X 風のエンゲージメント行を追加可能
 - 切り詰められた投稿を自動展開

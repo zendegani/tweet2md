@@ -22,6 +22,7 @@ Key features:
 - Optional auto-close of new tabs opened via the inline button or context menu after export
 - Download embedded X media locally alongside your md file to prevent link rot
 - Optional Downloads subfolder so Markdown files and images land inside a chosen subfolder of your Downloads folder, instead of cluttering the root
+- Customizable filename template: build the exported filename from placeholders like {date}, {datetime}, {handle}, {author}, {id}, {slug}, and {type}, with a live preview in Settings — leave blank to keep the default
 - Rich YAML frontmatter with author, handle, date, source URL, content type, and engagement stats (likes, reposts, replies, bookmarks, views)
 - Optional X-style engagement row directly in the Markdown body (likes, reposts, replies, bookmarks, views) — toggle independently of the YAML frontmatter
 - Automatically expand truncated posts and strip engagement buttons, follow prompts, and trackers

@@ -22,6 +22,7 @@ https://github.com/zendegani/tweet2md/blob/main/CHANGELOG.md
 - 导出后自动关闭标签页
 - 本地下载图片与媒体
 - 可选的下载子文件夹：Markdown 文件与图片保存到所选子文件夹中，不再直接堆放在下载根目录
+- 可自定义的文件名模板：使用 {date}、{datetime}、{handle}、{author}、{id}、{slug}、{type} 等占位符构建导出文件名，设置中提供实时预览 —— 留空则保持默认
 - 丰富的 YAML frontmatter 元数据
 - 可选 X 风格互动统计行
 - 自动展开被截断内容

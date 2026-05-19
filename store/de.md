@@ -22,6 +22,7 @@ Hauptfunktionen:
 - Optionales automatisches Schließen neuer Tabs nach dem Export
 - Lädt eingebettete X-Medien lokal zusammen mit der md-Datei herunter, um Linkverlust zu vermeiden
 - Optionaler Downloads-Unterordner: Markdown-Dateien und Bilder landen in einem ausgewählten Unterordner statt direkt im Downloads-Verzeichnis
+- Anpassbare Dateinamen-Vorlage: Stelle den exportierten Dateinamen aus Platzhaltern wie {date}, {datetime}, {handle}, {author}, {id}, {slug} und {type} zusammen, mit Live-Vorschau in den Einstellungen — leer lassen für den Standard
 - Umfangreiches YAML-Frontmatter mit Autor, Handle, Datum, Quell-URL, Inhaltstyp und Engagement-Statistiken
 - Optionale X-ähnliche Engagement-Zeile direkt im Markdown-Text
 - Erweitert automatisch gekürzte Beiträge und entfernt Engagement-Buttons, Follow-Hinweise und Tracker

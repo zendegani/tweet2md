@@ -22,6 +22,7 @@ Principais recursos:
 - Fechamento automático opcional de abas após exportação
 - Download local de imagens e mídias incorporadas
 - Subpasta opcional de Downloads: arquivos Markdown e imagens são salvos em uma subpasta escolhida em vez da raiz
+- Modelo de nome de arquivo personalizável: monte o nome do arquivo exportado com marcadores como {date}, {datetime}, {handle}, {author}, {id}, {slug} e {type}, com pré-visualização ao vivo nas configurações — deixe em branco para manter o padrão
 - YAML frontmatter rico com metadados e estatísticas
 - Linha opcional de engajamento estilo X
 - Expansão automática de posts truncados

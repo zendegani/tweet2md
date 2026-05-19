@@ -22,6 +22,7 @@ Características principales:
 - Cierre automático opcional de pestañas nuevas abiertas mediante el botón inline o menú contextual después de exportar
 - Descarga medios incrustados de X localmente junto al archivo md para evitar enlaces rotos
 - Subcarpeta opcional de Descargas: los archivos Markdown y las imágenes se guardan en una subcarpeta elegida en lugar de mezclarse con el resto de Descargas
+- Plantilla de nombre de archivo personalizable: arma el nombre del archivo exportado con marcadores como {date}, {datetime}, {handle}, {author}, {id}, {slug} y {type}, con vista previa en directo en los ajustes — déjalo en blanco para mantener el formato por defecto
 - YAML frontmatter enriquecido con autor, handle, fecha, URL fuente, tipo de contenido y estadísticas de interacción (likes, reposts, respuestas, marcadores, vistas)
 - Fila opcional de interacciones estilo X directamente en el cuerpo Markdown (likes, reposts, respuestas, marcadores, vistas), configurable independientemente del YAML frontmatter
 - Expande automáticamente publicaciones truncadas y elimina botones de interacción, sugerencias de seguimiento y rastreadores
