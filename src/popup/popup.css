@@ -677,6 +677,7 @@ body {
   pointer-events: none;
 }
 
+.field-label-stacked .field-text:hover .field-hint,
 .field-info-wrap:hover .field-hint,
 .field-info:focus-visible + .field-hint,
 .field-info[aria-expanded="true"] + .field-hint {
