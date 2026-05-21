@@ -1006,9 +1006,9 @@ details.option-group[open] .option-group-chevron {
 }
 
 .fm-picker-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   margin-bottom: 4px;
 }
 
@@ -1016,8 +1016,18 @@ details.option-group[open] .option-group-chevron {
   display: none;
 }
 
-.fm-picker-list .fm-picker-mode-header {
-  grid-column: 1 / -1;
+/* Column-major field layout: items flow top-to-bottom in column 1, then
+ * continue in column 2. The browser balances column heights automatically,
+ * which keeps the 5+5 (default) and 8+7 (Obsidian) splits even without
+ * manual row counts. break-inside on each row prevents a label getting
+ * sliced across a column boundary. */
+.fm-picker-fields {
+  column-count: 2;
+  column-gap: 14px;
+}
+
+.fm-picker-fields .fm-field {
+  break-inside: avoid;
 }
 
 .fm-field {
