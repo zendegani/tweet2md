@@ -43,6 +43,19 @@
   box-sizing: border-box;
 }
 
+/* Hide the document scrollbar visual entirely. The popup width must stay
+ * constant when content crosses the scroll threshold (e.g. switching the
+ * field picker from default → Obsidian mode), and an actual scrollbar is
+ * rarely useful at the popup's narrow width — wheel/trackpad still scrolls. */
+html {
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+}
+
+html::-webkit-scrollbar {
+  display: none; /* Chromium, Safari */
+}
+
 body {
   font-family: var(--font);
   background: var(--bg-primary);
@@ -368,14 +381,47 @@ body {
   height: 18px;
 }
 
-/* ─── Nav link (Back link in settings view) ────────────────── */
-.settings-help {
-  margin: 0;
-  padding: 0 12px;
-  font-size: 11.5px;
+/* ─── Settings topbar: Back on the left, help-icon on the right ── */
+.settings-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.settings-help-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.settings-help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  background: transparent;
   color: var(--text-secondary);
-  opacity: 0.75;
-  font-style: italic;
+  opacity: 0.55;
+  cursor: help;
+  border-radius: 50%;
+  transition: opacity var(--transition), color var(--transition), background var(--transition);
+}
+
+.settings-help-icon:hover,
+.settings-help-icon:focus-visible {
+  opacity: 1;
+  color: var(--accent);
+  background: var(--bg-hover);
+  outline: none;
+}
+
+.settings-help-icon svg {
+  width: 14px;
+  height: 14px;
 }
 
 .nav-link {
