@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Single-Tweet Export**: New **Copy just this tweet (no thread)** context-menu item, plus Shift- or Alt-clicking the inline button, exports only the focused tweet instead of the whole thread. Default behaviour is unchanged.
 
+### Fixed
+
+- **Polls**: Tweet polls are now captured — choices with their result percentages and the vote total/status line. Previously they were dropped entirely. (#28)
+
 ## [1.6.1] - 2026-05-21
 
 ### Added
