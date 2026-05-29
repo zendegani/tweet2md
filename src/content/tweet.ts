@@ -158,6 +158,46 @@ function collectMediaFrom(
   return out;
 }
 
+// Polls render inside data-testid="cardPoll": a <ul> of choices (each with a
+// label and, once results are shown, a percentage) followed by a
+// "N votes · <status>" line. Pre-vote polls omit the percentages, so render
+// choices-only gracefully.
+function extractPoll(article: Element): string {
+  const pollEl = article.querySelector('[data-testid="cardPoll"]');
+  if (!pollEl) return '';
+
+  const lines: string[] = [];
+  for (const li of pollEl.querySelectorAll('li[role="listitem"]')) {
+    let pct = '';
+    for (const el of li.querySelectorAll('span, div')) {
+      const t = (el.textContent || '').trim();
+      if (/^\d+(?:\.\d+)?%$/.test(t)) {
+        pct = t;
+        break;
+      }
+    }
+    let label = (li.textContent || '').replace(/\s+/g, ' ').trim();
+    if (pct && label.endsWith(pct)) {
+      label = label.slice(0, label.length - pct.length).trim();
+    }
+    if (!label) continue;
+    lines.push(pct ? `- ${label} — ${pct}` : `- ${label}`);
+  }
+  if (lines.length === 0) return '';
+
+  // Footer = everything in the card outside the choices list (votes + status).
+  const clone = pollEl.cloneNode(true) as Element;
+  clone.querySelectorAll('ul').forEach((ul) => ul.remove());
+  const footer = (clone.textContent || '')
+    .replace(/\s+/g, ' ')
+    .replace(/\s*·\s*/g, ' · ')
+    .trim();
+
+  let md = `**Poll**\n${lines.join('\n')}`;
+  if (footer) md += `\n\n_${footer}_`;
+  return md;
+}
+
 function extractSingleTweetFromArticle(
   article: Element
 ): { text: string; media: string[] } {
@@ -259,7 +299,8 @@ function extractSingleTweetFromArticle(
   // 3) Link Card
   if (!embeddedMd) {
     const cardWrapper = article.querySelector('[data-testid="card.wrapper"]');
-    if (cardWrapper) {
+    // Polls also live in card.wrapper but are handled separately below.
+    if (cardWrapper && !cardWrapper.querySelector('[data-testid="cardPoll"]')) {
       const cardLink = cardWrapper.querySelector('a[href]');
       const href = cardLink?.getAttribute('href') || '';
 
@@ -327,6 +368,12 @@ function extractSingleTweetFromArticle(
         embedContainers.push(cardWrapper);
       }
     }
+  }
+
+  // 4) Poll — part of the main tweet (not an embed), rendered after the text.
+  const pollMd = extractPoll(article);
+  if (pollMd) {
+    text += text ? `\n\n${pollMd}` : pollMd;
   }
 
   const media = collectMediaFrom(article, embedContainers);
