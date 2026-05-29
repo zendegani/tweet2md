@@ -15,6 +15,7 @@ Principais recursos:
 - Captura cartões de links de tweets
 - Suporte completo para artigos longos do X
 - Extrai tweets, threads e citações em Markdown limpo
+- Exporta apenas um tweet sem a thread — pelo menu de contexto ou com Shift/Alt-clique no botão inline
 - Preserva estrutura e contexto das citações
 - Popup com múltiplas visualizações
 - Mostrar ou ocultar botão inline

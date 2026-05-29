@@ -15,6 +15,7 @@ Key features:
 - Capture link cards from tweets: title, source domain, and the Open Graph preview image
 - Full support for long-form X Articles (formerly Notes) with headings, lists, and code blocks
 - Extract tweets, nested threads, and quote tweets into clean Markdown
+- Export just one tweet without its thread — via the right-click menu or Shift/Alt-clicking the inline button
 - Preserve quoted-post structure and context — including the original author's name and handle
 - Multi-view popup: primary actions stay focused up front, set-once preferences live in a Settings panel behind a gear icon
 - Show or hide the inline button via a toggle if it conflicts with another extension's icon
