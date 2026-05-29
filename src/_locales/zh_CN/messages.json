@@ -83,6 +83,21 @@
   "group_inline": {
     "message": "内联按钮和右键菜单"
   },
+  "group_frontmatter": {
+    "message": "frontmatter 字段"
+  },
+  "opt_frontmatter_help": {
+    "message": "选择哪些条目出现在 YAML frontmatter 中。选择按模式分别保存。"
+  },
+  "opt_frontmatter_mode_default": {
+    "message": "默认模式"
+  },
+  "opt_frontmatter_mode_obsidian": {
+    "message": "Obsidian 友好模式"
+  },
+  "opt_frontmatter_select_all": {
+    "message": "全部启用"
+  },
   "nav_settings": {
     "message": "设置"
   },

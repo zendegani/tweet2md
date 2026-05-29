@@ -1,0 +1,230 @@
+{
+  "extensionName": {
+    "message": "X थ्रेड और आर्टिकल को Markdown या Obsidian में"
+  },
+  "extensionDescription": {
+    "message": "X (Twitter) के थ्रेड, ट्वीट और आर्टिकल को साफ़ Markdown में एक्सपोर्ट करें — Obsidian में भेजें या लोकल सेव करें। कोई API ज़रूरी नहीं।"
+  },
+  "tagline": {
+    "message": "थ्रेड और आर्टिकल को Markdown में बदलें"
+  },
+  "btn_download": {
+    "message": ".md डाउनलोड"
+  },
+  "btn_copy": {
+    "message": ".md कॉपी"
+  },
+  "btn_obsidian": {
+    "message": "Obsidian में जोड़ें"
+  },
+  "btn_obsidian_hint": {
+    "message": "लंबे थ्रेड या इमेज? बेहतर है .md डाउनलोड करें"
+  },
+  "obsidian_opened": {
+    "message": "Obsidian खोला जा रहा है…"
+  },
+  "extracting": {
+    "message": "एक्सट्रैक्ट हो रहा है…"
+  },
+  "group_export": {
+    "message": "एक्सपोर्ट"
+  },
+  "group_downloads": {
+    "message": "डाउनलोड"
+  },
+  "opt_download_folder": {
+    "message": "सबफ़ोल्डर"
+  },
+  "opt_download_folder_title": {
+    "message": "Markdown और इमेज को अपने Downloads फ़ोल्डर के इस सबफ़ोल्डर में सेव करें। सीधे Downloads में सेव करने के लिए खाली छोड़ें।"
+  },
+  "opt_download_folder_placeholder": {
+    "message": "जैसे tweet2md"
+  },
+  "opt_filename_template": {
+    "message": "फ़ाइल नाम टेम्पलेट"
+  },
+  "opt_filename_template_title": {
+    "message": "एक्सपोर्ट की गई फ़ाइल के नाम का टेम्पलेट। प्लेसहोल्डर: {date}, {datetime}, {handle}, {author}, {id}, {slug}, {type}। डिफ़ॉल्ट के लिए खाली छोड़ें।"
+  },
+  "opt_filename_template_placeholder": {
+    "message": "{handle}-{id}.md"
+  },
+  "opt_filename_preview": {
+    "message": "पूर्वावलोकन:"
+  },
+  "opt_filename_template_info": {
+    "message": "फ़ाइल नाम टेम्पलेट के प्लेसहोल्डर दिखाएँ"
+  },
+  "opt_filename_template_hint_title": {
+    "message": "प्लेसहोल्डर"
+  },
+  "opt_filename_hint_date": {
+    "message": "प्रकाशन तिथि (YYYY-MM-DD)"
+  },
+  "opt_filename_hint_datetime": {
+    "message": "प्रकाशन तिथि + समय"
+  },
+  "opt_filename_hint_handle": {
+    "message": "@ के बिना लेखक का handle"
+  },
+  "opt_filename_hint_author": {
+    "message": "लेखक का प्रदर्शित नाम"
+  },
+  "opt_filename_hint_id": {
+    "message": "ट्वीट ID"
+  },
+  "opt_filename_hint_slug": {
+    "message": "टेक्स्ट का छोटा पूर्वावलोकन"
+  },
+  "opt_filename_hint_type": {
+    "message": "tweet / thread / article"
+  },
+  "group_inline": {
+    "message": "Inline बटन और कॉन्टेक्स्ट मेनू"
+  },
+  "group_frontmatter": {
+    "message": "frontmatter फ़ील्ड"
+  },
+  "opt_frontmatter_help": {
+    "message": "चुनें कि YAML frontmatter में कौन-सी एंट्रियाँ दिखें। चयन प्रत्येक मोड के अनुसार सेव होते हैं।"
+  },
+  "opt_frontmatter_mode_default": {
+    "message": "डिफ़ॉल्ट मोड"
+  },
+  "opt_frontmatter_mode_obsidian": {
+    "message": "Obsidian-friendly मोड"
+  },
+  "opt_frontmatter_select_all": {
+    "message": "सभी चालू करें"
+  },
+  "nav_settings": {
+    "message": "सेटिंग्स"
+  },
+  "nav_back": {
+    "message": "वापस"
+  },
+  "settings_help": {
+    "message": "अधिक जानकारी के लिए लेबल पर hover करें"
+  },
+  "group_obsidian": {
+    "message": "Obsidian"
+  },
+  "opt_obsidian_friendly": {
+    "message": "Obsidian-friendly frontmatter"
+  },
+  "opt_obsidian_friendly_title": {
+    "message": "Obsidian के लिए ऑप्टिमाइज़्ड frontmatter जनरेट करें: wikilink लेखक, tags, published/created तिथियाँ"
+  },
+  "opt_obsidian_vault": {
+    "message": "Vault का नाम"
+  },
+  "opt_obsidian_vault_title": {
+    "message": "'Add to Obsidian' बटन द्वारा उपयोग होता है। खाली छोड़ें तो Obsidian पिछला उपयोग किया हुआ vault चुनेगा।"
+  },
+  "opt_obsidian_vault_placeholder": {
+    "message": "(वैकल्पिक)"
+  },
+  "opt_obsidian_folder": {
+    "message": "सबफ़ोल्डर"
+  },
+  "opt_obsidian_folder_title": {
+    "message": "नोट को vault के इस सबफ़ोल्डर में बनाएँ (जैसे Tweets या Inbox/Tweets)। खाली छोड़ें तो vault की रूट में बनेगा।"
+  },
+  "opt_obsidian_folder_placeholder": {
+    "message": "जैसे Tweets"
+  },
+  "opt_save_images_title": {
+    "message": "Markdown फ़ाइल के बगल वाले फ़ोल्डर में इमेज डाउनलोड करें"
+  },
+  "opt_save_images": {
+    "message": "इमेज लोकल सेव करें"
+  },
+  "opt_metadata_title": {
+    "message": "likes, reposts, views को YAML frontmatter में जोड़ें"
+  },
+  "opt_metadata": {
+    "message": "मेटाडेटा शामिल करें"
+  },
+  "opt_inline_stats_title": {
+    "message": "likes, reposts, replies, bookmarks और views को Markdown body में एक पंक्ति के रूप में दिखाएँ"
+  },
+  "opt_inline_stats": {
+    "message": "इंगेजमेंट आँकड़े inline दिखाएँ"
+  },
+  "opt_close_tab_title": {
+    "message": "ट्वीट के inline बटन या राइट-क्लिक मेनू से एक्सपोर्ट के बाद टैब अपने आप बंद करें"
+  },
+  "opt_close_tab": {
+    "message": "एक्सपोर्ट के बाद नया टैब बंद करें"
+  },
+  "ctx_save_tweet": {
+    "message": "ट्वीट को Markdown के रूप में सेव करें"
+  },
+  "ctx_copy_tweet": {
+    "message": "ट्वीट को Markdown के रूप में कॉपी करें"
+  },
+  "ctx_copy_just_this_tweet": {
+    "message": "केवल यह ट्वीट कॉपी करें (बिना थ्रेड)"
+  },
+  "ctx_obsidian_tweet": {
+    "message": "ट्वीट को Obsidian में जोड़ें"
+  },
+  "opt_show_inline_title": {
+    "message": "प्रत्येक ट्वीट के ऐक्शन बार पर Share के बगल एक डाउनलोड बटन जोड़ें"
+  },
+  "opt_show_inline": {
+    "message": "ट्वीट पर inline बटन दिखाएँ"
+  },
+  "opt_inline_copies_title": {
+    "message": "चालू होने पर, हर ट्वीट का inline आइकन फ़ाइल डाउनलोड करने के बजाय Markdown क्लिपबोर्ड में कॉपी करता है"
+  },
+  "opt_inline_copies": {
+    "message": "Inline बटन डाउनलोड के बजाय कॉपी करता है"
+  },
+  "footer_hint": {
+    "message": "शुरू करने के लिए X.com पर कोई ट्वीट या आर्टिकल खोलें"
+  },
+  "footer_feedback": {
+    "message": "समस्याएँ या सुझाव?"
+  },
+  "error_reload": {
+    "message": "पेज रीलोड करें और दोबारा कोशिश करें।"
+  },
+  "error_specific_page": {
+    "message": "किसी विशिष्ट ट्वीट या आर्टिकल पेज को खोलें (जिसके URL में /status/ हो)।"
+  },
+  "error_failed": {
+    "message": "कंटेंट एक्सट्रैक्ट करने में विफल।"
+  },
+  "error_unexpected": {
+    "message": "एक अप्रत्याशित त्रुटि हुई।"
+  },
+  "download_failed": {
+    "message": "डाउनलोड विफल।"
+  },
+  "article_downloaded": {
+    "message": "आर्टिकल डाउनलोड हो गया!"
+  },
+  "thread_downloaded": {
+    "message": "थ्रेड डाउनलोड हो गया!"
+  },
+  "tweet_downloaded": {
+    "message": "ट्वीट डाउनलोड हो गया!"
+  },
+  "downloaded": {
+    "message": "डाउनलोड हो गया!"
+  },
+  "article_copied": {
+    "message": "आर्टिकल कॉपी हो गया!"
+  },
+  "thread_copied": {
+    "message": "थ्रेड कॉपी हो गया!"
+  },
+  "tweet_copied": {
+    "message": "ट्वीट कॉपी हो गया!"
+  },
+  "copied": {
+    "message": "कॉपी हो गया!"
+  }
+}

@@ -83,6 +83,21 @@
   "group_inline": {
     "message": "الزر المدمج وقائمة النقر بالزر الأيمن"
   },
+  "group_frontmatter": {
+    "message": "حقول الـ frontmatter"
+  },
+  "opt_frontmatter_help": {
+    "message": "اختر الإدخالات التي تظهر في YAML frontmatter. تُحفظ الاختيارات لكل وضع."
+  },
+  "opt_frontmatter_mode_default": {
+    "message": "الوضع الافتراضي"
+  },
+  "opt_frontmatter_mode_obsidian": {
+    "message": "وضع متوافق مع Obsidian"
+  },
+  "opt_frontmatter_select_all": {
+    "message": "تفعيل الكل"
+  },
   "nav_settings": {
     "message": "الإعدادات"
   },

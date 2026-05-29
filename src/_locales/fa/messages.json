@@ -83,6 +83,21 @@
   "group_inline": {
     "message": "دکمه روی توییت و منوی راست‌کلیک"
   },
+  "group_frontmatter": {
+    "message": "فیلدهای frontmatter"
+  },
+  "opt_frontmatter_help": {
+    "message": "انتخاب کنید کدام موارد در frontmatter YAML نمایش داده شوند. انتخاب‌ها برای هر حالت جداگانه ذخیره می‌شوند."
+  },
+  "opt_frontmatter_mode_default": {
+    "message": "حالت پیش‌فرض"
+  },
+  "opt_frontmatter_mode_obsidian": {
+    "message": "حالت سازگار با Obsidian"
+  },
+  "opt_frontmatter_select_all": {
+    "message": "فعال‌سازی همه"
+  },
   "nav_settings": {
     "message": "تنظیمات"
   },

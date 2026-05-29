@@ -83,6 +83,21 @@
   "group_inline": {
     "message": "Bouton intégré et menu contextuel"
   },
+  "group_frontmatter": {
+    "message": "Champs du frontmatter"
+  },
+  "opt_frontmatter_help": {
+    "message": "Choisissez quelles entrées apparaissent dans le frontmatter YAML. Les sélections sont enregistrées par mode."
+  },
+  "opt_frontmatter_mode_default": {
+    "message": "Mode par défaut"
+  },
+  "opt_frontmatter_mode_obsidian": {
+    "message": "Mode optimisé pour Obsidian"
+  },
+  "opt_frontmatter_select_all": {
+    "message": "Tout activer"
+  },
   "nav_settings": {
     "message": "Paramètres"
   },

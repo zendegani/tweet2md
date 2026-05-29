@@ -1,0 +1,230 @@
+{
+  "extensionName": {
+    "message": "Thread e articoli di X in Markdown o Obsidian"
+  },
+  "extensionDescription": {
+    "message": "Esporta thread, tweet e articoli di X (Twitter) in Markdown pulito — invia a Obsidian o salva localmente. Nessuna API."
+  },
+  "tagline": {
+    "message": "Converti thread e articoli in Markdown"
+  },
+  "btn_download": {
+    "message": "Scarica .md"
+  },
+  "btn_copy": {
+    "message": "Copia .md"
+  },
+  "btn_obsidian": {
+    "message": "Aggiungi a Obsidian"
+  },
+  "btn_obsidian_hint": {
+    "message": "Thread lunghi o immagini? Usa Scarica .md"
+  },
+  "obsidian_opened": {
+    "message": "Apertura di Obsidian…"
+  },
+  "extracting": {
+    "message": "Estrazione…"
+  },
+  "group_export": {
+    "message": "Esportazione"
+  },
+  "group_downloads": {
+    "message": "Download"
+  },
+  "opt_download_folder": {
+    "message": "Sottocartella"
+  },
+  "opt_download_folder_title": {
+    "message": "Salva Markdown e immagini in questa sottocartella all'interno della tua cartella Download. Lascia vuoto per salvare direttamente in Download."
+  },
+  "opt_download_folder_placeholder": {
+    "message": "es. tweet2md"
+  },
+  "opt_filename_template": {
+    "message": "Modello nome file"
+  },
+  "opt_filename_template_title": {
+    "message": "Modello per il nome del file esportato. Segnaposto: {date}, {datetime}, {handle}, {author}, {id}, {slug}, {type}. Lascia vuoto per il predefinito."
+  },
+  "opt_filename_template_placeholder": {
+    "message": "{handle}-{id}.md"
+  },
+  "opt_filename_preview": {
+    "message": "Anteprima:"
+  },
+  "opt_filename_template_info": {
+    "message": "Mostra segnaposto del modello nome file"
+  },
+  "opt_filename_template_hint_title": {
+    "message": "Segnaposto"
+  },
+  "opt_filename_hint_date": {
+    "message": "data di pubblicazione (AAAA-MM-GG)"
+  },
+  "opt_filename_hint_datetime": {
+    "message": "data di pubblicazione + ora"
+  },
+  "opt_filename_hint_handle": {
+    "message": "handle dell'autore senza @"
+  },
+  "opt_filename_hint_author": {
+    "message": "nome visualizzato dell'autore"
+  },
+  "opt_filename_hint_id": {
+    "message": "ID del tweet"
+  },
+  "opt_filename_hint_slug": {
+    "message": "breve anteprima del testo"
+  },
+  "opt_filename_hint_type": {
+    "message": "tweet / thread / articolo"
+  },
+  "group_inline": {
+    "message": "Pulsante inline e menu contestuale"
+  },
+  "group_frontmatter": {
+    "message": "Campi del frontmatter"
+  },
+  "opt_frontmatter_help": {
+    "message": "Scegli quali voci compaiono nel frontmatter YAML. Le selezioni sono salvate per modalità."
+  },
+  "opt_frontmatter_mode_default": {
+    "message": "Modalità predefinita"
+  },
+  "opt_frontmatter_mode_obsidian": {
+    "message": "Modalità ottimizzata per Obsidian"
+  },
+  "opt_frontmatter_select_all": {
+    "message": "Attiva tutto"
+  },
+  "nav_settings": {
+    "message": "Impostazioni"
+  },
+  "nav_back": {
+    "message": "Indietro"
+  },
+  "settings_help": {
+    "message": "Passa sopra le etichette per maggiori informazioni"
+  },
+  "group_obsidian": {
+    "message": "Obsidian"
+  },
+  "opt_obsidian_friendly": {
+    "message": "frontmatter ottimizzato per Obsidian"
+  },
+  "opt_obsidian_friendly_title": {
+    "message": "Genera frontmatter ottimizzato per Obsidian: autore con wikilink, tag, date published/created"
+  },
+  "opt_obsidian_vault": {
+    "message": "Nome del vault"
+  },
+  "opt_obsidian_vault_title": {
+    "message": "Usato dal pulsante 'Aggiungi a Obsidian'. Lascia vuoto per far scegliere a Obsidian l'ultimo vault utilizzato."
+  },
+  "opt_obsidian_vault_placeholder": {
+    "message": "(opzionale)"
+  },
+  "opt_obsidian_folder": {
+    "message": "Sottocartella"
+  },
+  "opt_obsidian_folder_title": {
+    "message": "Crea la nota in questa sottocartella del vault (es. Tweets o Inbox/Tweets). Lascia vuoto per creare nella radice del vault."
+  },
+  "opt_obsidian_folder_placeholder": {
+    "message": "es. Tweets"
+  },
+  "opt_save_images_title": {
+    "message": "Scarica le immagini in una cartella accanto al file Markdown"
+  },
+  "opt_save_images": {
+    "message": "Salva immagini in locale"
+  },
+  "opt_metadata_title": {
+    "message": "Aggiungi like, repost, visualizzazioni come frontmatter YAML"
+  },
+  "opt_metadata": {
+    "message": "Includi metadati"
+  },
+  "opt_inline_stats_title": {
+    "message": "Mostra like, repost, risposte, segnalibri e visualizzazioni come riga nel corpo Markdown"
+  },
+  "opt_inline_stats": {
+    "message": "Mostra statistiche di interazione inline"
+  },
+  "opt_close_tab_title": {
+    "message": "Chiudi automaticamente la scheda dopo l'esportazione dal pulsante inline o dal menu di scelta rapida"
+  },
+  "opt_close_tab": {
+    "message": "Chiudi la nuova scheda dopo l'esportazione"
+  },
+  "ctx_save_tweet": {
+    "message": "Salva tweet come Markdown"
+  },
+  "ctx_copy_tweet": {
+    "message": "Copia tweet come Markdown"
+  },
+  "ctx_copy_just_this_tweet": {
+    "message": "Copia solo questo tweet (senza thread)"
+  },
+  "ctx_obsidian_tweet": {
+    "message": "Aggiungi tweet a Obsidian"
+  },
+  "opt_show_inline_title": {
+    "message": "Aggiungi un pulsante di download accanto a Condividi nella barra delle azioni di ogni tweet"
+  },
+  "opt_show_inline": {
+    "message": "Mostra pulsante inline nei tweet"
+  },
+  "opt_inline_copies_title": {
+    "message": "Quando attivo, l'icona inline su ogni tweet copia il Markdown negli appunti invece di scaricare un file"
+  },
+  "opt_inline_copies": {
+    "message": "Il pulsante inline copia invece di scaricare"
+  },
+  "footer_hint": {
+    "message": "Apri un tweet o un articolo su X.com per iniziare"
+  },
+  "footer_feedback": {
+    "message": "Problemi o suggerimenti?"
+  },
+  "error_reload": {
+    "message": "Ricarica la pagina e riprova."
+  },
+  "error_specific_page": {
+    "message": "Apri una pagina specifica di tweet o articolo (con /status/ nell'URL)."
+  },
+  "error_failed": {
+    "message": "Impossibile estrarre il contenuto."
+  },
+  "error_unexpected": {
+    "message": "Si è verificato un errore inatteso."
+  },
+  "download_failed": {
+    "message": "Download non riuscito."
+  },
+  "article_downloaded": {
+    "message": "Articolo scaricato!"
+  },
+  "thread_downloaded": {
+    "message": "Thread scaricato!"
+  },
+  "tweet_downloaded": {
+    "message": "Tweet scaricato!"
+  },
+  "downloaded": {
+    "message": "Scaricato!"
+  },
+  "article_copied": {
+    "message": "Articolo copiato!"
+  },
+  "thread_copied": {
+    "message": "Thread copiato!"
+  },
+  "tweet_copied": {
+    "message": "Tweet copiato!"
+  },
+  "copied": {
+    "message": "Copiato!"
+  }
+}

@@ -1,58 +1,51 @@
-tweet2md é uma extensão Chrome de código aberto que transforma conteúdo do x.com em Markdown pronto para produção para pesquisa, anotações, fluxos de trabalho de IA e arquivamento offline.
+tweet2md é uma extensão Chrome de código aberto que converte threads, posts e artigos do X/Twitter em Markdown limpo para Obsidian, pesquisa, fluxos de IA e arquivamento offline.
 
-Novidades
+Exporte conteúdo com um clique:
 
-Veja as últimas atualizações e versões:
-https://github.com/zendegani/tweet2md/blob/main/CHANGELOG.md
+- Salvar como Markdown
+- Copiar Markdown para a área de transferência
+- Enviar diretamente para o Obsidian
+- Baixar imagens localmente junto ao seu arquivo .md
 
-Principais recursos:
+Funciona inteiramente no seu navegador. Sem chaves de API, sem contas, sem rastreamento, sem analytics.
 
-- Três formas de ativação: popup da barra de ferramentas, botão inline em tweets ou menu de contexto
-- Copiar Markdown, baixar arquivo ou enviar para Obsidian
-- Botão “Adicionar ao Obsidian” com um clique
-- Subpasta opcional de vault para a integração com Obsidian: notas criadas em uma pasta específica (ex.: Tweets ou Inbox/Tweets) — deixe em branco para usar a raiz do vault
-- Frontmatter amigável ao Obsidian
-- Captura cartões de links de tweets
-- Suporte completo para artigos longos do X
-- Extrai tweets, threads e citações em Markdown limpo
-- Exporta apenas um tweet sem a thread — pelo menu de contexto ou com Shift/Alt-clique no botão inline
-- Preserva estrutura e contexto das citações
-- Popup com múltiplas visualizações
-- Mostrar ou ocultar botão inline
-- Botão inline pode copiar em vez de baixar
-- Fechamento automático opcional de abas após exportação
-- Download local de imagens e mídias incorporadas
-- Subpasta opcional de Downloads: arquivos Markdown e imagens são salvos em uma subpasta escolhida em vez da raiz
-- Modelo de nome de arquivo personalizável: monte o nome do arquivo exportado com marcadores como {date}, {datetime}, {handle}, {author}, {id}, {slug} e {type}, com pré-visualização ao vivo nas configurações — deixe em branco para manter o padrão
-- YAML frontmatter rico com metadados e estatísticas
-- Linha opcional de engajamento estilo X
-- Expansão automática de posts truncados
-- Interface multilíngue
-- Tema claro e escuro
+Recursos principais:
+
+- Exporta tweets, threads, citações, threads aninhadas e artigos longos do X (antigas Notes)
+- Markdown limpo que funciona com Obsidian, Logseq, Notion, Hugo e outros fluxos baseados em Markdown
+- Botão "Adicionar ao Obsidian" com um clique via esquema URI obsidian://
+- frontmatter YAML completo com autor, handle, datas, URL de origem, tipo de conteúdo e métricas de engajamento
+- frontmatter opcional otimizado para Obsidian: autores em wikilink [[@handle]], metadados compatíveis com Dataview e títulos e descrições sintetizados
+- Baixa imagens incorporadas localmente para evitar links quebrados
+- Captura cards de link com título, domínio de origem e imagem de pré-visualização
+- Captura enquetes com opções, porcentagens de resultados e a linha de total/status de votos
+- Preserva a estrutura e atribuição dos tweets citados
+- Exporta um único tweet ou uma thread inteira
+- Botão de exportação inline dentro do x.com, além de popup da barra de ferramentas e menu de contexto do clique direito
+- Modelos de nome de arquivo personalizáveis com placeholders como {date}, {handle}, {slug} e {type}
+- Vault de Obsidian e subpasta de vault opcionais
+- Subpasta opcional para downloads de Markdown e mídia
+- Interface multilíngue: inglês, espanhol, alemão, francês, italiano, russo, japonês, português (Brasil), chinês (simplificado), hindi, árabe e persa
+- Modo claro e escuro
 
 Ótimo para:
 
-- Importar conteúdo do X para Obsidian, Notion, Logseq ou Hugo
-- Exportar texto para prompts LLM e pipelines RAG
-- Arquivar threads de pesquisa offline
-- Construir um Second Brain pesquisável
-- Preparar material para escrita ou tradução
-
-Por que usar:
-
-- Fluxo de trabalho com um clique
-- Integração direta com Obsidian
-- Markdown limpo e estruturado
-- Arquivamento local de imagens
-- Sem necessidade de API
-- Tudo processado localmente
+- Fluxos de Obsidian e PKM
+- Pesquisa e arquivamento de referências
+- Prompts de IA e pipelines RAG
+- Construir um segundo cérebro pesquisável
+- Preservar conteúdo longo do X offline
 
 Limitações atuais:
 
-- Focado na extração de conteúdo do x.com
-- Vídeos e GIFs não são exportados como mídia reproduzível
-- Pode ser necessário recarregar a página após instalar ou atualizar a extensão
-- Algumas funcionalidades podem parar de funcionar se o x.com mudar sua estrutura
+- Vídeos e GIFs não são exportados como arquivos de mídia reproduzíveis
+- Algumas funções podem parar de funcionar se o x.com alterar significativamente a estrutura da página
+- Se você instalar ou atualizar a extensão com uma aba do x.com já aberta, recarregue a aba antes de exportar — isto é intencional, para evitar falhas silenciosas em uma página não inicializada
 
-Este é um projeto de código aberto.
-tweet2md é uma ferramenta independente e não é afiliada ao X ou x.com.
+Código aberto:
+https://github.com/zendegani/tweet2md
+
+Changelog:
+https://github.com/zendegani/tweet2md/blob/main/CHANGELOG.md
+
+tweet2md é um projeto independente de código aberto e não é afiliado ao X ou Twitter.
