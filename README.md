@@ -23,6 +23,7 @@
 - **Three Ways to Trigger** — Toolbar popup, inline button on every tweet's action bar, or the right-click context menu
 - **X Articles** — Full support for long-form Articles (formerly Notes) with headings, lists, and code blocks
 - **Tweets & Threads** — Extract tweets, nested threads, and quote tweets into clean Markdown
+- **Single-Tweet Export** — Grab just one tweet without its thread via the right-click menu's **Copy just this tweet (no thread)** item, or by Shift/Alt-clicking the inline button
 - **Quoted Posts** — Preserve quoted-post structure and context in a reusable format, with the original author's name and handle
 - **Link Cards** — Capture external link previews including the title, domain, and high-res Open Graph image
 - **Add to Obsidian** — One-click handoff to Obsidian via the `obsidian://` URI scheme, with an optional vault name for direct targeting
@@ -101,8 +102,8 @@ Install `tweet2md` from the [Chrome Web Store](https://chromewebstore.google.com
 Pick whichever entry point you prefer — they all run the same extractor and respect the same toggles:
 
 - **Toolbar popup** — Click the tweet2md icon, then **Download .md**, **Copy .md**, or **Add to Obsidian**.
-- **Inline button** — Click the download icon at the right of any tweet's action bar (and at the top of long-form articles). Opens the tweet in a new tab and exports automatically.
-- **Right-click menu** — Right-click any tweet and pick **Save tweet as Markdown** or **Copy tweet as Markdown**.
+- **Inline button** — Click the download icon at the right of any tweet's action bar (and at the top of long-form articles). Opens the tweet in a new tab and exports automatically. Shift/Alt-click to export just that tweet without its thread.
+- **Right-click menu** — Right-click any tweet and pick **Save tweet as Markdown**, **Copy tweet as Markdown**, or **Copy just this tweet (no thread)**.
 
 Main-view toggles (configure per export):
 

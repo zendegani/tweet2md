@@ -15,6 +15,7 @@ https://github.com/zendegani/tweet2md/blob/main/CHANGELOG.md
 - ツイート内リンクカードの取得
 - 長文 X Articles（旧 Notes）を完全サポート
 - ツイート、スレッド、引用ツイートを Markdown に変換
+- スレッドを含めず単一のツイートだけをエクスポート — 右クリックメニュー、またはインラインボタンの Shift/Alt クリックで
 - 引用投稿の構造とコンテキストを保持
 - マルチビュー対応ポップアップ
 - インラインボタンの表示・非表示切替

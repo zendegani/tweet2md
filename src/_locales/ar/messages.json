@@ -149,6 +149,9 @@
   "ctx_copy_tweet": {
     "message": "نسخ التغريدة كـ Markdown"
   },
+  "ctx_copy_just_this_tweet": {
+    "message": "نسخ هذه التغريدة فقط (دون السلسلة)"
+  },
   "ctx_obsidian_tweet": {
     "message": "إضافة التغريدة إلى Obsidian"
   },

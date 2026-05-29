@@ -149,6 +149,9 @@
   "ctx_copy_tweet": {
     "message": "ツイートをMarkdownとしてコピー"
   },
+  "ctx_copy_just_this_tweet": {
+    "message": "このツイートだけをコピー（スレッドなし）"
+  },
   "ctx_obsidian_tweet": {
     "message": "ツイートをObsidianに追加"
   },

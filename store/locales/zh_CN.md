@@ -15,6 +15,7 @@ https://github.com/zendegani/tweet2md/blob/main/CHANGELOG.md
 - 捕获推文链接卡片
 - 完整支持长篇 X Articles
 - 提取推文、线程和引用推文
+- 仅导出单条推文（不含线程）——通过右键菜单或 Shift/Alt 点击内嵌按钮
 - 保留引用内容结构与上下文
 - 多视图弹窗界面
 - 可显示或隐藏内联按钮

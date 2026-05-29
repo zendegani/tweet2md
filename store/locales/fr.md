@@ -15,6 +15,7 @@ Fonctionnalités principales :
 - Capture des cartes de liens de tweets
 - Support complet des longs articles X
 - Extraction des tweets, fils et citations en Markdown propre
+- Exporter un seul tweet sans son fil — via le menu contextuel ou un Maj/Alt-clic sur le bouton intégré
 - Préservation de la structure et du contexte des citations
 - Popup multi-vues avec panneau de paramètres
 - Affichage/masquage du bouton inline

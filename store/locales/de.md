@@ -15,6 +15,7 @@ Hauptfunktionen:
 - Erfasst Linkkarten aus Tweets: Titel, Quelldomain und Open-Graph-Vorschaubild
 - Vollständige Unterstützung für lange X-Artikel (ehemals Notes) mit Überschriften, Listen und Codeblöcken
 - Extrahiert Tweets, verschachtelte Threads und zitierte Tweets in sauberes Markdown
+- Exportiert nur einen einzelnen Tweet ohne Thread — über das Kontextmenü oder Umschalt-/Alt-Klick auf den Inline-Button
 - Bewahrt Struktur und Kontext zitierter Beiträge einschließlich Name und Handle des ursprünglichen Autors
 - Mehransichts-Popup mit fokussierten Hauptaktionen und Einstellungen hinter einem Zahnrad-Symbol
 - Inline-Button kann bei Konflikten mit anderen Erweiterungen ein- oder ausgeblendet werden

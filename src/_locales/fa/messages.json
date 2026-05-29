@@ -149,6 +149,9 @@
   "ctx_copy_tweet": {
     "message": "کپی توییت به‌صورت Markdown"
   },
+  "ctx_copy_just_this_tweet": {
+    "message": "کپی فقط همین توییت (بدون رشته)"
+  },
   "ctx_obsidian_tweet": {
     "message": "افزودن توییت به Obsidian"
   },

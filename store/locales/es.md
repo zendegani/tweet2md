@@ -15,6 +15,7 @@ Características principales:
 - Captura tarjetas de enlaces de tweets: título, dominio de origen e imagen Open Graph
 - Compatibilidad completa con artículos largos de X (antes Notes), incluyendo encabezados, listas y bloques de código
 - Extrae tweets, hilos anidados y tweets citados en Markdown limpio
+- Exporta solo un tweet sin su hilo — desde el menú contextual o con Shift/Alt-clic en el botón inline
 - Conserva la estructura y el contexto de publicaciones citadas, incluyendo el nombre y handle del autor original
 - Popup de múltiples vistas: las acciones principales permanecen visibles y las preferencias se encuentran en un panel de Configuración detrás de un icono de engranaje
 - Muestra u oculta el botón inline mediante un interruptor si entra en conflicto con otra extensión

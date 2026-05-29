@@ -149,6 +149,9 @@
   "ctx_copy_tweet": {
     "message": "将推文复制为 Markdown"
   },
+  "ctx_copy_just_this_tweet": {
+    "message": "仅复制此推文（不含线程）"
+  },
   "ctx_obsidian_tweet": {
     "message": "将推文添加到 Obsidian"
   },
