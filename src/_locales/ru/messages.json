@@ -1,0 +1,230 @@
+{
+  "extensionName": {
+    "message": "Треды и статьи X в Markdown или Obsidian"
+  },
+  "extensionDescription": {
+    "message": "Экспорт тредов, твитов и статей X (Twitter) в чистый Markdown — отправка в Obsidian или сохранение локально. Без API."
+  },
+  "tagline": {
+    "message": "Превращайте треды и статьи в Markdown"
+  },
+  "btn_download": {
+    "message": "Скачать .md"
+  },
+  "btn_copy": {
+    "message": "Копировать .md"
+  },
+  "btn_obsidian": {
+    "message": "Добавить в Obsidian"
+  },
+  "btn_obsidian_hint": {
+    "message": "Длинные треды или изображения? Используйте Скачать .md"
+  },
+  "obsidian_opened": {
+    "message": "Открытие Obsidian…"
+  },
+  "extracting": {
+    "message": "Извлечение…"
+  },
+  "group_export": {
+    "message": "Экспорт"
+  },
+  "group_downloads": {
+    "message": "Загрузки"
+  },
+  "opt_download_folder": {
+    "message": "Подпапка"
+  },
+  "opt_download_folder_title": {
+    "message": "Сохранять Markdown и изображения в этой подпапке внутри папки Загрузки. Оставьте пустым, чтобы сохранять прямо в Загрузки."
+  },
+  "opt_download_folder_placeholder": {
+    "message": "напр. tweet2md"
+  },
+  "opt_filename_template": {
+    "message": "Шаблон имени файла"
+  },
+  "opt_filename_template_title": {
+    "message": "Шаблон имени экспортируемого файла. Плейсхолдеры: {date}, {datetime}, {handle}, {author}, {id}, {slug}, {type}. Оставьте пустым для значения по умолчанию."
+  },
+  "opt_filename_template_placeholder": {
+    "message": "{handle}-{id}.md"
+  },
+  "opt_filename_preview": {
+    "message": "Превью:"
+  },
+  "opt_filename_template_info": {
+    "message": "Показать плейсхолдеры шаблона имени файла"
+  },
+  "opt_filename_template_hint_title": {
+    "message": "Плейсхолдеры"
+  },
+  "opt_filename_hint_date": {
+    "message": "дата публикации (ГГГГ-ММ-ДД)"
+  },
+  "opt_filename_hint_datetime": {
+    "message": "дата публикации + время"
+  },
+  "opt_filename_hint_handle": {
+    "message": "handle автора без @"
+  },
+  "opt_filename_hint_author": {
+    "message": "отображаемое имя автора"
+  },
+  "opt_filename_hint_id": {
+    "message": "ID твита"
+  },
+  "opt_filename_hint_slug": {
+    "message": "короткое превью текста"
+  },
+  "opt_filename_hint_type": {
+    "message": "tweet / thread / article"
+  },
+  "group_inline": {
+    "message": "Inline-кнопка и контекстное меню"
+  },
+  "group_frontmatter": {
+    "message": "Поля frontmatter"
+  },
+  "opt_frontmatter_help": {
+    "message": "Выберите, какие поля попадают в YAML frontmatter. Выбор сохраняется для каждого режима."
+  },
+  "opt_frontmatter_mode_default": {
+    "message": "Стандартный режим"
+  },
+  "opt_frontmatter_mode_obsidian": {
+    "message": "Режим под Obsidian"
+  },
+  "opt_frontmatter_select_all": {
+    "message": "Включить все"
+  },
+  "nav_settings": {
+    "message": "Настройки"
+  },
+  "nav_back": {
+    "message": "Назад"
+  },
+  "settings_help": {
+    "message": "Наведите на метки для подробностей"
+  },
+  "group_obsidian": {
+    "message": "Obsidian"
+  },
+  "opt_obsidian_friendly": {
+    "message": "frontmatter под Obsidian"
+  },
+  "opt_obsidian_friendly_title": {
+    "message": "Генерировать frontmatter, оптимизированный для Obsidian: автор как wikilink, теги, даты published/created"
+  },
+  "opt_obsidian_vault": {
+    "message": "Название vault"
+  },
+  "opt_obsidian_vault_title": {
+    "message": "Используется кнопкой «Добавить в Obsidian». Оставьте пустым, чтобы Obsidian выбрал последний использованный vault."
+  },
+  "opt_obsidian_vault_placeholder": {
+    "message": "(необязательно)"
+  },
+  "opt_obsidian_folder": {
+    "message": "Подпапка"
+  },
+  "opt_obsidian_folder_title": {
+    "message": "Создавать заметку в этой подпапке vault (например, Tweets или Inbox/Tweets). Оставьте пустым, чтобы создавать в корне vault."
+  },
+  "opt_obsidian_folder_placeholder": {
+    "message": "напр. Tweets"
+  },
+  "opt_save_images_title": {
+    "message": "Скачивать изображения в папку рядом с Markdown-файлом"
+  },
+  "opt_save_images": {
+    "message": "Сохранять изображения локально"
+  },
+  "opt_metadata_title": {
+    "message": "Добавлять лайки, репосты, просмотры как YAML frontmatter"
+  },
+  "opt_metadata": {
+    "message": "Включать метаданные"
+  },
+  "opt_inline_stats_title": {
+    "message": "Показывать лайки, репосты, ответы, закладки и просмотры строкой в теле Markdown"
+  },
+  "opt_inline_stats": {
+    "message": "Показывать статистику в самом тексте"
+  },
+  "opt_close_tab_title": {
+    "message": "Автоматически закрывать вкладку после экспорта через inline-кнопку или контекстное меню"
+  },
+  "opt_close_tab": {
+    "message": "Закрывать новую вкладку после экспорта"
+  },
+  "ctx_save_tweet": {
+    "message": "Сохранить твит как Markdown"
+  },
+  "ctx_copy_tweet": {
+    "message": "Копировать твит как Markdown"
+  },
+  "ctx_copy_just_this_tweet": {
+    "message": "Копировать только этот твит (без треда)"
+  },
+  "ctx_obsidian_tweet": {
+    "message": "Добавить твит в Obsidian"
+  },
+  "opt_show_inline_title": {
+    "message": "Добавлять кнопку скачивания рядом с кнопкой «Поделиться» на панели действий каждого твита"
+  },
+  "opt_show_inline": {
+    "message": "Показывать inline-кнопку на твитах"
+  },
+  "opt_inline_copies_title": {
+    "message": "Когда включено, inline-иконка на каждом твите копирует Markdown в буфер обмена, а не скачивает файл"
+  },
+  "opt_inline_copies": {
+    "message": "Inline-кнопка копирует вместо скачивания"
+  },
+  "footer_hint": {
+    "message": "Откройте твит или статью на X.com, чтобы начать"
+  },
+  "footer_feedback": {
+    "message": "Проблемы или предложения?"
+  },
+  "error_reload": {
+    "message": "Перезагрузите страницу и попробуйте снова."
+  },
+  "error_specific_page": {
+    "message": "Откройте конкретную страницу твита или статьи (с /status/ в URL)."
+  },
+  "error_failed": {
+    "message": "Не удалось извлечь содержимое."
+  },
+  "error_unexpected": {
+    "message": "Произошла непредвиденная ошибка."
+  },
+  "download_failed": {
+    "message": "Загрузка не удалась."
+  },
+  "article_downloaded": {
+    "message": "Статья скачана!"
+  },
+  "thread_downloaded": {
+    "message": "Тред скачан!"
+  },
+  "tweet_downloaded": {
+    "message": "Твит скачан!"
+  },
+  "downloaded": {
+    "message": "Скачано!"
+  },
+  "article_copied": {
+    "message": "Статья скопирована!"
+  },
+  "thread_copied": {
+    "message": "Тред скопирован!"
+  },
+  "tweet_copied": {
+    "message": "Твит скопирован!"
+  },
+  "copied": {
+    "message": "Скопировано!"
+  }
+}

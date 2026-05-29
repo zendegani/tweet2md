@@ -1,58 +1,51 @@
-tweet2md is an open-source Chrome extension that turns x.com content into production-ready Markdown for research, note-taking, AI workflows, and offline archiving.
+tweet2md is an open-source Chrome extension that turns X/Twitter threads, posts, and articles into clean Markdown for Obsidian, research, AI workflows, and offline archiving.
 
-What's new?
+Export content in one click:
 
-See the latest updates and releases:
-https://github.com/zendegani/tweet2md/blob/main/CHANGELOG.md
+- Save as Markdown
+- Copy Markdown to clipboard
+- Send directly to Obsidian
+- Download images locally alongside your .md file
+
+Works entirely locally in your browser. No API keys, no accounts, no tracking, no analytics.
 
 Key features:
 
-- Three ways to trigger: toolbar popup, inline download button on every tweet's action bar, or right-click context menu (Save / Copy as Markdown / Add to Obsidian)
-- Copy Markdown to clipboard, download as a file, or hand off to Obsidian
-- One-click Add to Obsidian button — opens Obsidian via the obsidian:// URI scheme with the rendered Markdown prefilled; optional vault name to target a specific vault
-- Optional vault subfolder for the Obsidian handoff so notes land inside a specific folder (e.g. Tweets or Inbox/Tweets) — leave blank to use the vault root
-- Obsidian-friendly frontmatter (opt-in): wikilinked [[@handle]] author for instant backlinks, synthesized title, published/created date split, prose description snippet, and a tags array — plus all the existing engagement metadata for Dataview queries
-- Capture link cards from tweets: title, source domain, and the Open Graph preview image
-- Full support for long-form X Articles (formerly Notes) with headings, lists, and code blocks
-- Extract tweets, nested threads, and quote tweets into clean Markdown
-- Export just one tweet without its thread — via the right-click menu or Shift/Alt-clicking the inline button
-- Preserve quoted-post structure and context — including the original author's name and handle
-- Multi-view popup: primary actions stay focused up front, set-once preferences live in a Settings panel behind a gear icon
-- Show or hide the inline button via a toggle if it conflicts with another extension's icon
-- Inline button can be configured to copy to clipboard instead of download
-- Optional auto-close of new tabs opened via the inline button or context menu after export
-- Download embedded X media locally alongside your md file to prevent link rot
-- Optional Downloads subfolder so Markdown files and images land inside a chosen subfolder of your Downloads folder, instead of cluttering the root
-- Customizable filename template: build the exported filename from placeholders like {date}, {datetime}, {handle}, {author}, {id}, {slug}, and {type}, with a live preview in Settings — leave blank to keep the default
-- Rich YAML frontmatter with author, handle, date, source URL, content type, and engagement stats (likes, reposts, replies, bookmarks, views)
-- Optional X-style engagement row directly in the Markdown body (likes, reposts, replies, bookmarks, views) — toggle independently of the YAML frontmatter
-- Automatically expand truncated posts and strip engagement buttons, follow prompts, and trackers
-- Multi-language UI: English, Spanish, German, French, Japanese, Portuguese (Brazil), Chinese (Simplified), Arabic, and Persian. Content extraction works on any language regardless of UI translation
-- Light and dark mode popup, matching your system preferences
+- Export tweets, threads, quote tweets, nested threads, and X Articles (formerly Notes)
+- Clean Markdown that works with Obsidian, Logseq, Notion, Hugo, and other Markdown-based workflows
+- One-click "Add to Obsidian" support via the obsidian:// URI scheme
+- Rich YAML frontmatter with author, handle, dates, source URL, content type, and engagement stats
+- Optional Obsidian-friendly frontmatter: wikilinked [[@handle]] authors, Dataview-friendly metadata, and synthesized titles and descriptions
+- Download embedded images locally to prevent link rot
+- Capture link cards with title, source domain, and preview image
+- Capture polls with choices, result percentages, and the vote total/status line
+- Preserve quote tweet structure and attribution
+- Export a single tweet or an entire thread
+- Inline export button directly inside x.com, plus toolbar popup and right-click context menu
+- Custom filename templates using placeholders like {date}, {handle}, {slug}, and {type}
+- Optional vault targeting and vault subfolder support for Obsidian
+- Optional downloads subfolder for exported Markdown and media
+- Multi-language UI: English, Spanish, German, French, Italian, Russian, Japanese, Portuguese (Brazil), Chinese (Simplified), Hindi, Arabic, and Persian
+- Light and dark mode support
 
 Great for:
 
-- Importing X content into Obsidian, Notion, Logseq, Hugo, or any Markdown-based PKM system
-- Exporting clean text for LLM prompts, RAG pipelines, or AI training workflows
-- Archiving research threads, news references, and long-form articles offline
-- Building a searchable Second Brain from your Twitter/X activity
-- Preparing source material for writing, translation, or summarization
-
-Why use it:
-
-- One-click workflow from any tweet, thread, or article page — popup, inline icon, or right-click menu
-- First-class Obsidian path: hit Add to Obsidian and the note lands in your vault, no plugin or sync setup required
-- Clean, well-structured Markdown output that is easy to edit and index
-- Local image archiving so your saved content never has broken links
-- Zero-API architecture — works directly in your browser with no API keys or accounts
-- Processes everything locally on your device. No analytics, no tracking, no data leaves your machine.
+- Obsidian and PKM workflows
+- Research and reference archiving
+- AI prompts and RAG pipelines
+- Building a searchable second brain
+- Preserving long-form X content offline
 
 Current limitations:
 
-- Focused on x.com content extraction
 - Videos and GIFs are not exported as playable media files
-- Requires a page reload if the extension was installed or updated after opening the tab. This is intentional to avoid silent failures and ensure content is extracted reliably from a properly initialized page.
-- Some content may stop working if x.com changes its page structure significantly
+- Some functionality may break if x.com changes its page structure significantly
+- If you install or update the extension while an x.com tab is already open, reload the tab before exporting — this is intentional, to avoid silent failures on an uninitialized page
 
-This is an open-source project.
-tweet2md is an independent tool and is not affiliated with X or x.com.
+Open source:
+https://github.com/zendegani/tweet2md
+
+Changelog:
+https://github.com/zendegani/tweet2md/blob/main/CHANGELOG.md
+
+tweet2md is an independent open-source project and is not affiliated with X or Twitter.

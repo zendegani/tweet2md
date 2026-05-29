@@ -35,7 +35,7 @@
 - **Inline Engagement Stats** — Optional X-style row in the Markdown body: `💬 284 · 🔁 1.5K · ❤️ 8K · 🔖 253 · 👁 100K`
 - **Copy or Download** — Copy Markdown to clipboard or download as a file
 - **Clean Output** — Automatically expand truncated posts and strip engagement buttons, follow prompts, and trackers
-- **Multi-Language UI** — Popup available in English, Spanish, German, French, Japanese, Portuguese (Brazil), Chinese (Simplified), Arabic, and Persian. Content extraction works on any language regardless of UI translation
+- **Multi-Language UI** — Popup available in English, Spanish, German, French, Italian, Russian, Japanese, Portuguese (Brazil), Chinese (Simplified), Hindi, Arabic, and Persian. Content extraction works on any language regardless of UI translation
 - **Light & Dark Mode** — Popup matches your system preferences
 
 ### Inline button — one click on any tweet

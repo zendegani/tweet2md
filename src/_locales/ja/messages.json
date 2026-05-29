@@ -83,6 +83,21 @@
   "group_inline": {
     "message": "インラインボタン & 右クリックメニュー"
   },
+  "group_frontmatter": {
+    "message": "frontmatter のフィールド"
+  },
+  "opt_frontmatter_help": {
+    "message": "YAML frontmatter に含めるエントリを選択します。選択はモードごとに保存されます。"
+  },
+  "opt_frontmatter_mode_default": {
+    "message": "デフォルトモード"
+  },
+  "opt_frontmatter_mode_obsidian": {
+    "message": "Obsidian 向けモード"
+  },
+  "opt_frontmatter_select_all": {
+    "message": "すべて有効化"
+  },
   "nav_settings": {
     "message": "設定"
   },

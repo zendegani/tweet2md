@@ -83,6 +83,21 @@
   "group_inline": {
     "message": "Inline-Button & Rechtsklick-Menü"
   },
+  "group_frontmatter": {
+    "message": "Frontmatter-Felder"
+  },
+  "opt_frontmatter_help": {
+    "message": "Wähle, welche Einträge im YAML-Frontmatter erscheinen. Die Auswahl wird pro Modus gespeichert."
+  },
+  "opt_frontmatter_mode_default": {
+    "message": "Standardmodus"
+  },
+  "opt_frontmatter_mode_obsidian": {
+    "message": "Obsidian-freundlicher Modus"
+  },
+  "opt_frontmatter_select_all": {
+    "message": "Alle aktivieren"
+  },
   "nav_settings": {
     "message": "Einstellungen"
   },
