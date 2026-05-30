@@ -6,7 +6,7 @@
     "message": "将 X (Twitter) 线程、推文和文章导出为干净的 Markdown — 直接发送到 Obsidian 或本地保存。无需 API。"
   },
   "tagline": {
-    "message": "将推文和文章转换为 Markdown"
+    "message": "将线程和文章转换为 Markdown"
   },
   "btn_download": {
     "message": "下载 .md"
@@ -153,7 +153,7 @@
     "message": "在正文中显示互动数据"
   },
   "opt_close_tab_title": {
-    "message": "启用后，下载或复制推文后会自动关闭当前标签页。"
+    "message": "从推文的内联按钮或右键菜单导出后自动关闭标签页"
   },
   "opt_close_tab": {
     "message": "导出后关闭新标签页"

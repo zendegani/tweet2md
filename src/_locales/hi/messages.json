@@ -1,6 +1,6 @@
 {
   "extensionName": {
-    "message": "X थ्रेड और आर्टिकल को Markdown या Obsidian में"
+    "message": "X थ्रेड्स और आर्टिकल्स को Markdown या Obsidian में"
   },
   "extensionDescription": {
     "message": "X (Twitter) के थ्रेड, ट्वीट और आर्टिकल को साफ़ Markdown में एक्सपोर्ट करें — Obsidian में भेजें या लोकल सेव करें। कोई API ज़रूरी नहीं।"
@@ -24,7 +24,7 @@
     "message": "Obsidian खोला जा रहा है…"
   },
   "extracting": {
-    "message": "एक्सट्रैक्ट हो रहा है…"
+    "message": "सामग्री निकाली जा रही है…"
   },
   "group_export": {
     "message": "एक्सपोर्ट"
@@ -120,7 +120,7 @@
     "message": "Vault का नाम"
   },
   "opt_obsidian_vault_title": {
-    "message": "'Add to Obsidian' बटन द्वारा उपयोग होता है। खाली छोड़ें तो Obsidian पिछला उपयोग किया हुआ vault चुनेगा।"
+    "message": "'Add to Obsidian' बटन द्वारा उपयोग किया जाता है। खाली छोड़ने पर Obsidian अंतिम उपयोग किया गया vault चुनेगा।"
   },
   "opt_obsidian_vault_placeholder": {
     "message": "(वैकल्पिक)"
@@ -171,7 +171,7 @@
     "message": "ट्वीट को Obsidian में जोड़ें"
   },
   "opt_show_inline_title": {
-    "message": "प्रत्येक ट्वीट के ऐक्शन बार पर Share के बगल एक डाउनलोड बटन जोड़ें"
+    "message": "प्रत्येक ट्वीट के ऐक्शन बार में Share के बगल में डाउनलोड बटन जोड़ें"
   },
   "opt_show_inline": {
     "message": "ट्वीट पर inline बटन दिखाएँ"

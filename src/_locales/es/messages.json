@@ -153,7 +153,7 @@
     "message": "Mostrar estadísticas de interacción en línea"
   },
   "opt_close_tab_title": {
-    "message": "Cuando está activado, la pestaña se cierra automáticamente después de descargar o copiar el tweet."
+    "message": "Cierra automáticamente la pestaña después de exportar desde el botón integrado o el menú contextual de un tweet."
   },
   "opt_close_tab": {
     "message": "Cerrar la nueva pestaña después de exportar"

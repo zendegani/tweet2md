@@ -153,7 +153,7 @@
     "message": "Mostrar estatísticas de engajamento no texto"
   },
   "opt_close_tab_title": {
-    "message": "Quando ativado, a aba é fechada automaticamente após o tweet ser baixado ou copiado."
+    "message": "Fechar automaticamente a aba após exportar pelo botão integrado ou menu de contexto do tweet"
   },
   "opt_close_tab": {
     "message": "Fechar a nova aba após exportar"
