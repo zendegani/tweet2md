@@ -54,10 +54,10 @@
     "message": "Aperçu :"
   },
   "opt_filename_template_info": {
-    "message": "Afficher les placeholders du modèle de nom de fichier"
+    "message": "Afficher les variables du modèle de nom de fichier"
   },
   "opt_filename_template_hint_title": {
-    "message": "Placeholders"
+    "message": "Variables"
   },
   "opt_filename_hint_date": {
     "message": "date de publication (AAAA-MM-JJ)"
@@ -153,7 +153,7 @@
     "message": "Afficher les statistiques d’engagement en ligne"
   },
   "opt_close_tab_title": {
-    "message": "Lorsque cette option est activée, l’onglet se ferme automatiquement après le téléchargement ou la copie du tweet."
+    "message": "Fermer automatiquement l’onglet après l’export depuis le bouton intégré ou le menu contextuel d’un tweet"
   },
   "opt_close_tab": {
     "message": "Fermer le nouvel onglet après l’export"

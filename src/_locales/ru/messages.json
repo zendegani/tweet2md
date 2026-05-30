@@ -51,7 +51,7 @@
     "message": "{handle}-{id}.md"
   },
   "opt_filename_preview": {
-    "message": "Превью:"
+    "message": "Предпросмотр:"
   },
   "opt_filename_template_info": {
     "message": "Показать плейсхолдеры шаблона имени файла"
@@ -111,10 +111,10 @@
     "message": "Obsidian"
   },
   "opt_obsidian_friendly": {
-    "message": "frontmatter под Obsidian"
+    "message": "Frontmatter для Obsidian"
   },
   "opt_obsidian_friendly_title": {
-    "message": "Генерировать frontmatter, оптимизированный для Obsidian: автор как wikilink, теги, даты published/created"
+    "message": "Генерировать frontmatter, оптимизированный для Obsidian: автор как wikilink, теги, даты публикации и создания"
   },
   "opt_obsidian_vault": {
     "message": "Название vault"
@@ -150,7 +150,7 @@
     "message": "Показывать лайки, репосты, ответы, закладки и просмотры строкой в теле Markdown"
   },
   "opt_inline_stats": {
-    "message": "Показывать статистику в самом тексте"
+    "message": "Показывать статистику активности в тексте"
   },
   "opt_close_tab_title": {
     "message": "Автоматически закрывать вкладку после экспорта через inline-кнопку или контекстное меню"

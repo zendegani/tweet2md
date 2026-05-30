@@ -153,7 +153,7 @@
     "message": "Engagement-Statistiken inline anzeigen"
   },
   "opt_close_tab_title": {
-    "message": "Wenn aktiviert, wird der Tab automatisch geschlossen, nachdem der Tweet heruntergeladen oder kopiert wurde."
+    "message": "Tab nach dem Export über Inline-Button oder Kontextmenü automatisch schließen"
   },
   "opt_close_tab": {
     "message": "Neuen Tab nach dem Export schließen"

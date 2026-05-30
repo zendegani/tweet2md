@@ -42,7 +42,7 @@
     "message": "es. tweet2md"
   },
   "opt_filename_template": {
-    "message": "Modello nome file"
+    "message": "Modello del nome file"
   },
   "opt_filename_template_title": {
     "message": "Modello per il nome del file esportato. Segnaposto: {date}, {datetime}, {handle}, {author}, {id}, {slug}, {type}. Lascia vuoto per il predefinito."
@@ -111,10 +111,10 @@
     "message": "Obsidian"
   },
   "opt_obsidian_friendly": {
-    "message": "frontmatter ottimizzato per Obsidian"
+    "message": "Frontmatter ottimizzato per Obsidian"
   },
   "opt_obsidian_friendly_title": {
-    "message": "Genera frontmatter ottimizzato per Obsidian: autore con wikilink, tag, date published/created"
+    "message": "Genera frontmatter ottimizzato per Obsidian: autore con wikilink, tag e date di pubblicazione/creazione"
   },
   "opt_obsidian_vault": {
     "message": "Nome del vault"
@@ -147,7 +147,7 @@
     "message": "Includi metadati"
   },
   "opt_inline_stats_title": {
-    "message": "Mostra like, repost, risposte, segnalibri e visualizzazioni come riga nel corpo Markdown"
+    "message": "Mostra like, repost, risposte, segnalibri e visualizzazioni in una riga nel corpo del Markdown"
   },
   "opt_inline_stats": {
     "message": "Mostra statistiche di interazione inline"
