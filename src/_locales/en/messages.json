@@ -27,10 +27,10 @@
     "message": "Add to NotebookLM"
   },
   "btn_notebooklm_hint": {
-    "message": "Click ‘Add source’ → ‘Copied text’ and paste"
+    "message": "Click ‘+ Add sources’ → ‘Copied text’ and paste"
   },
   "notebooklm_opened": {
-    "message": "Copied — in NotebookLM click ‘Add source’ → ‘Copied text’ and paste"
+    "message": "Copied — in NotebookLM click ‘+ Add sources’ → ‘Copied text’ and paste"
   },
   "extracting": {
     "message": "Extracting…"
