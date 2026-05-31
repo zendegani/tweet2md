@@ -239,12 +239,22 @@ body {
   color: var(--obsidian);
 }
 
+/* NotebookLM's wordmark is black on white — mirror that on the button.
+ * In dark mode flip to white so the outlined button stays visible against
+ * the dark popup background. */
 .notebooklm-row {
-  --notebooklm: #1A73E8;
-  --notebooklm-glow: rgba(26, 115, 232, 0.18);
+  --notebooklm: #0f1419;
+  --notebooklm-glow: rgba(15, 20, 25, 0.08);
   display: flex;
   gap: 8px;
   align-items: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  .notebooklm-row {
+    --notebooklm: #e7e9ea;
+    --notebooklm-glow: rgba(231, 233, 234, 0.1);
+  }
 }
 
 .btn-notebooklm {

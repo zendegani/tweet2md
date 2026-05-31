@@ -27,10 +27,10 @@
     "message": "Add to NotebookLM"
   },
   "btn_notebooklm_hint": {
-    "message": "Opens NotebookLM with the markdown on your clipboard — just paste"
+    "message": "Click ‘Add source’ → ‘Copied text’ and paste"
   },
   "notebooklm_opened": {
-    "message": "Markdown copied — paste it into NotebookLM"
+    "message": "Copied — in NotebookLM click ‘Add source’ → ‘Copied text’ and paste"
   },
   "extracting": {
     "message": "Extracting…"

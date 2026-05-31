@@ -215,7 +215,7 @@ async function runAutoExtract(
     const fallback =
       action === 'copy' ? 'Copied!'
       : action === 'obsidian' ? 'Opening Obsidian…'
-      : action === 'notebooklm' ? 'Markdown copied — paste it into NotebookLM'
+      : action === 'notebooklm' ? "Copied — in NotebookLM click ‘Add source’ → ‘Copied text’ and paste"
       : 'Downloaded!';
     showInPlaceToast(chrome.i18n.getMessage(key) || fallback);
   }
