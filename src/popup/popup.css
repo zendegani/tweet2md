@@ -291,7 +291,7 @@ body {
   inset-inline-end: 0;
   z-index: 20;
   width: max-content;
-  max-width: 220px;
+  max-width: 260px;
   padding: 8px 10px;
   background: var(--bg-primary);
   border: 1px solid var(--border-subtle);
@@ -300,6 +300,7 @@ body {
   font-size: 11.5px;
   line-height: 1.4;
   color: var(--text-primary);
+  white-space: pre-line;
   opacity: 0;
   visibility: hidden;
   transform: translateY(2px);
