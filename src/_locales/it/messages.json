@@ -18,7 +18,7 @@
     "message": "Aggiungi a Obsidian"
   },
   "btn_obsidian_hint": {
-    "message": "Thread lunghi o immagini? Usa 'Scarica .md'"
+    "message": "Configura vault, sottocartella e campi del frontmatter in Impostazioni.\nPer thread lunghi o immagini usa 'Scarica .md'."
   },
   "obsidian_opened": {
     "message": "Apertura di Obsidian…"

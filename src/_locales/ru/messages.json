@@ -18,7 +18,7 @@
     "message": "Добавить в Obsidian"
   },
   "btn_obsidian_hint": {
-    "message": "Длинные треды или изображения? Используйте 'Скачать .md'"
+    "message": "Vault, подпапку и поля frontmatter можно настроить в Настройках.\nДля длинных тредов или изображений используйте 'Скачать .md'."
   },
   "obsidian_opened": {
     "message": "Открытие Obsidian…"
