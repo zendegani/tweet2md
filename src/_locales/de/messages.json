@@ -18,7 +18,7 @@
     "message": "Zu Obsidian hinzufügen"
   },
   "btn_obsidian_hint": {
-    "message": "Lange Threads oder Bilder? Nutze stattdessen .md herunterladen"
+    "message": "Lange Threads oder Bilder? Nutze stattdessen '.md herunterladen'"
   },
   "obsidian_opened": {
     "message": "Obsidian wird geöffnet…"

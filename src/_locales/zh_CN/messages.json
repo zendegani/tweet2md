@@ -18,7 +18,7 @@
     "message": "添加到 Obsidian"
   },
   "btn_obsidian_hint": {
-    "message": "长线程或图片？请改用下载 .md"
+    "message": "长线程或图片？请改用「下载 .md」"
   },
   "obsidian_opened": {
     "message": "正在打开 Obsidian…"
