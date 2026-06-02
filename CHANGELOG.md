@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Fixed
+
+- **Obsidian button row**: The *Add to Obsidian* button now takes the full row width, so the label no longer clips in locales with longer translations (e.g. German, Russian). The accompanying long-threads hint moved into a ⓘ tooltip next to the button. (#33)
+- **"Download .md" hint wording (pt_BR / hi / ja)**: Aligned the hint text with each locale's actual Download button label so the reference is unambiguous; the Japanese hint marks the button label with 「…」. (#33)
+
 ## [1.7.0] - 2026-05-30
 
 ### Added
