@@ -18,7 +18,7 @@
     "message": "Ajouter à Obsidian"
   },
   "btn_obsidian_hint": {
-    "message": "Fils longs ou images ? Utilisez Télécharger .md"
+    "message": "Fils longs ou images ? Utilisez 'Télécharger .md'"
   },
   "obsidian_opened": {
     "message": "Ouverture d’Obsidian…"
