@@ -247,7 +247,7 @@ body {
 
 .btn-hint-wrap {
   position: absolute;
-  right: 0;
+  inset-inline-end: 0;
   top: 50%;
   transform: translateY(-50%);
   display: inline-flex;
@@ -283,12 +283,12 @@ body {
   height: 14px;
 }
 
-/* Tooltip floats above the popup chrome and anchors to the right edge of
+/* Tooltip floats above the popup chrome and anchors to the end edge of
  * the row so it never extends past the popup window on long translations. */
 .btn-hint-tooltip {
   position: absolute;
   bottom: 28px;
-  right: 0;
+  inset-inline-end: 0;
   z-index: 20;
   width: max-content;
   max-width: 220px;
@@ -380,7 +380,7 @@ body {
  * actually centered relative to the popup width. */
 .footer-version {
   position: absolute;
-  left: 0;
+  inset-inline-start: 0;
   font-size: 10.5px;
   color: var(--text-secondary);
   opacity: 0.5;
@@ -435,11 +435,11 @@ body {
   display: none;
 }
 
-/* ─── Settings gear (top-right corner) ─────────────────────── */
+/* ─── Settings gear (top end corner) ───────────────────────── */
 .btn-settings-icon {
   position: absolute;
   top: 14px;
-  right: 14px;
+  inset-inline-end: 14px;
   width: 28px;
   height: 28px;
   display: flex;
@@ -519,7 +519,7 @@ body {
 .settings-help-hint {
   position: absolute;
   top: 28px;
-  right: 0;
+  inset-inline-end: 0;
   z-index: 20;
   width: max-content;
   max-width: 240px;
@@ -578,7 +578,7 @@ body {
   font-style: normal;
   line-height: 1.4;
   color: var(--text-primary);
-  text-align: left;
+  text-align: start;
   white-space: normal;
   opacity: 0;
   visibility: hidden;
@@ -607,8 +607,8 @@ body {
 .btn-settings-icon[data-tooltip]::after {
   bottom: auto;
   top: calc(100% + 4px);
-  left: auto;
-  right: 0;
+  inset-inline-start: auto;
+  inset-inline-end: 0;
   transform: translateY(-2px);
 }
 
@@ -656,14 +656,14 @@ body {
 }
 
 .nav-arrow {
-  margin-left: auto;
+  margin-inline-start: auto;
   font-size: 14px;
   opacity: 0.6;
 }
 
 .nav-back .nav-arrow {
-  margin-left: 0;
-  margin-right: 4px;
+  margin-inline-start: 0;
+  margin-inline-end: 4px;
 }
 
 /* ─── Options Toggles ───────────────────────────────────────── */
@@ -814,7 +814,7 @@ details.option-group[open] .option-group-chevron {
   content: "";
   position: absolute;
   top: 2px;
-  left: 2px;
+  inset-inline-start: 2px;
   width: 16px;
   height: 16px;
   background: var(--toggle-off-knob);
@@ -832,6 +832,13 @@ details.option-group[open] .option-group-chevron {
 .toggle-input:checked + .toggle-switch::after {
   transform: translateX(16px);
   background: var(--accent);
+}
+
+/* transform: translateX is direction-agnostic — under RTL the knob's ON
+ * position must move in the opposite physical direction so it still travels
+ * from inline-start to inline-end of the track. */
+[dir="rtl"] .toggle-input:checked + .toggle-switch::after {
+  transform: translateX(-16px);
 }
 
 /* Obsidian-friendly toggle: paint icon + switch in Obsidian purple when
@@ -939,8 +946,8 @@ details.option-group[open] .option-group-chevron {
 .field-hint {
   position: absolute;
   top: 22px;
-  right: 0;
-  left: auto;
+  inset-inline-end: 0;
+  inset-inline-start: auto;
   z-index: 10;
   width: max-content;
   max-width: 100%;
@@ -1161,7 +1168,7 @@ details.option-group[open] .option-group-chevron {
   content: "";
   position: absolute;
   top: 2px;
-  left: 2px;
+  inset-inline-start: 2px;
   width: 8px;
   height: 8px;
   background: var(--toggle-off-knob);
@@ -1177,6 +1184,10 @@ details.option-group[open] .option-group-chevron {
 .fm-field-input:checked + .toggle-switch-mini::after {
   transform: translateX(10px);
   background: var(--accent);
+}
+
+[dir="rtl"] .fm-field-input:checked + .toggle-switch-mini::after {
+  transform: translateX(-10px);
 }
 
 .fm-field-input:disabled + .toggle-switch-mini {

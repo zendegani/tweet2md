@@ -60,6 +60,19 @@ if (footerVersion) {
 
 // ─── Initialize i18n ──────────────────────────────────────────────────
 
+// Chrome ships canonical direction + locale tokens per active UI language.
+// Setting them on <html> is what makes bidi text (e.g. Latin words embedded
+// in Arabic/Persian sentences) flow correctly and lets logical CSS props
+// (inset-inline-*, margin-inline-*) mirror the layout for RTL locales.
+const bidiDir = chrome.i18n.getMessage('@@bidi_dir');
+if (bidiDir === 'rtl' || bidiDir === 'ltr') {
+  document.documentElement.setAttribute('dir', bidiDir);
+}
+const uiLocale = chrome.i18n.getMessage('@@ui_locale');
+if (uiLocale) {
+  document.documentElement.setAttribute('lang', uiLocale.replace(/_/g, '-'));
+}
+
 document.querySelectorAll('[data-i18n]').forEach((el) => {
   const key = el.getAttribute('data-i18n');
   if (key) {
