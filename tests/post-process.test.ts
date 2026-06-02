@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { postProcess, buildFilename, applyFilenameTemplate } from '../src/shared/post-process';
+import { postProcess, buildFilename, applyFilenameTemplate, applyTagsTemplate, DEFAULT_TAGS_TEMPLATE } from '../src/shared/post-process';
 import type { ExtractedContent } from '../src/types/messages';
 
 function content(markdown: string): ExtractedContent {
@@ -216,6 +216,83 @@ describe('postProcess() frontmatter field filtering', () => {
     expect(result.markdown).not.toContain('tags:');
     expect(result.markdown).toContain('author: "[[@example]]"');
     expect(result.markdown).toContain('published: 2026-05-11');
+  });
+});
+
+describe('applyTagsTemplate()', () => {
+  const sample: ExtractedContent = {
+    type: 'thread',
+    author: { name: 'Jane Doe', handle: '@janedoe' },
+    markdown: '# Jane Doe (@janedoe)\n\nThe quick brown fox.',
+    sourceUrl: 'https://x.com/janedoe/status/42',
+    date: '2026-05-19T14:30:00.000Z',
+    tweetId: '42',
+  };
+
+  it('reproduces the legacy tags list via the default template', () => {
+    expect(applyTagsTemplate(DEFAULT_TAGS_TEMPLATE, sample)).toEqual(['clippings', 'x', 'thread']);
+  });
+
+  it('parses comma-separated tags leniently (whitespace tolerated)', () => {
+    expect(applyTagsTemplate(' clippings , x ,{type} ', sample)).toEqual(['clippings', 'x', 'thread']);
+  });
+
+  it('substitutes the documented placeholders', () => {
+    expect(applyTagsTemplate('{handle}, {type}, daily-{date}', sample))
+      .toEqual(['janedoe', 'thread', 'daily-2026-05-19']);
+  });
+
+  it('drops empty pieces from trailing or doubled commas', () => {
+    expect(applyTagsTemplate(',clippings,,x,', sample)).toEqual(['clippings', 'x']);
+  });
+
+  it('drops a tag whose unknown placeholder cannot be resolved', () => {
+    expect(applyTagsTemplate('clippings, {nope}, x', sample)).toEqual(['clippings', 'x']);
+  });
+
+  it('sanitizes tags to Obsidian-safe form', () => {
+    expect(applyTagsTemplate('My Tag, A/B\\C, #already, , one--two', sample))
+      .toEqual(['my-tag', 'abc', 'already', 'one-two']);
+  });
+});
+
+describe('postProcess() obsidian tags template', () => {
+  const data: ExtractedContent = {
+    type: 'thread',
+    author: { name: 'Example', handle: '@example' },
+    markdown: '# Example (@example)\n\nHi.',
+    sourceUrl: 'https://x.com/example/status/123',
+    date: '2026-05-11T00:00:00.000Z',
+    tweetId: '123',
+  };
+
+  it('emits the legacy tags line when no custom template is set', () => {
+    const result = postProcess(data, {
+      includeMetadata: true,
+      downloadImages: false,
+      obsidianFriendly: true,
+    });
+    expect(result.markdown).toContain('tags: [clippings, x, thread]');
+  });
+
+  it('emits the custom tags line when a template is set', () => {
+    const result = postProcess(data, {
+      includeMetadata: true,
+      downloadImages: false,
+      obsidianFriendly: true,
+      obsidianTagsTemplate: '{handle}, social/x, {type}',
+    });
+    expect(result.markdown).toContain('tags: [example, socialx, thread]');
+  });
+
+  it('omits the tags line entirely when the template resolves to nothing', () => {
+    const result = postProcess(data, {
+      includeMetadata: true,
+      downloadImages: false,
+      obsidianFriendly: true,
+      obsidianTagsTemplate: '{unknown}, {alsounknown}',
+    });
+    expect(result.markdown).not.toContain('tags:');
   });
 });
 

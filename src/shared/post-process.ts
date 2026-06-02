@@ -7,6 +7,10 @@ export interface PostProcessOptions {
   inlineStats?: boolean;
   obsidianFriendly?: boolean;
   filenameTemplate?: string;
+  // Comma-separated tags template used only by the Obsidian-friendly schema.
+  // Same placeholder vocabulary as filename templates. Empty/undefined falls
+  // back to DEFAULT_TAGS_TEMPLATE so existing users see no change.
+  obsidianTagsTemplate?: string;
   // Per-field opt-out for the YAML frontmatter. Undefined → emit every field
   // (legacy behavior). A `false` entry suppresses that field; missing keys are
   // treated as enabled so newly-added fields don't silently disappear for
@@ -46,6 +50,12 @@ export const FRONTMATTER_FIELDS_OBSIDIAN = [
 ] as const;
 
 export const FILENAME_PLACEHOLDERS = ['date', 'datetime', 'handle', 'author', 'id', 'slug', 'type'] as const;
+export const TAGS_PLACEHOLDERS = FILENAME_PLACEHOLDERS;
+
+// Reproduces the pre-feature behavior exactly: `tags: [clippings, x, <type>]`
+// in the Obsidian-friendly frontmatter. Persisted as the empty-string sentinel
+// in storage so the default can evolve without forcing a re-save.
+export const DEFAULT_TAGS_TEMPLATE = 'clippings, x, {type}';
 
 const DESCRIPTION_MAX_CHARS = 200;
 
@@ -203,6 +213,50 @@ export function applyFilenameTemplate(template: string, data: ExtractedContent):
   return rendered ? `${rendered}.md` : '';
 }
 
+// Obsidian tag rules: no whitespace, no `#`, no slashes/backslashes, no commas.
+// Spaces collapse to `-`; everything else illegal is dropped. Empty result
+// means the tag was unusable and should be filtered out by the caller.
+function sanitizeTag(raw: string): string {
+  return raw
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[#,/\\]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+export function applyTagsTemplate(template: string, data: ExtractedContent): string[] {
+  const handle = data.author.handle.replace('@', '');
+  const replacements: Record<string, string> = {
+    date: isoToDateOnly(data.date),
+    datetime: isoToDateTime(data.date),
+    handle,
+    author: data.author.name,
+    id: data.tweetId,
+    slug: slugify(previewForSlug(data)),
+    type: data.type,
+  };
+
+  const knownPlaceholder = /\{(date|datetime|handle|author|id|slug|type)\}/g;
+  // Non-global: we only need a yes/no answer per piece, and a /g RegExp
+  // retains `lastIndex` between .test() calls which causes intermittent misses.
+  const anyPlaceholder = /\{[^}]+\}/;
+
+  return template
+    .split(',')
+    .map((piece) => piece.trim())
+    .filter(Boolean)
+    .map((piece) => {
+      const resolved = piece.replace(knownPlaceholder, (_, key: string) => replacements[key] ?? '');
+      // Anything still bracketed is an unknown placeholder — autocomplete steers
+      // users away from these but a manual typer can still produce them; drop
+      // the whole tag rather than emit garbage like `#foo-{bar}`.
+      if (anyPlaceholder.test(resolved)) return '';
+      return sanitizeTag(resolved);
+    })
+    .filter(Boolean);
+}
+
 export function buildFilename(data: ExtractedContent, template?: string): string {
   if (template && template.trim()) {
     const fromTemplate = applyFilenameTemplate(template.trim(), data);
@@ -254,7 +308,11 @@ export function postProcess(
         const desc = buildDescription(finalMarkdown);
         if (desc) lines.push(`description: ${yamlEscape(desc)}`);
       }
-      if (includeField('tags')) lines.push(`tags: [clippings, x, ${data.type}]`);
+      if (includeField('tags')) {
+        const template = (opts.obsidianTagsTemplate ?? '').trim() || DEFAULT_TAGS_TEMPLATE;
+        const tags = applyTagsTemplate(template, data);
+        if (tags.length > 0) lines.push(`tags: [${tags.join(', ')}]`);
+      }
     } else {
       if (includeField('author')) lines.push(`author: "${data.author.name}"`);
       if (includeField('handle')) lines.push(`handle: "${data.author.handle}"`);
