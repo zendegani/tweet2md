@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "metadata": {
+    "type": "tweet",
+    "sourceUrl": "https://x.com/bcherny/status/2053982327123132846",
+    "tweetId": "2053982327123132846",
+    "author": {
+      "name": "Boris Cherny",
+      "handle": "bcherny"
+    },
+    "date": "<ignored>",
+    "engagement": "<ignored>"
+  },
+  "body": {
+    "type": "tweet",
+    "author": {
+      "name": "Boris Cherny",
+      "handle": "bcherny"
+    },
+    "date": "<ignored>",
+    "tweetId": "2053982327123132846",
+    "text": [
+      {
+        "type": "text",
+        "value": "The best way to level up from 1 agent => many agents. No more cycling between terminal tabs"
+      }
+    ],
+    "media": [],
+    "engagement": "<ignored>",
+    "quotedTweet": {
+      "type": "tweet",
+      "author": {
+        "name": "Claude",
+        "handle": "claudeai"
+      },
+      "date": "<ignored>",
+      "tweetId": "",
+      "text": [
+        {
+          "type": "text",
+          "value": "New in Claude Code: agent view."
+        },
+        {
+          "type": "break"
+        },
+        {
+          "type": "break"
+        },
+        {
+          "type": "text",
+          "value": "One list of all your sessions, available today as a research preview."
+        }
+      ],
+      "media": [
+        {
+          "kind": "video",
+          "url": "https://pbs.twimg.com/media/HIEVJQ4XoAAXNNi.jpg",
+          "posterUrl": "https://pbs.twimg.com/media/HIEVJQ4XoAAXNNi.jpg"
+        }
+      ]
+    }
+  }
+}

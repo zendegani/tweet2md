@@ -19,22 +19,28 @@ const FIXTURES = resolve(__dirname, 'fixtures');
 // each fixture comes online; simpler fixtures land first.
 const AST_READY_FIXTURES = [
   'elonmusk-2052914500169613445',
+  'bcherny-2053982327123132846',
 ];
 
-interface DocumentLike {
-  metadata: { date: unknown; engagement?: unknown };
-  body: { type: string; date?: unknown; engagement?: unknown };
-}
-
 function normalize(doc: Document): unknown {
-  const clone = JSON.parse(JSON.stringify(doc)) as DocumentLike;
+  const clone = JSON.parse(JSON.stringify(doc));
   clone.metadata.date = '<ignored>';
   if (clone.metadata.engagement) clone.metadata.engagement = '<ignored>';
-  if (clone.body.type === 'tweet') {
-    clone.body.date = '<ignored>';
-    if (clone.body.engagement) clone.body.engagement = '<ignored>';
-  }
+  ignoreVolatileInTree(clone.body);
   return clone;
+}
+
+function ignoreVolatileInTree(node: unknown): void {
+  if (!node || typeof node !== 'object') return;
+  const obj = node as Record<string, unknown>;
+  if (obj.type === 'tweet') {
+    obj.date = '<ignored>';
+    if (obj.engagement) obj.engagement = '<ignored>';
+    if (obj.quotedTweet) ignoreVolatileInTree(obj.quotedTweet);
+  }
+  if (Array.isArray(obj.tweets)) {
+    for (const t of obj.tweets) ignoreVolatileInTree(t);
+  }
 }
 
 function normalizeWhitespace(root: Element, win: { Node: typeof Node }): void {
