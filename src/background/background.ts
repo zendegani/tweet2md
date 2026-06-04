@@ -1,4 +1,8 @@
-import type { DownloadRequest } from '../types/messages';
+import type {
+  DownloadRequest,
+  PdfRenderRequest,
+  PdfRenderResponse,
+} from '../types/messages';
 import {
   isAllowedImageUrl,
   isTrustedDownloadSender,
@@ -163,6 +167,60 @@ function loadDownloadFolder(): Promise<string> {
     });
   });
 }
+
+// ─── Offscreen PDF renderer ────────────────────────────────────────
+//
+// PDF generation runs in chrome-extension://<id>/offscreen.html (extension
+// origin) so html2canvas's offscreen-iframe clone never touches X.com's
+// <script src="…twimg.com…"> tags — those tags inside the page's
+// documentElement otherwise re-execute in the clone and trip CSP, leaving
+// the PDF blank. Content script delegates here.
+
+const OFFSCREEN_PATH = 'offscreen.html';
+let offscreenCreating: Promise<void> | null = null;
+
+async function ensureOffscreenDocument(): Promise<void> {
+  const url = chrome.runtime.getURL(OFFSCREEN_PATH);
+  const existing = await chrome.runtime.getContexts({
+    contextTypes: ['OFFSCREEN_DOCUMENT' as chrome.runtime.ContextType],
+    documentUrls: [url],
+  });
+  if (existing.length > 0) return;
+  // Multiple PDF requests in flight can race the creation; coalesce.
+  if (offscreenCreating) {
+    await offscreenCreating;
+    return;
+  }
+  offscreenCreating = chrome.offscreen
+    .createDocument({
+      url: OFFSCREEN_PATH,
+      reasons: ['DOM_SCRAPING' as chrome.offscreen.Reason],
+      justification: 'Render tweet HTML to a PDF via html2canvas in an extension-origin document, so the snapshot iframe is not bound by x.com page CSP.',
+    })
+    .finally(() => {
+      offscreenCreating = null;
+    });
+  await offscreenCreating;
+}
+
+chrome.runtime.onMessage.addListener((message: PdfRenderRequest, _sender, sendResponse) => {
+  if (!message || message.action !== 'PDF_RENDER_REQUEST') return false;
+  (async (): Promise<PdfRenderResponse> => {
+    try {
+      await ensureOffscreenDocument();
+      const resp = (await chrome.runtime.sendMessage({
+        action: 'OFFSCREEN_RENDER_PDF',
+        html: message.html,
+        filenameBase: message.filenameBase,
+      })) as PdfRenderResponse | undefined;
+      if (!resp) return { success: false, error: 'Offscreen did not respond' };
+      return resp;
+    } catch (err) {
+      return { success: false, error: err instanceof Error ? err.message : String(err) };
+    }
+  })().then(sendResponse);
+  return true; // async
+});
 
 chrome.runtime.onMessage.addListener(
   (message: DownloadRequest, sender, sendResponse) => {
