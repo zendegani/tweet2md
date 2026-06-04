@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { JSDOM } from 'jsdom';
 import { domToAst } from '../src/content/dom-to-ast';
@@ -26,6 +26,7 @@ const AST_READY_FIXTURES = [
   'Huawei-2059206000587210807',
   'marcelpociot-2038915006050300007',
   'theonejvo-2015892980851474595',
+  'trq212-2035372716820218141',
 ];
 
 function normalize(doc: Document): unknown {
@@ -80,10 +81,28 @@ function normalizeWhitespace(root: Element, win: { Node: typeof Node }): void {
   }
 }
 
-function loadFixtureHtml(htmlPath: string, url: string): void {
-  const html = readFileSync(htmlPath, 'utf-8');
-  const dom = new JSDOM(html, { url });
+function loadFixtureHtml(htmlPaths: string[], url: string): void {
+  const [first, ...rest] = htmlPaths;
+  const dom = new JSDOM(readFileSync(first, 'utf-8'), { url });
   normalizeWhitespace(dom.window.document.documentElement, dom.window);
+
+  // Multi-chunk fixtures: long threads use <id>-a.html / <id>-b.html / …
+  // because X virtualizes the timeline. We append each subsequent file's
+  // cellInnerDiv children onto the first DOM's timeline; the extractor
+  // dedupes by tweet id.
+  if (rest.length > 0) {
+    const targetCell = dom.window.document.querySelector('[data-testid="cellInnerDiv"]');
+    const timeline = targetCell?.parentElement || dom.window.document.body;
+    for (const p of rest) {
+      const moreDom = new JSDOM(readFileSync(p, 'utf-8'), { url });
+      normalizeWhitespace(moreDom.window.document.documentElement, moreDom.window);
+      const cells = moreDom.window.document.querySelectorAll('[data-testid="cellInnerDiv"]');
+      for (const cell of cells) {
+        timeline.appendChild(dom.window.document.importNode(cell, true));
+      }
+    }
+  }
+
   document.documentElement.replaceWith(
     dom.window.document.documentElement.cloneNode(true) as HTMLElement
   );
@@ -95,6 +114,16 @@ function loadFixtureHtml(htmlPath: string, url: string): void {
   });
 }
 
+function fixtureHtmlPaths(name: string): string[] {
+  // Single file: <name>.html. Multi-chunk: <name>-a.html, <name>-b.html, …
+  const single = join(FIXTURES, `${name}.html`);
+  if (existsSync(single)) return [single];
+  return readdirSync(FIXTURES)
+    .filter((f) => f.startsWith(`${name}-`) && f.endsWith('.html'))
+    .sort()
+    .map((f) => join(FIXTURES, f));
+}
+
 function sourceUrlFromMd(mdPath: string): string {
   const md = readFileSync(mdPath, 'utf-8');
   return md.match(/^source:\s*"(.+)"$/m)?.[1] || '';
@@ -103,18 +132,18 @@ function sourceUrlFromMd(mdPath: string): string {
 describe('domToAst() snapshot tests', () => {
   for (const name of AST_READY_FIXTURES) {
     it(name, async () => {
-      const htmlPath = join(FIXTURES, `${name}.html`);
+      const htmlPaths = fixtureHtmlPaths(name);
       const mdPath = join(FIXTURES, `${name}.md`);
       const astPath = join(FIXTURES, `${name}.ast.json`);
 
-      if (!existsSync(htmlPath)) {
+      if (htmlPaths.length === 0) {
         console.warn(`\n  ⚠️  skipping "${name}" — html fixture missing.\n`);
         return;
       }
       const url = sourceUrlFromMd(mdPath);
       if (!url) throw new Error(`fixture ${name} missing source URL in .md`);
 
-      loadFixtureHtml(htmlPath, url);
+      loadFixtureHtml(htmlPaths, url);
 
       const ast = domToAst();
       const json = JSON.stringify(normalize(ast), null, 2) + '\n';

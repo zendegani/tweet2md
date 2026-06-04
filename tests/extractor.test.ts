@@ -56,14 +56,29 @@ function normalizeWhitespace(root: Element, win: { Node: typeof Node }): void {
   }
 }
 
-function loadFixtureHtml(htmlPath: string, url: string): void {
-  const html = readFileSync(htmlPath, 'utf-8');
-  const dom = new JSDOM(html, { url });
-  // DevTools' "Copy outerHTML" pretty-prints, inserting newlines +
-  // indentation both between elements AND inside text content. Production
-  // DOM has none of that. We strip it to mirror real conditions before
-  // running the extractor — but keep <pre> / code-block content intact.
+function loadFixtureHtml(htmlPaths: string[], url: string): void {
+  const [first, ...rest] = htmlPaths;
+  const dom = new JSDOM(readFileSync(first, 'utf-8'), { url });
   normalizeWhitespace(dom.window.document.documentElement, dom.window);
+
+  // Multi-chunk fixtures: long threads can't fit in a single outerHTML
+  // capture (X virtualizes the timeline as you scroll). Convention is
+  // <id>-a.html / <id>-b.html / ... — we merge them by appending each
+  // subsequent file's cellInnerDiv children onto the first DOM's timeline.
+  // Same-tweetId duplicates are fine; the extractor dedupes on tweet id.
+  if (rest.length > 0) {
+    const targetCell = dom.window.document.querySelector('[data-testid="cellInnerDiv"]');
+    const timeline = targetCell?.parentElement || dom.window.document.body;
+    for (const p of rest) {
+      const moreDom = new JSDOM(readFileSync(p, 'utf-8'), { url });
+      normalizeWhitespace(moreDom.window.document.documentElement, moreDom.window);
+      const moreCells = moreDom.window.document.querySelectorAll('[data-testid="cellInnerDiv"]');
+      for (const cell of moreCells) {
+        timeline.appendChild(dom.window.document.importNode(cell, true));
+      }
+    }
+  }
+
   document.documentElement.replaceWith(
     dom.window.document.documentElement.cloneNode(true) as HTMLElement
   );
@@ -88,11 +103,12 @@ function parseSourceUrl(md: string): string | null {
   return md.match(/^source:\s*"(.+)"$/m)?.[1] || null;
 }
 
-function findHtmlForId(id: string): string | null {
-  for (const f of readdirSync(FIXTURES)) {
-    if (f.endsWith('.html') && f.includes(id)) return join(FIXTURES, f);
-  }
-  return null;
+function findHtmlForId(id: string): string[] {
+  // Sort gives deterministic order; multi-chunk fixtures use <id>-a, -b, …
+  return readdirSync(FIXTURES)
+    .filter((f) => f.endsWith('.html') && f.includes(id))
+    .sort()
+    .map((f) => join(FIXTURES, f));
 }
 
 const mdFixtures = readdirSync(FIXTURES).filter((f) => f.endsWith('.md'));
@@ -109,13 +125,13 @@ describe('extract() snapshot tests', () => {
     const expectedRaw = readFileSync(mdPath, 'utf-8');
     const url = parseSourceUrl(expectedRaw);
     const id = url?.match(/\/status\/(\d+)/)?.[1] || '';
-    const htmlPath = id ? findHtmlForId(id) : null;
+    const htmlPaths = id ? findHtmlForId(id) : [];
 
     it(`${mdName}`, async () => {
       if (!url) {
         throw new Error(`fixture ${mdName} has no \`source:\` frontmatter`);
       }
-      if (!htmlPath || !existsSync(htmlPath)) {
+      if (htmlPaths.length === 0) {
         console.warn(
           `\n  ⚠️  skipping "${mdName}" — no .html fixture found containing id ${id}.\n  ` +
             `Drop the page's outerHTML into tests/fixtures/<anything>${id}.html and re-run.\n`
@@ -123,7 +139,7 @@ describe('extract() snapshot tests', () => {
         return;
       }
 
-      loadFixtureHtml(htmlPath, url);
+      loadFixtureHtml(htmlPaths, url);
 
       const res = await extract({ includeMetadata: true });
       expect(res.success, res.success ? '' : (res as { error?: string }).error || '').toBe(true);
