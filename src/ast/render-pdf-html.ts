@@ -9,6 +9,7 @@ import type {
   MediaItem,
   PollNode,
   LinkCardNode,
+  ArticleCardNode,
 } from './types';
 
 export interface RenderPdfHtmlOptions {
@@ -68,12 +69,13 @@ function renderTweetCard(tweet: TweetNode, meta?: DocumentMetadata): string {
     : '';
   const poll = tweet.poll ? renderPoll(tweet.poll) : '';
   const linkCard = tweet.linkCard ? renderLinkCard(tweet.linkCard) : '';
+  const articleCard = tweet.articleCard ? renderArticleCard(tweet.articleCard) : '';
   const quote = tweet.quotedTweet ? renderQuotedTweet(tweet.quotedTweet) : '';
   const engagement = tweet.engagement
     ? renderEngagement(tweet.engagement)
     : '';
   const source = meta ? renderSource(meta) : '';
-  return `<article class="tweet-card">${head}${text}${media}${poll}${linkCard}${quote}${engagement}${source}</article>`;
+  return `<article class="tweet-card">${head}${text}${media}${poll}${linkCard}${articleCard}${quote}${engagement}${source}</article>`;
 }
 
 function renderQuotedTweet(quote: TweetNode): string {
@@ -84,7 +86,8 @@ function renderQuotedTweet(quote: TweetNode): string {
   const media = quote.media.length > 0
     ? `<div class="tweet-media">${quote.media.map(renderMedia).join('')}</div>`
     : '';
-  return `<aside class="tweet-card is-quote">${head}${text}${media}</aside>`;
+  const articleCard = quote.articleCard ? renderArticleCard(quote.articleCard) : '';
+  return `<aside class="tweet-card is-quote">${head}${text}${media}${articleCard}</aside>`;
 }
 
 function renderAuthorHeader(tweet: TweetNode): string {
@@ -167,6 +170,26 @@ function renderLinkCard(card: LinkCardNode): string {
   </a>`;
 }
 
+// X Article card. Same skeleton as LinkCard but with a "📝 Article" eyebrow
+// and no domain (it's X-hosted). When url is absent (the common case for
+// article-quote tweets), we render a non-link <div> with the same class so
+// styling stays uniform.
+function renderArticleCard(card: ArticleCardNode): string {
+  const img = card.imageUrl
+    ? `<div class="link-card-image"><img src="${escapeAttr(card.imageUrl)}" alt=""></div>`
+    : '';
+  const desc = card.description ? `<div class="link-card-desc">${escapeHtml(card.description)}</div>` : '';
+  const inner = `${img}
+    <div class="link-card-body">
+      <div class="link-card-domain">📝 Article</div>
+      <div class="link-card-title">${escapeHtml(card.title)}</div>
+      ${desc}
+    </div>`;
+  return card.url
+    ? `<a class="link-card article-card" href="${escapeAttr(card.url)}">${inner}</a>`
+    : `<div class="link-card article-card">${inner}</div>`;
+}
+
 // ─── Article ────────────────────────────────────────────────────────
 
 function renderArticle(article: ArticleNode, meta: DocumentMetadata): string {
@@ -199,6 +222,8 @@ function renderArticleBlock(block: Block): string {
       return `<figure class="article-image"><img src="${escapeAttr(block.posterUrl)}" alt="${escapeAttr(block.alt || '')}"></figure>`;
     case 'thematicBreak':
       return '<hr>';
+    case 'articleCard':
+      return renderArticleCard(block);
     default:
       return '';
   }

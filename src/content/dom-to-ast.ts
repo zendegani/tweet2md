@@ -12,6 +12,7 @@ import type {
   PollNode,
   PollChoice,
   LinkCardNode,
+  ArticleCardNode,
   ImageNode,
   HeadingNode,
   ListNode,
@@ -187,6 +188,68 @@ function extractLinkCard(article: Element): LinkCardNode | undefined {
   if (description) node.description = description;
   if (imageUrl) node.imageUrl = imageUrl;
   if (domain) node.domain = domain;
+  return node;
+}
+
+// ─── Article card (X long-form preview) ────────────────────────────
+//
+// X article cards appear in two places:
+//   1. Tweet quote position — wrapped in div[role="link"], beside an
+//      avatar + author header. quotedTweetContainer() picks them up via
+//      the fallback path below (an article quote has no tweetText).
+//   2. Inline in an article body (`twitterArticleRichTextView`) — sits as
+//      a sibling block among paragraphs. articleBlockToNodes() emits it.
+//
+// In both cases the distinguishing DOM hook is data-testid="article-cover-image",
+// with a sibling "Article" badge + title span + description div.
+function extractArticleCard(scope: Element): ArticleCardNode | undefined {
+  const coverEl = scope.querySelector('[data-testid="article-cover-image"]');
+  if (!coverEl) return undefined;
+
+  // Title + description live in the two text divs that follow the cover.
+  // Walk siblings of the cover's parent to find them — works for both the
+  // quote-position layout and the article-body layout, even though their
+  // wrapping divs differ slightly.
+  const cardRoot = coverEl.parentElement?.parentElement || coverEl.parentElement;
+  let title = '';
+  let description = '';
+  if (cardRoot) {
+    const textDivs = cardRoot.querySelectorAll('div[dir="auto"]');
+    for (const d of textDivs) {
+      const t = d.textContent?.trim() || '';
+      if (!t) continue;
+      // Skip the "Article" badge text — it always equals "Article" exactly.
+      if (t === 'Article') continue;
+      if (!title) title = t;
+      else if (!description) description = t;
+    }
+  }
+  if (!title) return undefined;
+
+  // Image: prefer the <img src>; fall back to the background-image URL.
+  let imageUrl: string | undefined;
+  const imgEl = coverEl.querySelector('img') as HTMLImageElement | null;
+  if (imgEl?.src) imageUrl = imgEl.src;
+  else {
+    const bg = coverEl.querySelector('[style*="background-image"]') as HTMLElement | null;
+    const m = bg?.getAttribute('style')?.match(/background-image:\s*url\(["']?([^"')]+)["']?\)/);
+    if (m) imageUrl = m[1];
+  }
+  if (imageUrl && hostMatches(imageUrl, 'pbs.twimg.com')) {
+    imageUrl = imageUrl.replace(/&name=\w+/, '&name=large');
+  }
+
+  // URL: X article quotes wrap in a div[role="link"] without a real href.
+  // If a real <a href> exists in the card we honor it; otherwise leave url
+  // unset and the renderer omits the link wrapper.
+  let url: string | undefined;
+  const anchor = scope.querySelector('a[href]') as HTMLAnchorElement | null;
+  if (anchor?.href && /\/article\//.test(anchor.href)) url = anchor.href;
+
+  const node: ArticleCardNode = { type: 'articleCard', title };
+  if (description) node.description = description;
+  if (imageUrl) node.imageUrl = imageUrl;
+  if (url) node.url = url;
   return node;
 }
 
@@ -380,6 +443,15 @@ function articleBlockToNodes(block: HTMLElement): Block[] {
       items.push({ type: 'listItem', children: [{ type: 'paragraph', children: inline }] });
     }
     return items.length > 0 ? [{ type: 'list', ordered: true, children: items } satisfies ListNode] : [];
+  }
+
+  // Embedded X Article card — emit as ArticleCardNode. Must run BEFORE the
+  // simpleTweet branch below, because article-card blocks are also wrapped
+  // in simpleTweet markup and that branch would short-circuit to a profile
+  // thumbnail (losing banner + title + description).
+  if (block.querySelector('[data-testid="article-cover-image"]')) {
+    const card = extractArticleCard(block);
+    return card ? [card] : [];
   }
 
   // Embedded simpleTweet card — match legacy behavior by emitting just the
@@ -607,9 +679,15 @@ function collapseEdges(nodes: InlineNode[]): InlineNode[] {
 // ─── Quote tweet ────────────────────────────────────────────────────
 
 function quotedTweetContainer(article: Element): Element | null {
+  // Primary path: a tweet quote with its own tweetText element.
   const tweetTextEls = article.querySelectorAll(SELECTORS.tweetText);
-  if (tweetTextEls.length < 2) return null;
-  return tweetTextEls[1].closest('div[role="link"]');
+  if (tweetTextEls.length >= 2) {
+    return tweetTextEls[1].closest('div[role="link"]');
+  }
+  // Fallback: an article-card quote has no tweetText at all. Look for the
+  // article-cover-image inside a quote-style wrapper and return that.
+  const cover = article.querySelector('[data-testid="article-cover-image"]');
+  return cover ? cover.closest('div[role="link"]') : null;
 }
 
 function findStatusIdIn(container: Element): string {
@@ -625,15 +703,25 @@ function extractQuotedTweet(article: Element): TweetNode | undefined {
   if (!container) return undefined;
 
   const tweetTextEls = article.querySelectorAll(SELECTORS.tweetText);
-  const quoteTextEl = tweetTextEls[1];
+  const quoteTextEl = tweetTextEls[1]; // may be undefined for article quotes
 
   const author = stripHandlePrefix(extractAuthorFromArticle(container));
   const date = extractDateFromArticle(container);
   const tweetId = findStatusIdIn(container);
-  const text = extractInline(quoteTextEl, null);
-  const media = extractMedia(container, []);
+  const text = quoteTextEl ? extractInline(quoteTextEl, null) : [];
+  const articleCard = extractArticleCard(container);
+  // For article-card quotes the cover is what we want; don't double-render
+  // it as a media item.
+  const mediaExclude: Element[] = [];
+  if (articleCard) {
+    const coverEl = container.querySelector('[data-testid="article-cover-image"]');
+    if (coverEl) mediaExclude.push(coverEl);
+  }
+  const media = extractMedia(container, mediaExclude);
 
-  return { type: 'tweet', author, date, tweetId, text, media };
+  const node: TweetNode = { type: 'tweet', author, date, tweetId, text, media };
+  if (articleCard) node.articleCard = articleCard;
+  return node;
 }
 
 // ─── Media ──────────────────────────────────────────────────────────

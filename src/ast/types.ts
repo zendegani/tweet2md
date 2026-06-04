@@ -31,6 +31,7 @@ export type Block =
   | VideoNode
   | PollNode
   | LinkCardNode
+  | ArticleCardNode
   | ThematicBreakNode;
 
 export interface TweetNode {
@@ -42,6 +43,7 @@ export interface TweetNode {
   media: MediaItem[];
   poll?: PollNode;
   linkCard?: LinkCardNode;
+  articleCard?: ArticleCardNode;
   quotedTweet?: TweetNode;
   engagement?: EngagementCounts;
 }
@@ -122,6 +124,20 @@ export interface LinkCardNode {
   description?: string;
   imageUrl?: string;
   domain?: string;
+}
+
+// X's long-form Article preview card. Looks superficially like a LinkCard
+// but: (a) it's an X-native artifact, not an OG preview; (b) it appears in
+// quote position of a tweet OR inline in an article body; (c) it has no
+// domain (it's hosted by X) and may have no resolvable URL exposed in DOM.
+// Keeping it a separate node makes renderer branching clean (📝 vs 🔗 and
+// the slightly different field set).
+export interface ArticleCardNode {
+  type: 'articleCard';
+  title: string;
+  description?: string;
+  imageUrl?: string;
+  url?: string;
 }
 
 export interface ThematicBreakNode {

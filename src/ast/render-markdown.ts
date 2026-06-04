@@ -9,6 +9,7 @@ import type {
   MediaItem,
   PollNode,
   LinkCardNode,
+  ArticleCardNode,
 } from './types';
 
 // AST → markdown body, matching the shape produced by the legacy Turndown
@@ -99,6 +100,7 @@ function appendTweetBody(parts: string[], tweet: TweetNode): void {
 
 function renderTweetEmbed(tweet: TweetNode): string {
   if (tweet.quotedTweet) return renderQuotedTweetBlock(tweet.quotedTweet);
+  if (tweet.articleCard) return renderArticleCardBlock(tweet.articleCard);
   if (tweet.linkCard) return renderLinkCardBlock(tweet.linkCard);
   return '';
 }
@@ -109,6 +111,17 @@ function renderQuotedTweetBlock(quote: TweetNode): string {
   const mediaLines = quote.media.map(renderMediaItem);
 
   const segments: string[] = [headerLine];
+  // Article-card quote: cover image + 📝 title + description, after the
+  // author header. Matches the old Turndown rendering of an X article
+  // embedded in a tweet quote. Note: each part becomes its own paragraph
+  // inside the blockquote — keep newlines inside a part so the segment-
+  // level `> ` wrapping below applies to wrapped description lines too.
+  if (quote.articleCard) {
+    const c = quote.articleCard;
+    if (c.imageUrl) segments.push(`![Article cover](${c.imageUrl})`);
+    segments.push(c.url ? `📝 [**${c.title}**](${c.url})` : `📝 **${c.title}**`);
+    if (c.description) segments.push(c.description);
+  }
   if (text) segments.push(text);
   if (mediaLines.length > 0) segments.push(mediaLines.join('\n'));
 
@@ -126,6 +139,23 @@ function renderLinkCardBlock(card: LinkCardNode): string {
   if (card.description) parts.push(card.description);
   if (card.domain) parts.push(`_From ${card.domain}_`);
   const blockquoted = parts.map((p) => `> ${p}`).join('\n> \n');
+  return `\n\n${blockquoted}`;
+}
+
+// Article card outside a quoted-tweet wrapper (tweet directly embedding an
+// X article, no author header). Used by the tweet renderer's embed switch
+// and as the block-level fallback in article body flow.
+function renderArticleCardBlock(card: ArticleCardNode): string {
+  const parts: string[] = [];
+  if (card.imageUrl) parts.push(`![Article cover](${card.imageUrl})`);
+  parts.push(card.url ? `📝 [**${card.title}**](${card.url})` : `📝 **${card.title}**`);
+  if (card.description) parts.push(card.description);
+  // Split each part on internal newlines so a multi-line description stays
+  // inside the blockquote (legacy Turndown lost the `> ` prefix on wrapped
+  // description lines; the AST-correct form keeps them).
+  const blockquoted = parts
+    .map((p) => p.split('\n').map((l) => (l ? `> ${l}` : '> ')).join('\n'))
+    .join('\n> \n');
   return `\n\n${blockquoted}`;
 }
 
@@ -261,6 +291,10 @@ function renderArticleBlock(block: Block): string {
         .split('\n').map((l) => `> ${l}`).join('\n');
     case 'video':
       return `![🎥 Video](${block.posterUrl})`;
+    case 'articleCard':
+      // In article body flow the card is the whole block — render it as a
+      // blockquote stanza, same shape as the in-tweet form.
+      return renderArticleCardBlock(block).replace(/^\n\n/, '');
     default:
       return '';
   }

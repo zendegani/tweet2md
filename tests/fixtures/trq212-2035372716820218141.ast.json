@@ -1,0 +1,471 @@
+{
+  "version": 1,
+  "metadata": {
+    "type": "thread",
+    "sourceUrl": "https://x.com/trq212/status/2035372716820218141",
+    "tweetId": "2035372716820218141",
+    "author": {
+      "name": "Thariq",
+      "handle": "trq212"
+    },
+    "date": "<ignored>",
+    "engagement": "<ignored>"
+  },
+  "body": {
+    "type": "thread",
+    "tweets": [
+      {
+        "type": "tweet",
+        "author": {
+          "name": "Thariq",
+          "handle": "trq212"
+        },
+        "date": "<ignored>",
+        "tweetId": "2035372716820218141",
+        "text": [
+          {
+            "type": "text",
+            "value": "I put a lot of heart into my technical writing, I hope it's useful to you all."
+          },
+          {
+            "type": "break"
+          },
+          {
+            "type": "break"
+          },
+          {
+            "type": "text",
+            "value": "📌 Here's a pinned thread of everything I've written."
+          },
+          {
+            "type": "break"
+          },
+          {
+            "type": "break"
+          },
+          {
+            "type": "text",
+            "value": "(much of this will be posted on the Claude blog soon as well)"
+          }
+        ],
+        "media": [],
+        "engagement": "<ignored>"
+      },
+      {
+        "type": "tweet",
+        "author": {
+          "name": "Thariq",
+          "handle": "trq212"
+        },
+        "date": "<ignored>",
+        "tweetId": "2035372718372073503",
+        "text": [
+          {
+            "type": "text",
+            "value": "skills are the abstraction that all agents will build on"
+          }
+        ],
+        "media": [],
+        "quotedTweet": {
+          "type": "tweet",
+          "author": {
+            "name": "Thariq",
+            "handle": "trq212"
+          },
+          "date": "<ignored>",
+          "tweetId": "",
+          "text": [],
+          "media": [],
+          "articleCard": {
+            "type": "articleCard",
+            "title": "Lessons from Building Claude Code: How We Use Skills",
+            "description": "Skills have become one of the most used extension points in Claude Code. They’re flexible, easy to make, and simple to distribute.\nBut this flexibility also makes it hard to know what works best. What...",
+            "imageUrl": "https://pbs.twimg.com/media/HDl2jn9a0AAZkyz?format=jpg&name=large"
+          }
+        },
+        "engagement": "<ignored>"
+      },
+      {
+        "type": "tweet",
+        "author": {
+          "name": "Thariq",
+          "handle": "trq212"
+        },
+        "date": "<ignored>",
+        "tweetId": "2035372720246907060",
+        "text": [
+          {
+            "type": "text",
+            "value": "building an agent is more of an art than a science"
+          }
+        ],
+        "media": [],
+        "quotedTweet": {
+          "type": "tweet",
+          "author": {
+            "name": "Thariq",
+            "handle": "trq212"
+          },
+          "date": "<ignored>",
+          "tweetId": "",
+          "text": [],
+          "media": [],
+          "articleCard": {
+            "type": "articleCard",
+            "title": "Lessons from Building Claude Code: Seeing like an Agent",
+            "description": "One of the hardest parts of building an agent harness is constructing its action space.\nClaude acts through Tool Calling, but there are a number of ways tools can be constructed in the Claude API with...",
+            "imageUrl": "https://pbs.twimg.com/media/HCLxeR3acAAf2R9?format=jpg&name=large"
+          }
+        },
+        "engagement": "<ignored>"
+      },
+      {
+        "type": "tweet",
+        "author": {
+          "name": "Thariq",
+          "handle": "trq212"
+        },
+        "date": "<ignored>",
+        "tweetId": "2035372721941471241",
+        "text": [
+          {
+            "type": "text",
+            "value": "imo my highest alpha post is on prompt caching, but it's only really relevant if you're building agents from scratch"
+          }
+        ],
+        "media": [],
+        "quotedTweet": {
+          "type": "tweet",
+          "author": {
+            "name": "Thariq",
+            "handle": "trq212"
+          },
+          "date": "<ignored>",
+          "tweetId": "",
+          "text": [],
+          "media": [],
+          "articleCard": {
+            "type": "articleCard",
+            "title": "Lessons from Building Claude Code: Prompt Caching Is Everything",
+            "description": "It is often said in engineering that \"Cache Rules Everything Around Me\", and the same rule holds for agents.\nLong running agentic products like Claude Code are made feasible by prompt caching which...",
+            "imageUrl": "https://pbs.twimg.com/media/HBixJgAbsAAM61V?format=jpg&name=large"
+          }
+        },
+        "engagement": "<ignored>"
+      },
+      {
+        "type": "tweet",
+        "author": {
+          "name": "Thariq",
+          "handle": "trq212"
+        },
+        "date": "<ignored>",
+        "tweetId": "2035372724042805731",
+        "text": [
+          {
+            "type": "text",
+            "value": "playgrounds are one of the best ways to iterate on ideas visually"
+          }
+        ],
+        "media": [],
+        "quotedTweet": {
+          "type": "tweet",
+          "author": {
+            "name": "Thariq",
+            "handle": "trq212"
+          },
+          "date": "<ignored>",
+          "tweetId": "",
+          "text": [],
+          "media": [],
+          "articleCard": {
+            "type": "articleCard",
+            "title": "Making Playgrounds using Claude Code",
+            "description": "We've published a new Claude Code plugin called playground that helps Claude generate HTML playgrounds. These are standalone HTML files that let you visualize a problem with Claude, interact with it...",
+            "imageUrl": "https://pbs.twimg.com/media/G_2-teGbUAMtRec?format=jpg&name=large"
+          }
+        },
+        "engagement": "<ignored>"
+      },
+      {
+        "type": "tweet",
+        "author": {
+          "name": "Thariq",
+          "handle": "trq212"
+        },
+        "date": "<ignored>",
+        "tweetId": "2035372725921882119",
+        "text": [
+          {
+            "type": "text",
+            "value": "your agent should use a file system"
+          }
+        ],
+        "media": [],
+        "quotedTweet": {
+          "type": "tweet",
+          "author": {
+            "name": "Thariq",
+            "handle": "trq212"
+          },
+          "date": "<ignored>",
+          "tweetId": "1970243253061783669",
+          "text": [
+            {
+              "type": "text",
+              "value": "Your Agent should use a File System"
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "text",
+              "value": "This is a hill I will die on. Every agent can use a file system."
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "text",
+              "value": "The file system is an elegant way of representing state that your agent could read into context & allowing it to verify its work."
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "text",
+              "value": "🧵on why and examples"
+            }
+          ],
+          "media": [
+            {
+              "kind": "image",
+              "url": "https://pbs.twimg.com/media/G1exUvtboAAENax?format=jpg&name=large",
+              "alt": "Image"
+            }
+          ]
+        },
+        "engagement": "<ignored>"
+      },
+      {
+        "type": "tweet",
+        "author": {
+          "name": "Thariq",
+          "handle": "trq212"
+        },
+        "date": "<ignored>",
+        "tweetId": "2035372727595343985",
+        "text": [
+          {
+            "type": "text",
+            "value": "bash is all you need"
+          }
+        ],
+        "media": [],
+        "quotedTweet": {
+          "type": "tweet",
+          "author": {
+            "name": "Thariq",
+            "handle": "trq212"
+          },
+          "date": "<ignored>",
+          "tweetId": "1982869394482139206",
+          "text": [
+            {
+              "type": "text",
+              "value": "Why even non-coding agents need bash"
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "text",
+              "value": "I've done dozens of calls with companies making general agents over the past few weeks and my advice generally boils down to: \"use the bash tool more\""
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "text",
+              "value": "Here's a concrete example from my email agent:"
+            }
+          ],
+          "media": [
+            {
+              "kind": "image",
+              "url": "https://pbs.twimg.com/media/G4SQLUtWIAApKIm?format=jpg&name=large",
+              "alt": "Image"
+            }
+          ]
+        },
+        "engagement": "<ignored>"
+      },
+      {
+        "type": "tweet",
+        "author": {
+          "name": "Thariq",
+          "handle": "trq212"
+        },
+        "date": "<ignored>",
+        "tweetId": "2035372729726087456",
+        "text": [
+          {
+            "type": "text",
+            "value": "the agent SDK is the easiest way to build agents"
+          }
+        ],
+        "media": [],
+        "linkCard": {
+          "type": "linkCard",
+          "url": "https://t.co/CRJsZfF7dl",
+          "title": "Building agents with the Claude Agent SDK | Claude",
+          "description": "How to get started with the Claude Agent SDK and best practices for using it.",
+          "domain": "claude.com"
+        },
+        "engagement": "<ignored>"
+      },
+      {
+        "type": "tweet",
+        "author": {
+          "name": "Thariq",
+          "handle": "trq212"
+        },
+        "date": "<ignored>",
+        "tweetId": "2035579288724947380",
+        "text": [
+          {
+            "type": "text",
+            "value": "been meaning to write more longform on specs, but in the meantime this post is still good"
+          }
+        ],
+        "media": [],
+        "quotedTweet": {
+          "type": "tweet",
+          "author": {
+            "name": "Thariq",
+            "handle": "trq212"
+          },
+          "date": "<ignored>",
+          "tweetId": "2005315275026260309",
+          "text": [
+            {
+              "type": "text",
+              "value": "my favorite way to use Claude Code to build large features is spec based"
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "text",
+              "value": "start with a minimal spec or prompt and ask Claude to interview you using the AskUserQuestionTool"
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "break"
+            },
+            {
+              "type": "text",
+              "value": "then make a new session to execute the spec"
+            }
+          ],
+          "media": [
+            {
+              "kind": "image",
+              "url": "https://pbs.twimg.com/media/G9ROmpcWgAIcamR?format=jpg&name=large",
+              "alt": "Image"
+            }
+          ]
+        },
+        "engagement": "<ignored>"
+      },
+      {
+        "type": "tweet",
+        "author": {
+          "name": "Thariq",
+          "handle": "trq212"
+        },
+        "date": "<ignored>",
+        "tweetId": "2044873898572001376",
+        "text": [
+          {
+            "type": "text",
+            "value": "you have to think more carefully about session management with one million context, not less"
+          }
+        ],
+        "media": [],
+        "quotedTweet": {
+          "type": "tweet",
+          "author": {
+            "name": "Thariq",
+            "handle": "trq212"
+          },
+          "date": "<ignored>",
+          "tweetId": "",
+          "text": [],
+          "media": [],
+          "articleCard": {
+            "type": "articleCard",
+            "title": "Using Claude Code: Session Management & 1M Context",
+            "description": "In my recent calls with Claude Code users, one theme keeps coming up: the 1M token context window is a double-edged sword. \nIt lets Claude Code operate autonomously for longer and handle tasks more...",
+            "imageUrl": "https://pbs.twimg.com/media/HF-p1RUbEAIH-6t?format=jpg&name=large"
+          }
+        },
+        "engagement": "<ignored>"
+      },
+      {
+        "type": "tweet",
+        "author": {
+          "name": "Thariq",
+          "handle": "trq212"
+        },
+        "date": "<ignored>",
+        "tweetId": "2053632475294040084",
+        "text": [
+          {
+            "type": "text",
+            "value": "I've been using HTML for planning, speccing, exploration, code review, reports and a lot more."
+          }
+        ],
+        "media": [],
+        "quotedTweet": {
+          "type": "tweet",
+          "author": {
+            "name": "Thariq",
+            "handle": "trq212"
+          },
+          "date": "<ignored>",
+          "tweetId": "",
+          "text": [],
+          "media": [],
+          "articleCard": {
+            "type": "articleCard",
+            "title": "Using Claude Code: The Unreasonable Effectiveness of HTML",
+            "description": "This is now also on the Claude Blog.\n\nMarkdown has become the dominant file format used by agents to communicate with us. It’s simple, portable, has some rich text capability and is easy for you to...",
+            "imageUrl": "https://pbs.twimg.com/media/HHz_ftzaIAAwkQs?format=jpg&name=large"
+          }
+        },
+        "engagement": "<ignored>"
+      }
+    ]
+  }
+}
