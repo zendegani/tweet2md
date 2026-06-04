@@ -9,6 +9,7 @@
     "activeTab",
     "contextMenus",
     "downloads",
+    "offscreen",
     "storage"
   ],
   "action": {

@@ -43,10 +43,36 @@ export interface ExportPdfRequest {
   action: 'EXPORT_PDF';
 }
 
+// Content → background: render this fragment to a PDF in the offscreen doc.
+// Background spins up the offscreen page (extension origin → no x.com CSP)
+// and forwards via OffscreenRenderPdfRequest below.
+export interface PdfRenderRequest {
+  action: 'PDF_RENDER_REQUEST';
+  html: string;
+  filenameBase: string;
+}
+
+// Background → offscreen page.
+export interface OffscreenRenderPdfRequest {
+  action: 'OFFSCREEN_RENDER_PDF';
+  html: string;
+  filenameBase: string;
+}
+
+export interface PdfRenderResponse {
+  success: boolean;
+  error?: string;
+}
+
 export interface ExtractResponse {
   success: boolean;
   data?: ExtractedContent;
   error?: string;
 }
 
-export type MessageRequest = ExtractRequest | DownloadRequest | ExportPdfRequest;
+export type MessageRequest =
+  | ExtractRequest
+  | DownloadRequest
+  | ExportPdfRequest
+  | PdfRenderRequest
+  | OffscreenRenderPdfRequest;
