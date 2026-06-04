@@ -1,4 +1,5 @@
 import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 import type {
   OffscreenRenderPdfRequest,
   OffscreenRenderPdfResponse,
@@ -7,19 +8,26 @@ import type {
 // Offscreen-document PDF renderer.
 //
 // Lives at chrome-extension://<id>/offscreen.html — extension origin, so
-// jsPDF.html()'s internal layout iframe never touches X.com's <script>
-// tags (the original blocker). Per ADR 0001 PDF text must be real
-// selectable text, so we use jsPDF.html() (text drawn as PDF text ops,
-// images via html2canvas). Offscreen-only because chrome.storage /
-// chrome.downloads aren't reliably exposed there.
+// html2canvas's offscreen-iframe clone never touches X.com's <script>
+// tags (the blocker for in-content rendering).
+//
+// Current implementation is RASTER (html2canvas → addImage), which produces
+// the visually-correct Twitter-card layout but means text isn't real
+// selectable PDF text. Per ADR 0001 the long-term target is selectable
+// vector text; jsPDF.html() can do that but needs (a) a custom embedded
+// Unicode font (default jsPDF font is Latin-1, mangles emoji + non-ASCII)
+// and (b) page-boundary-aware autoPaging. Tracked as a follow-up; macOS
+// Preview's live OCR keeps text selectable in the meantime.
+//
+// Offscreen documents only have access to chrome.runtime reliably;
+// chrome.storage and chrome.downloads belong to the background worker.
 
 const RENDER_WIDTH_PX = 680;
-const PAGE_WIDTH_MM = 210;
+const A4_WIDTH_MM = 210;
+const A4_HEIGHT_MM = 297;
 const PAGE_MARGIN_MM = 10;
-const CONTENT_WIDTH_MM = PAGE_WIDTH_MM - 2 * PAGE_MARGIN_MM;
-// jsPDF allows custom page sizes up to 14400 units; mm gives us ~14.4m of
-// usable height before clamping — comfortably beyond any tweet thread.
-const MAX_PAGE_HEIGHT_MM = 14000;
+const CONTENT_WIDTH_MM = A4_WIDTH_MM - 2 * PAGE_MARGIN_MM;
+const CONTENT_HEIGHT_MM = A4_HEIGHT_MM - 2 * PAGE_MARGIN_MM;
 const RENDER_TIMEOUT_MS = 60000;
 const IMAGE_LOAD_TIMEOUT_MS = 5000;
 
@@ -62,52 +70,49 @@ async function renderPdfDataUrl(html: string): Promise<string> {
     const tImages = performance.now();
     osLog(`waitForImages: ${(tImages - t0).toFixed(0)}ms`);
 
-    // One-tall-page strategy: measure how tall the laid-out content is and
-    // build the PDF with a custom page format that fits the whole thing.
-    // This avoids the autoPaging:'text' width-misinterpretation that was
-    // zooming text in and slicing columns off, and the slice-mode card
-    // splits — until pagination is designed properly, single page wins.
-    const contentHeightPx = Math.max(host.offsetHeight, 1);
-    const mmPerPx = CONTENT_WIDTH_MM / RENDER_WIDTH_PX;
-    const contentHeightMm = contentHeightPx * mmPerPx;
-    const pageHeightMm = Math.min(
-      contentHeightMm + 2 * PAGE_MARGIN_MM,
-      MAX_PAGE_HEIGHT_MM,
-    );
-    osLog(
-      `content ${contentHeightPx}px → page ${PAGE_WIDTH_MM}×${pageHeightMm.toFixed(1)}mm`,
-    );
-
-    const pdf = new jsPDF({
-      unit: 'mm',
-      format: [PAGE_WIDTH_MM, pageHeightMm],
-      orientation: 'portrait',
-    });
-    await withTimeout(
-      pdf.html(host, {
-        margin: [PAGE_MARGIN_MM, PAGE_MARGIN_MM, PAGE_MARGIN_MM, PAGE_MARGIN_MM],
-        width: CONTENT_WIDTH_MM,
+    // scale=1.5 balances sharpness with raster cost. scale=2 was 4× the
+    // pixel area for ~10% perceptible-detail gain on body text.
+    const canvas = await withTimeout(
+      html2canvas(host, {
+        scale: 1.5,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
         windowWidth: RENDER_WIDTH_PX,
-        // autoPaging:false keeps it on the single page we just sized.
-        autoPaging: false,
-        image: { type: 'jpeg', quality: 0.85 },
-        html2canvas: {
-          scale: 1,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-        },
       }),
       RENDER_TIMEOUT_MS,
       'PDF render timed out after 60s',
     );
-    const tRender = performance.now();
-    osLog(`pdf.html: ${(tRender - tImages).toFixed(0)}ms`);
+    const tCanvas = performance.now();
+    osLog(
+      `html2canvas: ${(tCanvas - tImages).toFixed(0)}ms (canvas ${canvas.width}×${canvas.height})`,
+    );
+
+    const imgWidthMm = CONTENT_WIDTH_MM;
+    const imgHeightMm = (canvas.height / canvas.width) * imgWidthMm;
+    const imgData = canvas.toDataURL('image/jpeg', 0.85);
+    const tJpeg = performance.now();
+    osLog(`canvas→JPEG: ${(tJpeg - tCanvas).toFixed(0)}ms`);
+
+    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+    let yOffset = 0;
+    while (yOffset < imgHeightMm) {
+      pdf.addImage(
+        imgData,
+        'JPEG',
+        PAGE_MARGIN_MM,
+        PAGE_MARGIN_MM - yOffset,
+        imgWidthMm,
+        imgHeightMm,
+      );
+      yOffset += CONTENT_HEIGHT_MM;
+      if (yOffset < imgHeightMm) pdf.addPage();
+    }
 
     const dataUrl = pdf.output('datauristring');
     const tDone = performance.now();
-    osLog(`pdf.output: ${(tDone - tRender).toFixed(0)}ms, total ${(tDone - t0).toFixed(0)}ms`);
+    osLog(`pdf.output: ${(tDone - tJpeg).toFixed(0)}ms, total ${(tDone - t0).toFixed(0)}ms`);
     return dataUrl;
   } finally {
     host.innerHTML = '';
