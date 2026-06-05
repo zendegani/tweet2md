@@ -1,14 +1,14 @@
 {
-  "name": "tweet2md",
-  "version": "1.9.0",
-  "description": "One-click export of X (Twitter) threads, tweets, and articles to clean Markdown with images and metadata. Perfect for Obsidian, Notion, and AI/RAG workflows. Works locally—no API, no tracking.",
+  "name": "xclipper",
+  "version": "2.0.0",
+  "description": "XClipper — free, open-source web clipper for X (Twitter). Download threads, posts, and articles as Markdown or PDF for Obsidian, research, and AI/RAG workflows. Works locally — no API, no accounts, no tracking.",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "node build.mjs",
     "watch": "node build.mjs --watch",
-    "package": "npm run build && cd dist && zip -r ../tweet2md.zip . && echo '📦 tweet2md.zip created'",
-    "clean": "rm -rf dist tweet2md.zip",
+    "package": "npm run build && cd dist && zip -r ../xclipper.zip . && echo '📦 xclipper.zip created'",
+    "clean": "rm -rf dist xclipper.zip",
     "test": "vitest run",
     "test:watch": "vitest",
     "screenshots": "npm run build && node scripts/popup-screenshots.mjs"

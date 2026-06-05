@@ -96,8 +96,8 @@ interface StoredSettings {
 
 function loadStoredSettings(): Promise<StoredSettings> {
   return new Promise((resolve) => {
-    chrome.storage.local.get('tweet2md_settings', (result) => {
-      resolve((result['tweet2md_settings'] as StoredSettings) || {});
+    chrome.storage.local.get('xclipper_settings', (result) => {
+      resolve((result['xclipper_settings'] as StoredSettings) || {});
     });
   });
 }
@@ -245,7 +245,7 @@ if (autoMatch) {
         .replace(/^#$/, '');
       history.replaceState(null, '', window.location.pathname + window.location.search + (cleanHash || ''));
     } catch { /* history may be unavailable */ }
-    runPdfExport().catch((err) => console.error('tweet2md PDF export failed:', err));
+    runPdfExport().catch((err) => console.error('XClipper PDF export failed:', err));
   } else {
     const action: AutoAction =
       raw === 'copy' ? 'copy' : raw === 'obsidian' ? 'obsidian' : 'download';

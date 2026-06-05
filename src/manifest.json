@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extensionName__",
-  "short_name": "tweet2md",
-  "version": "1.9.0",
+  "short_name": "XClipper",
+  "version": "2.0.0",
   "description": "__MSG_extensionDescription__",
   "default_locale": "en",
   "permissions": [
