@@ -169,7 +169,7 @@ describe('sanitizeFilePath()', () => {
     ['folder//image.jpg', 'folder/image.jpg'],
     ['tweet title with spaces.md', 'tweet-title-with-spaces.md'],
     ['bad\u0000name.md', 'bad_name.md'],
-    ['../..', 'tweet2md.md'],
+    ['../..', 'xclipper.md'],
   ])('sanitizes %s to %s', (input, expected) => {
     expect(sanitizeFilePath(input)).toBe(expected);
   });

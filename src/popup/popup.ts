@@ -150,7 +150,7 @@ btnBack?.addEventListener('click', () => {
 
 // ─── Settings Persistence ───────────────────────────────────────────
 
-const SETTINGS_KEY = 'tweet2md_settings';
+const SETTINGS_KEY = 'xclipper_settings';
 
 type FieldMap = Record<string, boolean>;
 

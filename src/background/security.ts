@@ -1,6 +1,6 @@
 export { isAllowedImageUrl } from '../shared/media';
 
-const DEFAULT_DOWNLOAD_FILENAME = 'tweet2md.md';
+const DEFAULT_DOWNLOAD_FILENAME = 'xclipper.md';
 const MAX_PATH_SEGMENT_LENGTH = 80;
 const MAX_DOWNLOAD_PATH_LENGTH = 200;
 

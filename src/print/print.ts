@@ -1,4 +1,4 @@
-// Print-preview page for the tweet2md PDF spike.
+// Print-preview page for the XClipper PDF export.
 //
 // Background opens this page in a new tab with ?key=<uuid> pointing at
 // chrome.storage.session[key] = { html, filenameBase }. We hydrate the body
@@ -77,7 +77,7 @@ async function main(): Promise<void> {
 function showError(message: string): void {
   document.body.innerHTML =
     `<div style="font:14px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;` +
-    `color:#b91c1c;padding:40px;text-align:center">tweet2md print error: ${escapeHtml(message)}</div>`;
+    `color:#b91c1c;padding:40px;text-align:center">XClipper print error: ${escapeHtml(message)}</div>`;
 }
 
 function escapeHtml(s: string): string {

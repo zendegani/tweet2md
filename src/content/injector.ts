@@ -30,9 +30,9 @@ function extensionAlive(): boolean {
 function loadInlineMode(): void {
   if (!extensionAlive()) return;
   try {
-    chrome.storage.local.get('tweet2md_settings', (result) => {
+    chrome.storage.local.get('xclipper_settings', (result) => {
       if (chrome.runtime.lastError) return;
-      const s = (result['tweet2md_settings'] || {}) as {
+      const s = (result['xclipper_settings'] || {}) as {
         inlineButtonCopies?: boolean;
         showInlineButton?: boolean;
       };
@@ -52,7 +52,7 @@ function loadInlineMode(): void {
 loadInlineMode();
 try {
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area !== 'local' || !changes['tweet2md_settings']) return;
+    if (area !== 'local' || !changes['xclipper_settings']) return;
     loadInlineMode();
   });
 } catch {
@@ -152,7 +152,7 @@ function makeButton(onClick: (e: Event) => void): HTMLElement {
   wrapper.setAttribute('role', 'button');
   wrapper.setAttribute('tabindex', '0');
   wrapper.setAttribute('aria-label', 'Save as Markdown');
-  wrapper.title = 'Save as Markdown (tweet2md)\nShift/Alt-click: just this tweet';
+  wrapper.title = 'Save as Markdown (XClipper)\nShift/Alt-click: just this tweet';
   wrapper.style.cssText = [
     'display:inline-flex',
     'align-items:center',

@@ -35,11 +35,11 @@ let lastContextUrl: string | null = null;
 
 function registerContextMenus(): void {
   // Explicit parent suppresses Chrome's auto-group label (which would use
-  // the full extension name "tweet2md: X Threads Articles to Markdown").
+  // the full extension name).
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
       id: MENU_PARENT,
-      title: 'tweet2md',
+      title: 'XClipper',
       contexts: ['link', 'page'],
       targetUrlPatterns: ['*://x.com/*/status/*'],
       documentUrlPatterns: ['*://x.com/*'],
@@ -91,6 +91,19 @@ function registerContextMenus(): void {
 
 chrome.runtime.onInstalled.addListener(registerContextMenus);
 chrome.runtime.onStartup.addListener(registerContextMenus);
+
+// One-time migration: project renamed tweet2md → XClipper in v2.0.0. Existing
+// users have preferences stored under the old `tweet2md_settings` key. Copy
+// into the new `xclipper_settings` key on first run after update.
+// Remove this block on or after 2026-07-05 — anyone who hasn't opened the
+// extension for a month is a light user with minimal settings to lose.
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.storage.local.get(['tweet2md_settings', 'xclipper_settings'], (result) => {
+    if (!result.xclipper_settings && result.tweet2md_settings) {
+      chrome.storage.local.set({ xclipper_settings: result.tweet2md_settings });
+    }
+  });
+});
 
 function appendMarker(url: string, action: MenuAction, single: boolean): string {
   // Strip any existing tweet2md marker so we don't compound them.
@@ -156,7 +169,7 @@ chrome.runtime.onMessage.addListener((msg, sender, _sendResponse) => {
 
 // ─── Download handler ───────────────────────────────────────────────
 
-const SETTINGS_KEY = 'tweet2md_settings';
+const SETTINGS_KEY = 'xclipper_settings';
 
 function loadDownloadFolder(): Promise<string> {
   return new Promise((resolve) => {
