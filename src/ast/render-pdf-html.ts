@@ -301,7 +301,7 @@ const STYLES = `
 .entity{color:#1d9bf0;text-decoration:none}
 .tweet-media{display:grid;grid-template-columns:1fr;gap:2px;margin-top:12px;border-radius:16px;overflow:hidden;border:1px solid #eff3f4}
 .media-tile{position:relative}
-.media-tile img{display:block;width:100%;max-height:500px;object-fit:cover}
+.media-tile img{display:block;width:100%;height:auto}
 .media-overlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;background:rgba(15,20,25,0.78);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;pointer-events:none}
 .poll{margin-top:12px;border:1px solid #eff3f4;border-radius:8px;padding:8px 12px}
 .poll-choice{position:relative;padding:6px 8px;display:flex;justify-content:space-between;align-items:center;font-size:14px}
@@ -347,7 +347,7 @@ const STYLES = `
 .t2m-root strong{font-weight:700}
 .t2m-root em{font-style:italic}
 .t2m-root img{max-width:100%;height:auto}
-.t2m-root .media-tile img{max-height:380px;object-fit:cover}
+.t2m-root .media-tile img{height:auto}
 .t2m-root .link-card-image img{max-height:240px}
 .t2m-root .article-banner{max-height:300px;object-fit:cover}
 .t2m-root .tweet-card,.t2m-root .link-card,.t2m-root .article-image{page-break-inside:avoid}
