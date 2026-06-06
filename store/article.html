@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  body {
+    /* Use a background roughly matching the dark promo banner area to help with compositing */
+    background: #14181f; 
+    padding: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .window {
+    background: #1e1e1e;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    width: 600px;
+    overflow: hidden;
+    color: #d4d4d4;
+    border: 1px solid #333;
+  }
+  .titlebar {
+    height: 48px;
+    background: #252526;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    border-bottom: 1px solid #333;
+  }
+  .dots {
+    display: flex;
+    gap: 8px;
+  }
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+  .dot.red { background: #ff5f56; }
+  .dot.yellow { background: #ffbd2e; }
+  .dot.green { background: #27c93f; }
+  
+  .content {
+    padding: 32px;
+    font-family: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-x: auto;
+  }
+  
+  .yaml-key { color: #9cdcfe; } /* Light Blue */
+  .yaml-val { color: #ce9178; } /* String orange */
+  .yaml-num { color: #b5cea8; } /* Light green */
+  .yaml-dash { color: #808080; } /* Gray */
+  
+  .md-text { color: #d4d4d4; }
+  .md-h1 { color: #569cd6; font-weight: bold; }   /* Blue for # headings */
+  .md-h2 { color: #569cd6; }                       /* Blue for ## headings */
+  .md-italic { color: #d4d4d4; font-style: italic; }
+  .md-link { color: #4ec9b0; }
+  .md-url { color: #ce9178; }
+  .md-bracket { color: #d4d4d4; }
+  .md-list { color: #d4d4d4; }
+  .md-list-marker { color: #808080; }
+
+</style>
+</head>
+<body>
+  <div class="window" id="screenshot-target">
+    <div class="titlebar">
+      <div class="dots">
+        <div class="dot red"></div>
+        <div class="dot yellow"></div>
+        <div class="dot green"></div>
+      </div>
+    </div>
+    <div class="content">
+<span class="yaml-dash">---</span>
+<span class="yaml-key">author:</span> <span class="yaml-val">"Example Author"</span>
+<span class="yaml-key">handle:</span> <span class="yaml-val">"@example"</span>
+<span class="yaml-key">source:</span> <span class="yaml-val">https://x.com/example/...</span>
+<span class="yaml-key">date:</span> <span class="yaml-num">2026-06-26</span>
+<span class="yaml-key">type:</span> <span class="yaml-val">article</span>
+<span class="yaml-key">likes:</span> <span class="yaml-num">118988</span>
+<span class="yaml-key">reposts:</span> <span class="yaml-num">41647</span>
+<span class="yaml-key">replies:</span> <span class="yaml-num">6601</span>
+<span class="yaml-key">bookmarks:</span> <span class="yaml-num">183944</span>
+<span class="yaml-key">views:</span> <span class="yaml-num">86270821</span>
+<span class="yaml-dash">---</span>
+
+<span class="md-h1"># Example Article Title</span>
+
+<span class="md-italic">*By Example Author (@example)*</span>
+
+<span class="md-bracket">![</span><span class="md-link">Banner</span><span class="md-bracket">](</span><span class="md-url">example/banner.jpg</span><span class="md-bracket">)</span>
+
+<span class="md-text">One of the most important aspects of archiving long-form content is preserving its original structure in a portable format.</span>
+
+<span class="md-h2">## Key Capabilities</span>
+
+<span class="md-list-marker">-</span> <span class="md-list">Preserves nested structures</span>
+<span class="md-list-marker">-</span> <span class="md-list">Keeps inline links functional</span>
+<span class="md-list-marker">-</span> <span class="md-list">Handles images seamlessly</span></div>
+  </div>
+</body>
+</html>
