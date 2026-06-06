@@ -82,6 +82,7 @@ describe('renderPdfHtml', () => {
     expect(html).toContain('class="article"');
     expect(html).toContain('article-title');
     expect(html).toContain('article-banner');
+    expect(html).toContain('Jan 1, 2026');
     expect(html).toContain('<h2>');
     expect(html).toContain('<pre><code');
   });

@@ -197,7 +197,8 @@ function renderArticleCard(card: ArticleCardNode): string {
 
 function renderArticle(article: ArticleNode, meta: DocumentMetadata, opts: RenderPdfHtmlOptions = {}): string {
   const title = meta.title ? `<h1 class="article-title">${escapeHtml(meta.title)}</h1>` : '';
-  const byline = `<p class="article-byline">By ${escapeHtml(meta.author.name)} <span class="handle">@${escapeHtml(meta.author.handle)}</span></p>`;
+  const date = meta.date ? formatDate(meta.date) : '';
+  const byline = `<p class="article-byline">By ${escapeHtml(meta.author.name)} <span class="handle">@${escapeHtml(meta.author.handle)}</span>${date ? ` · ${escapeHtml(date)}` : ''}</p>`;
   const banner = article.banner
     ? `<img class="article-banner" src="${escapeAttr(article.banner.url)}" alt="">`
     : '';
