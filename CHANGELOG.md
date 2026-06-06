@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
+## [2.0.3] - 2026-06-06
+
+### Added
+
+- **Date in Article PDF exports**: Formatted publication date next to the author handle in the article byline.
+
+### Fixed
+
+- **Article PDF Engagement Stats and Metadata Overwrite**:
+  - Forward PDF rendering options to the article layout renderer and conditionally render engagement metrics below the title/banner when enabled.
+  - Fix an issue where the redundant `options.includeMetadata` override in `extract()` caused engagement stats to be overwritten with `undefined`.
+  - Add test coverage for the article engagement rendering toggle.
+
+---
 
 ## [2.0.2] - 2026-06-06
 
