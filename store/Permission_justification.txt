@@ -2,7 +2,7 @@
 
 ## Single purpose
 
-XClipper converts X.com posts and articles into clean Markdown. When the user visits a supported page and triggers an action (via the popup, the inline button, or the right-click context menu), the extension extracts the visible content and lets the user save it as a .md file, copy it to the clipboard, or hand it off to the Obsidian desktop app via the obsidian:// URI scheme. All processing happens locally in the browser and no data is transmitted to any external server.
+XClipper converts X.com posts and articles into clean Markdown or PDF. When the user visits a supported page and triggers an action (via the popup, the inline button, or the right-click context menu), the extension extracts the visible content and lets the user save it as a .md file, export it as a PDF through Chrome's print/save flow, copy it to the clipboard, or hand it off to the Obsidian desktop app via the obsidian:// URI scheme. All processing happens locally in the browser and no data is transmitted to any external server.
 
 ## Permission justification
 
@@ -16,7 +16,7 @@ The contextMenus permission is used to add "Save tweet as Markdown", "Copy tweet
 
 ### downloads
 
-The "downloads" permission is required to save the generated Markdown file to the user's device as a .md file.
+The "downloads" permission is required to save the generated Markdown file to the user's device as a .md file. PDF export uses Chrome's print/save dialog and does not rely on this permission.
 
 ### storage
 
