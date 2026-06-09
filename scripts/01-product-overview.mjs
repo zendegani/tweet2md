@@ -10,7 +10,6 @@
 // CHROME_PATH=… if you already have a CfT/Chromium build elsewhere.
 
 import { existsSync } from 'node:fs';
-import { unlink } from 'node:fs/promises';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFile } from 'node:child_process';
@@ -25,7 +24,8 @@ const execFileP = promisify(execFile);
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const CAP_HTML = join(ROOT, 'store/mockups/01-product-overview.html');
-const OUT_FILE = join(ROOT, 'assets/01-product-overview.png');
+const OUT_FILE  = join(ROOT, 'assets/01-product-overview.png');
+const HI_FILE   = join(ROOT, 'assets/01-product-overview@2x.png');
 const CHROME_CACHE = join(ROOT, '.puppeteer-cache');
 
 const TARGET = { id: '#cap', w: 1280, h: 800 };
@@ -76,19 +76,17 @@ async function main() {
     const el = await page.$(TARGET.id);
     if (!el) throw new Error(`element ${TARGET.id} not found in 01-product-overview.html`);
 
-    // 2× capture lands here, then sips downsamples to the final file in place.
-    const tmpPath = join(ROOT, 'assets/.tmp-capabilities.png');
-    await el.screenshot({ path: tmpPath, omitBackground: false });
+    // 2× capture lands as the @2x companion; sips downscales it to CWS size.
+    await el.screenshot({ path: HI_FILE, omitBackground: false });
 
     // sips quirks: -z takes HEIGHT first then WIDTH. Forces exact dimensions,
-    // does NOT preserve aspect (which is fine here — source is already the right
-    // ratio, we just want the integer-pixel downscale).
+    // does NOT preserve aspect (source is already the right ratio).
     await execFileP('sips', [
       '-z', String(TARGET.h), String(TARGET.w),
-      tmpPath, '--out', OUT_FILE,
+      HI_FILE, '--out', OUT_FILE,
     ]);
-    await unlink(tmpPath);
     log(`✓ ${OUT_FILE}  ${TARGET.w}×${TARGET.h}`);
+    log(`✓ ${HI_FILE}  ${TARGET.w * 2}×${TARGET.h * 2}`);
   } finally {
     await browser.close();
   }

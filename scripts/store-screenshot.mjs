@@ -18,7 +18,6 @@
 // CHROME_PATH=… if you already have a CfT/Chromium build elsewhere.
 
 import { existsSync } from 'node:fs';
-import { unlink } from 'node:fs/promises';
 import { resolve, dirname, join, basename, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFile } from 'node:child_process';
@@ -61,6 +60,7 @@ if (!existsSync(htmlFile)) {
 
 const defaultOut = join(ROOT, 'assets', basename(htmlFile, extname(htmlFile)) + '.png');
 const outFile    = positionals[1] ? resolve(ROOT, positionals[1]) : defaultOut;
+const hiFile     = outFile.replace(/\.png$/i, '@2x.png');
 const selector   = values.selector;
 const targetW    = Number(values.width);
 const targetH    = Number(values.height);
@@ -110,25 +110,23 @@ async function main() {
     // Let layout, fonts, and any post-load paints settle.
     await new Promise((r) => setTimeout(r, 400));
 
-    // Try to screenshot a specific element; fall back to full page.
+    // 2× capture lands as the @2x companion; sips downscales it to CWS size.
     const el = await page.$(selector);
-    const tmpPath = join(ROOT, 'assets/.tmp-store-screenshot.png');
-
     if (el) {
       log(`Capturing element "${selector}"`);
-      await el.screenshot({ path: tmpPath, omitBackground: false });
+      await el.screenshot({ path: hiFile, omitBackground: false });
     } else {
       log(`Selector "${selector}" not found — capturing full page`);
-      await page.screenshot({ path: tmpPath, fullPage: false });
+      await page.screenshot({ path: hiFile, fullPage: false });
     }
 
     // sips quirks: -z takes HEIGHT first then WIDTH.
     await execFileP('sips', [
       '-z', String(targetH), String(targetW),
-      tmpPath, '--out', outFile,
+      hiFile, '--out', outFile,
     ]);
-    await unlink(tmpPath);
     log(`✓ ${outFile}  ${targetW}×${targetH}`);
+    log(`✓ ${hiFile}  ${targetW * 2}×${targetH * 2}`);
   } finally {
     await browser.close();
   }

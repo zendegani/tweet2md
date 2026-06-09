@@ -11,7 +11,6 @@
 // CHROME_PATH=… if you already have a CfT/Chromium build elsewhere.
 
 import { existsSync, mkdirSync } from 'node:fs';
-import { unlink } from 'node:fs/promises';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execFile } from 'node:child_process';
@@ -82,20 +81,19 @@ async function main() {
       const el = await page.$(t.id);
       if (!el) throw new Error(`element ${t.id} not found in promo.html`);
 
-      // 2× capture lands here, then sips downsamples to the final file in place.
-      const tmpPath = join(OUT_DIR, `.tmp-${t.id.slice(1)}.png`);
-      await el.screenshot({ path: tmpPath });
-
+      // 2× capture lands as the @2x companion; sips downscales it to CWS size.
       const outPath = join(OUT_DIR, t.file);
+      const hiPath  = outPath.replace(/\.png$/i, '@2x.png');
+      await el.screenshot({ path: hiPath });
+
       // sips quirks: -z takes HEIGHT first then WIDTH. Forces exact dimensions,
-      // does NOT preserve aspect (which is fine here — source is already the right
-      // ratio, we just want the integer-pixel downscale).
+      // does NOT preserve aspect (source is already the right ratio).
       await execFileP('sips', [
         '-z', String(t.h), String(t.w),
-        tmpPath, '--out', outPath,
+        hiPath, '--out', outPath,
       ]);
-      await unlink(tmpPath);
       log(`✓ ${t.file}  ${t.w}×${t.h}`);
+      log(`✓ ${t.file.replace(/\.png$/i, '@2x.png')}  ${t.w * 2}×${t.h * 2}`);
     }
   } finally {
     await browser.close();
