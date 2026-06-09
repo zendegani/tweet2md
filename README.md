@@ -1,10 +1,17 @@
-# XClipper
+<h1 align="center">
+  <img src="assets/xclipper-wordmark.svg" alt="XClipper" height="72" />
+</h1>
 
-[![CI](https://github.com/zendegani/xclipper/actions/workflows/ci.yml/badge.svg)](https://github.com/zendegani/xclipper/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Chrome Web Store](https://img.shields.io/chrome-web-store/v/epmmehilhbpkgcjbcohgkmihlalagkho?label=Chrome%20Web%20Store)](https://chromewebstore.google.com/detail/xclipper/epmmehilhbpkgcjbcohgkmihlalagkho)
+<p align="center"><em>X / Twitter Web Clipper: Save Threads & Articles to Markdown, PDF, Obsidian.</em></p>
 
-> X / Twitter Web Clipper: Save Threads & Articles to Markdown, PDF, Obsidian.
+<p align="center">
+  <a href="https://github.com/zendegani/xclipper/actions/workflows/ci.yml"><img src="https://github.com/zendegani/xclipper/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
+  <a href="PRIVACY.md"><img src="https://img.shields.io/badge/Privacy-100%25%20local-brightgreen" alt="Privacy: 100% local" /></a>
+  <a href="src/manifest.json"><img src="https://img.shields.io/badge/Chrome-Manifest%20V3-4285F4?logo=googlechrome&logoColor=white" alt="Chrome Manifest V3" /></a>
+  <a href="https://chromewebstore.google.com/detail/xclipper/epmmehilhbpkgcjbcohgkmihlalagkho"><img src="https://img.shields.io/chrome-web-store/v/epmmehilhbpkgcjbcohgkmihlalagkho?label=Chrome%20Web%20Store" alt="Chrome Web Store" /></a>
+</p>
+
 
 <p align="center">
   <img src="assets/04-popup-clipping-interface.png" alt="XClipper extension UI" width="500" />
