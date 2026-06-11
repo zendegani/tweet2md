@@ -113,6 +113,7 @@
       </div>
 
       <div id="batch-section" class="batch-section hidden">
+        <div class="option-group-label" data-i18n="group_batch">Batch export</div>
         <div id="batch-tabs" class="batch-tabs" role="tablist">
           <button id="tab-batch-bookmarks" class="batch-tab" type="button" role="tab"
             data-i18n="batch_tab_bookmarks">Bookmarks</button>
@@ -124,9 +125,19 @@
         <button id="btn-batch" class="btn-batch btn-action" type="button"
           data-tooltip="Export every bookmark loaded on this page as Markdown files into one folder. Scroll the bookmarks page to load more."
           data-i18n-tooltip="btn_batch_hint">
-          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg id="btn-batch-icon-bookmarks" class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+          </svg>
+          <svg id="btn-batch-icon-profile" class="btn-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          <svg id="btn-batch-icon-selection" class="btn-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 11 12 14 22 4" />
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
           </svg>
           <span class="btn-label" id="btn-batch-label" data-i18n="btn_batch">Export bookmarks</span>
         </button>

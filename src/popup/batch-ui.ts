@@ -26,10 +26,11 @@ import {
   batchProgress,
   batchProgressText,
   batchSection,
-  batchTabs,
-  batchToolsRow,
   btnBatch,
   btnBatchCancel,
+  btnBatchIconBookmarks,
+  btnBatchIconProfile,
+  btnBatchIconSelection,
   btnBatchLabel,
   btnBatchPause,
   btnBatchReset,
@@ -49,6 +50,14 @@ const TAB_BUTTONS: Record<BatchTab, HTMLButtonElement> = {
   bookmarks: tabBatchBookmarks,
   profile: tabBatchProfile,
   selection: tabBatchSelection,
+};
+
+// Per-tab action-button icons (bookmark, user, check-square) — all three
+// live in the HTML; the inactive ones are hidden.
+const TAB_ICONS: Record<BatchTab, SVGElement> = {
+  bookmarks: btnBatchIconBookmarks,
+  profile: btnBatchIconProfile,
+  selection: btnBatchIconSelection,
 };
 
 let activeTab: BatchTab = 'bookmarks';
@@ -159,6 +168,7 @@ function setActiveTab(tab: BatchTab): void {
   activeTab = tab;
   (Object.keys(TAB_BUTTONS) as BatchTab[]).forEach((k) => {
     TAB_BUTTONS[k].classList.toggle('active', k === tab);
+    TAB_ICONS[k].classList.toggle('hidden', k !== tab);
   });
   void refreshIdleUi();
   startCountPolling();
@@ -172,8 +182,12 @@ function render(job: JobSnapshot): void {
 
   const active = job.status === 'running' || job.status === 'paused';
   btnBatch.classList.toggle('hidden', active);
-  batchTabs.classList.toggle('hidden', active);
-  batchToolsRow.classList.toggle('hidden', active);
+  // Tabs stay visible for layout stability but can't switch mid-job (the
+  // action button is hidden, so another tab would have nothing to show).
+  // The digest toggle stays live — finalize reads it when the job ends.
+  (Object.keys(TAB_BUTTONS) as BatchTab[]).forEach((k) => {
+    TAB_BUTTONS[k].disabled = active;
+  });
   // refreshIdleUi() re-evaluates the dedup row once the job is over.
   if (active) batchDedupRow.classList.add('hidden');
   btnBatchPause.classList.toggle('hidden', !active);
@@ -232,8 +246,9 @@ function startCountPolling(): void {
 // Job finished/stopped: bring the idle controls back and resume live counts.
 async function backToIdle(): Promise<void> {
   btnBatch.classList.remove('hidden');
-  batchTabs.classList.remove('hidden');
-  batchToolsRow.classList.remove('hidden');
+  (Object.keys(TAB_BUTTONS) as BatchTab[]).forEach((k) => {
+    TAB_BUTTONS[k].disabled = false;
+  });
   await refreshIdleUi();
   startCountPolling();
 }
