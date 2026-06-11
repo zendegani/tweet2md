@@ -80,6 +80,9 @@
   "btn_batch_profile_hint": {
     "message": "Export this profile's own posts loaded on the page as Markdown files into one folder. Reposts are skipped; scroll to load more."
   },
+  "group_batch": {
+    "message": "Batch export"
+  },
   "batch_tab_bookmarks": {
     "message": "Bookmarks"
   },

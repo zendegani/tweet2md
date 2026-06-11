@@ -1321,6 +1321,10 @@ details.option-group[open] .option-group-chevron {
   --batch: #0ea5e9;
   --batch-glow: rgba(14, 165, 233, 0.18);
   margin-bottom: 8px;
+  padding: 10px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
 }
 
 .batch-section.hidden {
@@ -1472,21 +1476,38 @@ details.option-group[open] .option-group-chevron {
 
 .batch-tab {
   flex: 1;
-  font: 600 12px/1 var(--font);
-  padding: 6px 0;
+  font: 700 13px/1 var(--font);
+  padding: 8px 0;
   border: none;
   border-radius: 9999px;
   background: transparent;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: background var(--transition), color var(--transition);
+  transition: background var(--transition), color var(--transition), box-shadow var(--transition);
 }
 
-.batch-tab:hover {
+.batch-tab:hover:not(:disabled) {
   color: var(--batch);
 }
 
 .batch-tab.active {
-  background: var(--batch-glow);
-  color: var(--batch);
+  background: var(--batch);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--batch-glow);
+}
+
+.batch-tab:disabled {
+  cursor: default;
+}
+
+/* Long profile handles: keep the label on one line and ellipsize. */
+.btn-batch .btn-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-icon.hidden {
+  display: none;
 }
