@@ -1,5 +1,6 @@
 import type { DownloadRequest, ExtractResponse } from '../types/messages';
 import { postProcess, resolveDownloadImages, buildFilename } from '../shared/post-process';
+import { loadSettings } from '../shared/settings';
 import { buildObsidianUrl } from '../shared/obsidian';
 import { delay, isArticlePage } from './dom';
 import { extractArticle } from './article';
@@ -61,8 +62,8 @@ chrome.runtime.onMessage.addListener((_message, _sender, sendResponse) => {
 
 async function runPdfExport(): Promise<void> {
   await waitForArticle();
-  const settings = await loadStoredSettings();
-  const includeEngagement = settings.inlineStats === true;
+  const settings = await loadSettings();
+  const includeEngagement = settings.inlineStats;
   const response = await extract({ includeMetadata: includeEngagement });
   if (!response.success || !response.data || !response.data.body) {
     throw new Error(response.error || 'PDF export: extraction failed');
@@ -77,27 +78,6 @@ async function runPdfExport(): Promise<void> {
 const AUTO_MARKER_RE = /[#&]xclipper=(download|copy|obsidian|pdf|1)/;
 const AUTO_SINGLE_MARKER_RE = /[#&]xclipper_single=1/;
 const AUTO_MARKER_STRIP_RE = /[#&]xclipper(?:_single)?=(?:download|copy|obsidian|pdf|1)/g;
-
-interface StoredSettings {
-  downloadImages?: boolean;
-  includeMetadata?: boolean;
-  closeTabAfterExport?: boolean;
-  inlineStats?: boolean;
-  obsidianFriendly?: boolean;
-  obsidianVault?: string;
-  obsidianFolder?: string;
-  filenameTemplate?: string;
-  frontmatterFields?: Record<string, boolean>;
-  frontmatterFieldsObsidian?: Record<string, boolean>;
-}
-
-function loadStoredSettings(): Promise<StoredSettings> {
-  return new Promise((resolve) => {
-    chrome.storage.local.get('xclipper_settings', (result) => {
-      resolve((result['xclipper_settings'] as StoredSettings) || {});
-    });
-  });
-}
 
 let autoExtractInFlight = false;
 
@@ -134,16 +114,16 @@ async function runAutoExtract(
   const article = await waitForArticle();
   if (!article) return;
 
-  const settings = await loadStoredSettings();
-  const includeMetadata = settings.includeMetadata !== false; // default on
-  const inlineStats = settings.inlineStats === true;
+  const settings = await loadSettings();
+  const includeMetadata = settings.includeMetadata;
+  const inlineStats = settings.inlineStats;
   // Obsidian is the dedicated Obsidian path — force its schema + skip local
   // image downloads (the deeplink carries Markdown via URL, not a folder).
   const obsidianFriendly =
-    action === 'obsidian' ? true : settings.obsidianFriendly === true;
+    action === 'obsidian' ? true : settings.obsidianFriendly;
   const downloadImages =
-    action === 'obsidian' ? false : resolveDownloadImages(action, settings.downloadImages === true);
-  const shouldClose = allowClose && settings.closeTabAfterExport === true;
+    action === 'obsidian' ? false : resolveDownloadImages(action, settings.downloadImages);
+  const shouldClose = allowClose && settings.closeTabAfterExport;
 
   // Need engagement data if either renderer wants it.
   const response = await extract({
@@ -161,7 +141,7 @@ async function runAutoExtract(
     downloadImages,
     inlineStats,
     obsidianFriendly,
-    filenameTemplate: (settings.filenameTemplate || '').trim(),
+    filenameTemplate: settings.filenameTemplate.trim(),
     frontmatterFields,
   });
 
@@ -181,8 +161,8 @@ async function runAutoExtract(
       ta.remove();
     }
   } else if (action === 'obsidian') {
-    const vault = (settings.obsidianVault || '').trim();
-    const folder = (settings.obsidianFolder || '').trim();
+    const vault = settings.obsidianVault.trim();
+    const folder = settings.obsidianFolder.trim();
     const url = buildObsidianUrl(result.markdown, result.filename, vault, folder);
     if (allowClose) {
       // New-tab flow: navigate the tab itself so the OS protocol handler
