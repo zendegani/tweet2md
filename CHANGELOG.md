@@ -2,14 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
 ---
 ## [2.0.4] - 2026-06-11
 
 ### Changed
 
+- **License**: Relicensed from MIT to the [PolyForm Noncommercial License 1.0.0](LICENSE) — free for noncommercial use, paid license required for commercial use; contributor terms updated to match. Forward-only: prior releases remain under MIT.
 - **Internal restructuring (no behavior change)**: Consolidated the user-settings shape into a single shared module so the popup, content script, and PDF flow can no longer drift apart, split the popup script into focused modules (DOM references, settings view, export actions, reusable widgets), and split the DOM→AST extractor into per-concern modules (inline, cards, media, poll, quote, tweet, article). Reduces the chance of regressions when adding a setting or an export target. Also enabled stricter TypeScript checks (`noUnusedLocals` / `noUnusedParameters`).
 
 ### Fixed
