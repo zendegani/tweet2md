@@ -1875,6 +1875,12 @@ details.option-group[open] .option-group-chevron {
   border-top: 1px solid var(--border-subtle);
 }
 
+/* Batch-only — hidden in Single mode (mode.ts toggles `.hidden`). Needs an
+ * explicit override since `.batch-format-controls` sets its own display. */
+.batch-format-controls.hidden {
+  display: none;
+}
+
 .batch-field {
   display: flex;
   align-items: center;
