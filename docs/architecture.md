@@ -67,9 +67,12 @@ tweet handles quotes and embeds for free.
 
 ## Extraction module map (`content/dom-to-ast/`)
 
-A clean dependency DAG — leaves have no internal imports, the orchestrator wires
-them. `articleToTweetNode` is the hub (used by both the tweet path and, via
-`simpleTweet`, the article path).
+A clean dependency DAG. The orchestrator (`index.ts`) and two composing nodes
+(`tweet-node.ts`, `article-body.ts`) wire together the leaves — `inline`,
+`cards`, `media`, `poll`, and the tiny `shared` helpers — none of which import
+another `dom-to-ast` module. `quote.ts` sits between: it composes the leaves but
+is itself only consumed by `tweet-node`. `articleToTweetNode` is the hub, used by
+both the tweet path and, via `simpleTweet`, the article path.
 
 ```mermaid
 flowchart TD
@@ -87,6 +90,9 @@ flowchart TD
   articleBody --> inline
   articleBody --> cards
   index --> shared["shared.ts"]
+  articleBody --> shared
+  tweetNode --> shared
+  quote --> shared
 ```
 
 `domToAst()` dispatches: article page → `articleDocument()`; otherwise it
