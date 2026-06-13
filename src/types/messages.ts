@@ -95,6 +95,10 @@ export interface BatchStartRequest {
   origin?: 'bookmarks' | 'profile' | 'selection' | 'likes';
   // Profile owner's handle when origin === 'profile'.
   handle?: string;
+  // File format + grouping for the job (defaults: 'md' / 'separate'). PDF
+  // can't batch, so it's not an option here.
+  format?: 'md' | 'txt' | 'html' | 'json' | 'csv';
+  output?: 'separate' | 'both' | 'combined';
 }
 
 // Extension page → background: add newly-loaded permalinks to the running

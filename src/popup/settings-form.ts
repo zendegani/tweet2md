@@ -10,6 +10,8 @@ import {
   DEFAULT_SETTINGS,
   SECTION_MAX_OPEN,
   type FieldMap,
+  type BatchFormat,
+  type BatchOutput,
 } from '../shared/settings';
 import {
   buildFilename,
@@ -21,7 +23,10 @@ import {
 } from '../shared/post-process';
 import { attachPlaceholderAutocomplete } from './placeholder-autocomplete';
 import {
-  chkBatchDigest,
+  batchFormatSelect,
+  outSeparate,
+  outBoth,
+  outCombined,
   chkDownloadImages,
   chkMetadata,
   chkCloseTab,
@@ -72,11 +77,35 @@ function persistAll(): void {
     obsidianTagsTemplate: txtObsidianTags.value.trim(),
     downloadFolder: txtDownloadFolder.value.trim(),
     filenameTemplate: txtFilenameTemplate.value.trim(),
-    batchDigest: chkBatchDigest.checked,
+    batchFormat: batchFormatSelect.value as BatchFormat,
+    batchOutput: readBatchOutput(),
     frontmatterFields,
     frontmatterFieldsObsidian,
     settingsSectionsOpen,
   });
+}
+
+// ─── Batch format + output (a <select> and a radio "segmented" group) ──
+
+function readBatchOutput(): BatchOutput {
+  if (outBoth.checked) return 'both';
+  if (outCombined.checked) return 'combined';
+  return 'separate';
+}
+
+function setBatchOutput(value: BatchOutput): void {
+  outSeparate.checked = value === 'separate';
+  outBoth.checked = value === 'both';
+  outCombined.checked = value === 'combined';
+}
+
+// CSV is metadata-only, so a per-item CSV makes no sense — force one combined
+// file and lock the other two options while CSV is selected.
+function syncOutputForFormat(): void {
+  const csv = batchFormatSelect.value === 'csv';
+  if (csv) setBatchOutput('combined');
+  outSeparate.disabled = csv;
+  outBoth.disabled = csv;
 }
 
 function updateInlineCopiesEnabled(): void {
@@ -248,7 +277,9 @@ export function initSettingsForm(): void {
     txtObsidianTags.value = settings.obsidianTagsTemplate;
     txtDownloadFolder.value = settings.downloadFolder;
     txtFilenameTemplate.value = settings.filenameTemplate;
-    chkBatchDigest.checked = settings.batchDigest;
+    batchFormatSelect.value = settings.batchFormat;
+    setBatchOutput(settings.batchOutput);
+    syncOutputForFormat();
     frontmatterFields = { ...settings.frontmatterFields };
     frontmatterFieldsObsidian = { ...settings.frontmatterFieldsObsidian };
     settingsSectionsOpen = [...settings.settingsSectionsOpen];
@@ -327,7 +358,13 @@ export function initSettingsForm(): void {
 
   // ─── Plain change/blur persistence for the remaining controls ───
   chkDownloadImages.addEventListener('change', persistAll);
-  chkBatchDigest.addEventListener('change', persistAll);
+  batchFormatSelect.addEventListener('change', () => {
+    syncOutputForFormat();
+    persistAll();
+  });
+  [outSeparate, outBoth, outCombined].forEach((r) =>
+    r.addEventListener('change', persistAll)
+  );
   chkMetadata.addEventListener('change', () => {
     // Mirror of the Obsidian-friendly → metadata rule: if metadata goes off,
     // Obsidian-friendly has nothing to reshape, so flip it off too.

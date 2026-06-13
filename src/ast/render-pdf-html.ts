@@ -34,6 +34,18 @@ export function renderPdfHtml(doc: Document, opts: RenderPdfHtmlOptions = {}): s
 <style>${STYLES}</style></head><body><div class="xclipper-root">${body}</div></body></html>`;
 }
 
+// Combined standalone HTML for a batch export: every document's body stacked
+// under one shared stylesheet, separated by a rule. Reuses renderBody so each
+// item renders identically to its single-item HTML export.
+export function renderPdfHtmlMany(docs: Document[], opts: RenderPdfHtmlOptions = {}): string {
+  const items = docs
+    .map((doc) => `<div class="xclipper-root">${renderBody(doc, opts)}</div>`)
+    .join('\n<hr>\n');
+  return `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>XClipper export (${docs.length})</title>
+<style>${STYLES}</style></head><body>${items}</body></html>`;
+}
+
 // Fragment variant for live-DOM injection: returns `<style>…<div class="xclipper-root">…</div>`
 // so the caller can set it as innerHTML of an offscreen container without
 // polluting page styles (all selectors are scoped to .xclipper-root).

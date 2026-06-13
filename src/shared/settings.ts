@@ -14,6 +14,11 @@ export const SETTINGS_KEY = 'xclipper_settings';
 
 export type FieldMap = Record<string, boolean>;
 
+// Batch file format ('md' plus the alternate single-export formats; PDF can't
+// batch). 'csv' is metadata-only and always lands as one combined file.
+export type BatchFormat = 'md' | 'txt' | 'html' | 'json' | 'csv';
+export type BatchOutput = 'separate' | 'both' | 'combined';
+
 export interface Settings {
   downloadImages: boolean;
   includeMetadata: boolean;
@@ -27,8 +32,11 @@ export interface Settings {
   obsidianTagsTemplate: string;
   downloadFolder: string;
   filenameTemplate: string;
-  // Batch export: also write a combined digest.md into the job's folder.
-  batchDigest: boolean;
+  // Batch export: file format for the whole job (PDF isn't batchable).
+  batchFormat: BatchFormat;
+  // Batch export: per-item files, one combined file, or both. CSV is always
+  // treated as 'combined' (one-row-per-item files would be pointless).
+  batchOutput: BatchOutput;
   frontmatterFields: FieldMap;
   frontmatterFieldsObsidian: FieldMap;
   // Section ids in most-recently-opened order (max length = SECTION_MAX_OPEN).
@@ -56,7 +64,8 @@ export const DEFAULT_SETTINGS: Settings = {
   obsidianTagsTemplate: '', // empty → use DEFAULT_TAGS_TEMPLATE in post-process
   downloadFolder: '', // empty → save directly in Downloads
   filenameTemplate: '', // empty → legacy {handle}-{id}.md / {handle}-{slug}.md
-  batchDigest: false, // off — extra file per batch, opt-in
+  batchFormat: 'md', // Markdown — matches the single-export default
+  batchOutput: 'separate', // per-item files only; 'both' adds a combined file
   frontmatterFields: allEnabled(FRONTMATTER_FIELDS_DEFAULT),
   frontmatterFieldsObsidian: allEnabled(FRONTMATTER_FIELDS_OBSIDIAN),
   settingsSectionsOpen: ['downloads', 'obsidian'],
@@ -86,9 +95,16 @@ export async function loadSettings(): Promise<Settings> {
       // Deduplicate while preserving order, then trim to the cap.
       const settingsSectionsOpen = Array.from(new Set(rawSections)).slice(0, SECTION_MAX_OPEN);
 
+      // Migration: the old boolean `batchDigest` (on = write a combined file
+      // alongside the per-item ones) maps to the new tri-state 'both'.
+      const legacyDigest = (saved as { batchDigest?: boolean }).batchDigest;
+      const batchOutput =
+        saved.batchOutput ?? (legacyDigest ? 'both' : DEFAULT_SETTINGS.batchOutput);
+
       resolve({
         ...DEFAULT_SETTINGS,
         ...saved,
+        batchOutput,
         frontmatterFields,
         frontmatterFieldsObsidian,
         settingsSectionsOpen,

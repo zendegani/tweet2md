@@ -140,11 +140,23 @@
   "btn_batch_add_hint": {
     "message": "Add the newly-loaded posts to the running batch queue."
   },
-  "opt_batch_digest": {
-    "message": "Export also as one file"
+  "batch_format": {
+    "message": "Format"
   },
-  "opt_batch_digest_hint": {
-    "message": "Also write every exported post into a single x-compilation-<date> file in the batch folder."
+  "batch_output": {
+    "message": "Output"
+  },
+  "batch_output_hint": {
+    "message": "Separate: one file per post. Both: per-post files plus one combined file. Combined: just one file."
+  },
+  "batch_out_separate": {
+    "message": "Separate"
+  },
+  "batch_out_both": {
+    "message": "Both"
+  },
+  "batch_out_combined": {
+    "message": "Combined"
   },
   "batch_bar_selected": {
     "message": "selected"

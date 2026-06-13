@@ -17,6 +17,7 @@ import type {
   HarvestResponse,
 } from '../types/messages';
 import { hostMatches } from '../shared/media';
+import { loadSettings } from '../shared/settings';
 // Pure module (no chrome.* at import time) — safe to share with the popup.
 import { EXPORTED_LEDGER_KEY, statusIdOf } from '../background/batch-state';
 import {
@@ -343,10 +344,13 @@ async function startExport(): Promise<void> {
 
   btnBatch.disabled = true;
   const { urls, handle } = await harvest();
+  const settings = await loadSettings();
   const resp = (await chrome.runtime.sendMessage({
     action: 'BATCH_START',
     urls,
     origin: activeTab,
+    format: settings.batchFormat,
+    output: settings.batchOutput,
     ...(activeTab === 'profile' && handle ? { handle } : {}),
   })) as BatchStartResponse | undefined;
   if (!resp?.success) {

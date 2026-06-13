@@ -108,14 +108,23 @@ export function markdownToPlainText(markdown: string): string {
 // toggles — the same selection the Markdown frontmatter uses. CSV is inherently
 // the metadata export, so it does not gate on the "Include metadata" toggle.
 export function buildCsvRow(data: ExtractedContent, opts: FormatOptions = {}): string {
+  return buildCsvTable([data], opts);
+}
+
+// Combined CSV for a batch: one header row + one data row per item. Used by
+// the batch flow, where CSV is always a single file (per-item one-row CSVs
+// would be pointless).
+export function buildCsvTable(rows: ExtractedContent[], opts: FormatOptions = {}): string {
   const fieldOrder = opts.obsidianFriendly ? FRONTMATTER_FIELDS_OBSIDIAN : FRONTMATTER_FIELDS_DEFAULT;
   const enabled = opts.frontmatterFields;
   const includeField = (key: string) => !enabled || enabled[key] !== false;
 
   const columns = fieldOrder.filter(includeField);
   const header = columns.map(csvEscape).join(',');
-  const row = columns.map((key) => csvEscape(fieldValue(key, data, opts))).join(',');
-  return `${header}\n${row}\n`;
+  const lines = rows.map((data) =>
+    columns.map((key) => csvEscape(fieldValue(key, data, opts))).join(',')
+  );
+  return [header, ...lines].join('\n') + '\n';
 }
 
 function fieldValue(key: string, data: ExtractedContent, opts: FormatOptions): string {
