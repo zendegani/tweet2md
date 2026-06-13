@@ -30,6 +30,21 @@ export function renderMarkdown(doc: Document): string {
   return parts.join('\n');
 }
 
+// Body content only — no author header and no Source/Date footer. The CSV
+// `text` column uses this, since author / url / date already have their own
+// columns; re-emitting them inside the text would be redundant.
+export function renderMarkdownBody(doc: Document): string {
+  const { body } = doc;
+  if (body.type === 'article') return renderArticleChildren(body.children);
+  const parts: string[] = [];
+  const tweets = body.type === 'thread' ? body.tweets : [body];
+  tweets.forEach((tweet, idx) => {
+    if (idx > 0) parts.push('', '---', '');
+    appendTweetBody(parts, tweet);
+  });
+  return parts.join('\n').trim();
+}
+
 // ─── Document headers ───────────────────────────────────────────────
 
 function tweetHeader(meta: DocumentMetadata): string {
