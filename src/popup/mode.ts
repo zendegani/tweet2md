@@ -2,6 +2,8 @@
 // popup opens, and batch-ui forces Batch when it finds a job already running
 // so reopening the popup mid-job lands on the progress, not on Single.
 
+import { syncBatchControls } from './settings-form';
+
 const MODE_KEY = 'lastExportMode';
 
 const tabSingle = document.getElementById('tab-mode-single');
@@ -19,6 +21,9 @@ export function setExportMode(single: boolean, persist = true): void {
   panelSingle?.classList.toggle('hidden', !single);
   panelBatch?.classList.toggle('hidden', single);
   batchFormatControls?.classList.toggle('hidden', single);
+  // The format-gated toggle disabling depends on mode, so re-sync after the
+  // batch controls' visibility flips.
+  syncBatchControls();
   if (persist) chrome.storage.local.set({ [MODE_KEY]: single ? 'single' : 'batch' });
 }
 

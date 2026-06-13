@@ -130,6 +130,7 @@ function formatOptionsFrom(s: Settings): FormatOptions {
     obsidianFriendly: s.obsidianFriendly,
     frontmatterFields: s.obsidianFriendly ? s.frontmatterFieldsObsidian : s.frontmatterFields,
     obsidianTagsTemplate: s.obsidianTagsTemplate,
+    includeMetadata: s.includeMetadata,
   };
 }
 

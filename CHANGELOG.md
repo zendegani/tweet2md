@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Batch output — Separate / Both / Combined**: a tri-state control replaces the old "Export also as one file" toggle — write per-post files, a single combined file, or both. CSV is always one combined file (one row per post).
 - **Batch source tabs are now icons**: Bookmarks, Profile, Likes, and Selection each show their icon (name on hover) so all four fit the strip cleanly.
 - **Batch export marked Beta** in the popup while it's still being tuned.
+- **Settings adapt to the chosen batch format**: in Batch mode, options a format can't use are greyed out (Save images / engagement stats for CSV/TXT/JSON). And **CSV now honors Include metadata** — with it off, CSV keeps only the `date`, source URL, and post `text` columns (mirroring the Markdown footer), instead of always emitting the full frontmatter columns.
 
 ### Fixed
 

@@ -337,6 +337,7 @@ async function runFormatExport(format: ExportFormat, btn: HTMLButtonElement): Pr
       obsidianFriendly,
       frontmatterFields: currentFrontmatterFields(obsidianFriendly),
       obsidianTagsTemplate: txtObsidianTags.value.trim(),
+      includeMetadata: chkMetadata.checked,
     });
 
     const filename = buildFilename(data, txtFilenameTemplate.value.trim()).replace(/\.md$/i, `.${exported.ext}`);

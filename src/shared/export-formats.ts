@@ -43,6 +43,10 @@ export interface FormatOptions {
   frontmatterFields?: Record<string, boolean>;
   // Tags template for the CSV `tags` column (Obsidian field set only).
   obsidianTagsTemplate?: string;
+  // CSV only: when false, drop the metadata columns and keep just date + source
+  // URL alongside `text` — mirrors the Markdown footer with metadata off.
+  // Defaults to true (full metadata columns).
+  includeMetadata?: boolean;
 }
 
 export function buildFormatExport(
@@ -134,9 +138,12 @@ export function buildCsvTable(rows: ExtractedContent[], opts: FormatOptions = {}
   const enabled = opts.frontmatterFields;
   const includeField = (key: string) => !enabled || enabled[key] !== false;
 
-  // Active fields for the current set (a disabled toggle drops its column),
-  // reordered for CSV; the body `text` column is always last.
-  const active: string[] = fieldOrder.filter(includeField);
+  // Metadata off → keep only the essentials (date + source URL), mirroring the
+  // Markdown footer which still appends Source/Date with the toggle off.
+  // Otherwise the active fields for the current set (a disabled per-field
+  // toggle drops its column). The body `text` column is always last.
+  const active: string[] =
+    opts.includeMetadata === false ? ['date', 'source'] : fieldOrder.filter(includeField);
   const columns = [
     ...CSV_COLUMN_ORDER.filter((k) => active.includes(k)),
     ...active.filter((k) => !CSV_COLUMN_ORDER.includes(k)),

@@ -74,6 +74,16 @@ describe('buildCsvRow', () => {
     expect(csv.split('\n')[0]).toBe('date,author,handle,type,source,text');
   });
 
+  it('with metadata off, keeps only date, source, and text', () => {
+    const csv = buildCsvRow(data, { obsidianFriendly: false, includeMetadata: false });
+    const [header, row] = csv.trimEnd().split('\n');
+    expect(header).toBe('date,source,text');
+    const cols = row.split(',');
+    expect(cols[0]).toBe('2026-01-02T10:00:00.000Z'); // date
+    expect(cols[1]).toBe('https://x.com/jane/status/123'); // source
+    expect(row.endsWith('"Hello, world"')).toBe(true); // text
+  });
+
   it('uses the handle for author in the Obsidian field set', () => {
     const csv = buildCsvRow(data, { obsidianFriendly: true });
     const [header, row] = csv.trimEnd().split('\n');

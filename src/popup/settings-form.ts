@@ -23,6 +23,7 @@ import {
 } from '../shared/post-process';
 import { attachPlaceholderAutocomplete } from './placeholder-autocomplete';
 import {
+  batchFormatControls,
   batchFormatSelect,
   outSeparate,
   outBoth,
@@ -106,6 +107,31 @@ function syncOutputForFormat(): void {
   if (csv) setBatchOutput('combined');
   outSeparate.disabled = csv;
   outBoth.disabled = csv;
+}
+
+// In Batch mode, grey out the toggles a format doesn't use, so it's clear they
+// have no effect: local images apply only to Markdown; engagement stats to
+// Markdown + HTML; metadata to Markdown + CSV. Single mode leaves all enabled
+// (the format is chosen per-button there, not up front).
+function syncBatchToggles(): void {
+  const batchMode = !batchFormatControls.classList.contains('hidden');
+  const fmt = batchFormatSelect.value;
+  const gate = (chk: HTMLInputElement, applies: boolean): void => {
+    const disabled = batchMode && !applies;
+    chk.disabled = disabled;
+    chk.closest('.toggle-label')?.classList.toggle('disabled', disabled);
+  };
+  gate(chkDownloadImages, fmt === 'md');
+  gate(chkInlineStats, fmt === 'md' || fmt === 'html');
+  gate(chkMetadata, fmt === 'md' || fmt === 'csv');
+}
+
+// Reconcile both batch-only control groups (output radios + format-gated
+// toggles) with the current format and mode. Called from mode switches,
+// settings restore, and the format <select> change.
+export function syncBatchControls(): void {
+  syncOutputForFormat();
+  syncBatchToggles();
 }
 
 function updateInlineCopiesEnabled(): void {
@@ -279,7 +305,7 @@ export function initSettingsForm(): void {
     txtFilenameTemplate.value = settings.filenameTemplate;
     batchFormatSelect.value = settings.batchFormat;
     setBatchOutput(settings.batchOutput);
-    syncOutputForFormat();
+    syncBatchControls();
     frontmatterFields = { ...settings.frontmatterFields };
     frontmatterFieldsObsidian = { ...settings.frontmatterFieldsObsidian };
     settingsSectionsOpen = [...settings.settingsSectionsOpen];
@@ -359,7 +385,7 @@ export function initSettingsForm(): void {
   // ─── Plain change/blur persistence for the remaining controls ───
   chkDownloadImages.addEventListener('change', persistAll);
   batchFormatSelect.addEventListener('change', () => {
-    syncOutputForFormat();
+    syncBatchControls();
     persistAll();
   });
   [outSeparate, outBoth, outCombined].forEach((r) =>
