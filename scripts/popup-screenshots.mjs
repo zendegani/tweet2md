@@ -5,8 +5,9 @@
 //   node scripts/popup-screenshots.mjs           # all locales in src/_locales
 //   node scripts/popup-screenshots.mjs en de fa  # subset
 //
-// Output per locale (four shots):
-//   screenshots/popup-<locale>.png            — main view
+// Output per locale (five shots):
+//   screenshots/popup-<locale>.png            — main view (Single export)
+//   screenshots/batch-<locale>.png            — Batch export view
 //   screenshots/settings-dl-<locale>.png      — settings, Downloads + Inline open
 //   screenshots/settings-obs-<locale>.png     — Obsidian + Frontmatter open, toggle OFF
 //   screenshots/settings-obs-on-<locale>.png  — Obsidian + Frontmatter open, toggle ON
@@ -157,6 +158,9 @@ async function screenshotPopup(chromePath, locale) {
 
     await captureShot(page, join(SHOTS, `popup-${locale}.png`), locale, 'main');
 
+    await setExportTab(page, 'batch');
+    await captureShot(page, join(SHOTS, `batch-${locale}.png`), locale, 'batch');
+
     await openSettings(page);
     await setOpenSections(page, ['downloads', 'inline']);
     await captureShot(page, join(SHOTS, `settings-dl-${locale}.png`), locale, 'settings-dl');
@@ -188,6 +192,16 @@ async function setObsidianFriendly(page, enabled) {
     cb.dispatchEvent(new Event('change', { bubbles: true }));
   }, enabled);
   await new Promise((r) => setTimeout(r, 50));
+}
+
+// Switch the Tier-1 export mode by clicking the Single/Batch tab, so the
+// popup's own listener runs (panel swap + persistence) exactly as for a user.
+async function setExportTab(page, mode) {
+  await page.evaluate((m) => {
+    const id = m === 'batch' ? 'tab-mode-batch' : 'tab-mode-single';
+    document.getElementById(id)?.click();
+  }, mode);
+  await new Promise((r) => setTimeout(r, 100));
 }
 
 async function openSettings(page) {
