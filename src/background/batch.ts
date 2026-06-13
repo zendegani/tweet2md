@@ -14,10 +14,20 @@ import type {
   BatchItemResultMessage,
   BatchStartResponse,
   BatchStatusResponse,
+  ExtractedContent,
 } from '../types/messages';
 import type { Document } from '../ast/types';
 import { renderDigest } from '../ast/render-digest';
-import { loadSettings } from '../shared/settings';
+import { renderMarkdown } from '../ast/render-markdown';
+import { renderPdfHtmlMany } from '../ast/render-pdf-html';
+import { loadSettings, type BatchFormat, type BatchOutput, type Settings } from '../shared/settings';
+import {
+  buildFormatExport,
+  buildCsvTable,
+  markdownToPlainText,
+  type ExportFormat,
+  type FormatOptions,
+} from '../shared/export-formats';
 import { recordExport } from '../shared/review-prompt';
 import {
   isAllowedImageUrl,
@@ -89,10 +99,94 @@ function coerceOrigin(raw: unknown): BatchJob['origin'] {
     : undefined;
 }
 
+const JOB_FORMATS = ['md', 'txt', 'html', 'json', 'csv'] as const;
+const JOB_OUTPUTS = ['separate', 'both', 'combined'] as const;
+
+function coerceFormat(raw: unknown): BatchFormat {
+  return JOB_FORMATS.includes(raw as BatchFormat) ? (raw as BatchFormat) : 'md';
+}
+
+function coerceOutput(raw: unknown): BatchOutput {
+  return JOB_OUTPUTS.includes(raw as BatchOutput) ? (raw as BatchOutput) : 'separate';
+}
+
+// CSV is metadata-only — a per-item CSV is a one-row file, so the whole job is
+// always one combined CSV regardless of the stored grouping.
+function effectiveOutput(job: BatchJob): BatchOutput {
+  if (job.format === 'csv') return 'combined';
+  return job.output ?? 'separate';
+}
+
+// ─── Format conversion (the AST is the source of truth) ─────────────
+//
+// The worker reports the postProcessed Markdown (written verbatim for the
+// 'md' format) plus the item's AST. Every other format is derived here from
+// that AST, so the background owns format selection — the worker stays format
+// agnostic.
+
+function formatOptionsFrom(s: Settings): FormatOptions {
+  return {
+    includeEngagement: s.inlineStats,
+    obsidianFriendly: s.obsidianFriendly,
+    frontmatterFields: s.obsidianFriendly ? s.frontmatterFieldsObsidian : s.frontmatterFields,
+    obsidianTagsTemplate: s.obsidianTagsTemplate,
+  };
+}
+
+// Reconstruct the ExtractedContent the format builders expect from a stored
+// AST. renderMarkdown gives the raw body Markdown (no frontmatter) used by the
+// TXT and CSV-description paths — the same string single-export passes.
+function docToExtracted(doc: Document): ExtractedContent {
+  const m = doc.metadata;
+  return {
+    type: m.type,
+    author: { name: m.author.name, handle: m.author.handle },
+    title: m.title,
+    markdown: renderMarkdown(doc),
+    sourceUrl: m.sourceUrl,
+    date: m.date,
+    tweetId: m.tweetId,
+    metadata: m.engagement,
+    body: doc,
+  };
+}
+
+interface BuiltFile {
+  content: string;
+  mime: string;
+  ext: string;
+}
+
+// One combined file for the whole batch in the chosen format.
+function buildCombined(format: BatchFormat, docs: Document[], opts: FormatOptions): BuiltFile {
+  switch (format) {
+    case 'md':
+      return { content: renderDigest(docs), mime: 'text/markdown', ext: 'md' };
+    case 'txt':
+      return {
+        content: docs.map((d) => markdownToPlainText(renderMarkdown(d))).join('\n\n---\n\n') + '\n',
+        mime: 'text/plain',
+        ext: 'txt',
+      };
+    case 'html':
+      return {
+        content: renderPdfHtmlMany(docs, { includeEngagement: opts.includeEngagement }),
+        mime: 'text/html',
+        ext: 'html',
+      };
+    case 'json':
+      return { content: JSON.stringify(docs, null, 2), mime: 'application/json', ext: 'json' };
+    case 'csv':
+      return { content: buildCsvTable(docs.map(docToExtracted), opts), mime: 'text/csv', ext: 'csv' };
+  }
+}
+
 export async function startBatch(
   rawUrls: unknown,
   origin?: BatchJob['origin'],
-  handle?: string
+  handle?: string,
+  format: BatchFormat = 'md',
+  output: BatchOutput = 'separate'
 ): Promise<BatchStartResponse> {
   const existing = await loadJob();
   if (existing && (existing.status === 'running' || existing.status === 'paused')) {
@@ -123,6 +217,8 @@ export async function startBatch(
   job = {
     ...job,
     urls: fresh,
+    format,
+    output,
     ...(origin ? { origin } : {}),
     ...(origin === 'profile' && handle ? { handle } : {}),
   };
@@ -235,7 +331,10 @@ async function handleItemResult(
 
   const { job: advanced, filename } = recordResult(job, outcome);
   if (outcome.success && filename) {
-    downloadItem(advanced.folder, filename, msg.markdown as string, msg.images);
+    // 'combined' writes nothing per item — the one file is built at finalize.
+    if (effectiveOutput(job) !== 'combined') {
+      await writePerItem(job, advanced.folder, filename, msg);
+    }
     await recordExported(expected);
     if (msg.doc) {
       try {
@@ -337,20 +436,16 @@ function writeJsonManifest(job: BatchJob, items: StoredItem[]): void {
   });
 }
 
-// Digest sink (ADR 0002, Phase D): one reading-oriented markdown file for
-// the whole batch — x-compilation-<date>.md, as advertised by the settings
-// toggle. Opt-in via settings.
-function writeDigest(folder: string, items: StoredItem[]): void {
-  const markdown = renderDigest(items.map((i) => i.doc));
+// Combined sink (ADR 0002, Phase D, generalized): one file for the whole batch
+// in the chosen format — x-compilation-<date>.<ext>. Written when output is
+// 'both' or 'combined' (and always for CSV, which has no per-item form).
+function writeCombined(job: BatchJob, items: StoredItem[], settings: Settings): void {
+  const built = buildCombined(job.format ?? 'md', items.map((i) => i.doc), formatOptionsFrom(settings));
   const d = new Date();
   const stamp =
     `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}` +
     String(d.getDate()).padStart(2, '0');
-  chrome.downloads.download({
-    url: 'data:text/markdown;charset=utf-8,' + encodeURIComponent(markdown),
-    filename: sanitizeFilePath(`${folder}/x-compilation-${stamp}.md`),
-    saveAs: false,
-  });
+  downloadData(job.folder, `x-compilation-${stamp}.${built.ext}`, built.content, built.mime);
 }
 
 // The finished/cancelled job stays in storage for inspection until the next
@@ -362,10 +457,13 @@ async function finalize(job: BatchJob): Promise<void> {
     const items = await takeStoredItems(job);
     if (items.length > 0) {
       writeJsonManifest(job, items);
-      if ((await loadSettings()).batchDigest) writeDigest(job.folder, items);
+      const out = effectiveOutput(job);
+      if (out === 'both' || out === 'combined') {
+        writeCombined(job, items, await loadSettings());
+      }
     }
   } catch (err) {
-    log('data.json/digest write failed:', err);
+    log('data.json/combined write failed:', err);
   }
   log(
     `job ${job.id} ${job.status}: ${job.completed} exported, ` +
@@ -407,12 +505,38 @@ function downloadItem(
       saveAs: false,
     });
   }
-  const dataUrl = 'data:text/markdown;charset=utf-8,' + encodeURIComponent(markdown);
+  downloadData(folder, filename, markdown, 'text/markdown');
+}
+
+// Generic data-URL download into the job folder. Used for the Markdown items,
+// the alternate per-item formats, and the combined file.
+function downloadData(folder: string, filename: string, content: string, mime: string): void {
   chrome.downloads.download({
-    url: dataUrl,
+    url: `data:${mime};charset=utf-8,` + encodeURIComponent(content),
     filename: sanitizeFilePath(`${folder}/${filename}`),
     saveAs: false,
   });
+}
+
+// Write one item's file in the job's format. Markdown is the worker's verbatim
+// postProcessed output (+ local images); the other formats are derived from
+// the AST here. Images only attach to Markdown — the others reference media by
+// URL or omit it. CSV never reaches this (it's always combined).
+async function writePerItem(
+  job: BatchJob,
+  folder: string,
+  filename: string,
+  msg: BatchItemResultMessage
+): Promise<void> {
+  const format = job.format ?? 'md';
+  if (format === 'md' || !msg.doc) {
+    downloadItem(folder, filename, msg.markdown as string, msg.images);
+    return;
+  }
+  const opts = formatOptionsFrom(await loadSettings());
+  const built = buildFormatExport(format as ExportFormat, docToExtracted(msg.doc), opts);
+  const outName = filename.replace(/\.md$/i, '') + '.' + built.ext;
+  downloadData(folder, outName, built.content, built.mime);
 }
 
 export function initBatch(): void {
@@ -429,7 +553,13 @@ export function initBatch(): void {
         return false;
       }
       const handle = typeof msg.handle === 'string' ? msg.handle : undefined;
-      startBatch(msg.urls, coerceOrigin(msg.origin), handle).then(sendResponse);
+      startBatch(
+        msg.urls,
+        coerceOrigin(msg.origin),
+        handle,
+        coerceFormat(msg.format),
+        coerceOutput(msg.output)
+      ).then(sendResponse);
       return true; // async sendResponse
     }
     if (msg.action === 'BATCH_APPEND') {

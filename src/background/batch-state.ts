@@ -15,6 +15,9 @@ export interface BatchJob {
   // Profile owner's handle (only when origin === 'profile'); lets the popup
   // offer "add to queue" on the same profile but not a different one.
   handle?: string;
+  // File format + grouping snapshotted at job start (default 'md'/'separate').
+  format?: 'md' | 'txt' | 'html' | 'json' | 'csv';
+  output?: 'separate' | 'both' | 'combined';
   // Normalized, deduped status permalinks.
   urls: string[];
   // Index of the item currently being processed (or next to dispatch).

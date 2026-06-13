@@ -91,21 +91,31 @@
             <input type="checkbox" id="chk-include-metadata" class="toggle-input" />
             <span class="toggle-switch"></span>
           </label>
-          <label id="opt-batch-digest" class="toggle-label hidden"
-            data-tooltip="Also write every exported post into a single x-compilation-<date> file in the batch folder."
-            data-i18n-tooltip="opt_batch_digest_hint">
-            <span class="toggle-text">
-              <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <polygon points="12 2 2 7 12 12 22 7 12 2" />
-                <polyline points="2 17 12 22 22 17" />
-                <polyline points="2 12 12 17 22 12" />
-              </svg>
-              <span data-i18n="opt_batch_digest">Export also as one file</span>
-            </span>
-            <input type="checkbox" id="chk-batch-digest" class="toggle-input" />
-            <span class="toggle-switch"></span>
-          </label>
+          <div id="batch-format-controls" class="batch-format-controls hidden">
+            <label class="batch-field">
+              <span class="batch-field-label" data-i18n="batch_format">Format</span>
+              <select id="batch-format" class="batch-select">
+                <option value="md">Markdown (.md)</option>
+                <option value="txt">Text (.txt)</option>
+                <option value="html">HTML (.html)</option>
+                <option value="json">JSON (.json)</option>
+                <option value="csv">CSV (.csv)</option>
+              </select>
+            </label>
+            <div class="batch-field">
+              <span class="batch-field-label" data-i18n="batch_output">Output</span>
+              <div class="segmented" role="radiogroup" aria-label="Output"
+                data-tooltip="Separate: one file per post. Both: per-post files plus one combined file. Combined: just one file."
+                data-i18n-tooltip="batch_output_hint">
+                <input type="radio" name="batch-output" id="out-separate" value="separate" class="seg-input" />
+                <label for="out-separate" class="seg-label" data-i18n="batch_out_separate">Separate</label>
+                <input type="radio" name="batch-output" id="out-both" value="both" class="seg-input" />
+                <label for="out-both" class="seg-label" data-i18n="batch_out_both">Both</label>
+                <input type="radio" name="batch-output" id="out-combined" value="combined" class="seg-input" />
+                <label for="out-combined" class="seg-label" data-i18n="batch_out_combined">Combined</label>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

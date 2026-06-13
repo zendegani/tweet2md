@@ -1864,3 +1864,91 @@ details.option-group[open] .option-group-chevron {
 .btn-icon.hidden {
   display: none;
 }
+
+/* ─── Batch format + output (in the Export settings box) ────── */
+.batch-format-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.batch-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.batch-field-label {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.batch-select {
+  font-family: var(--font);
+  font-size: 12px;
+  padding: 5px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+/* Segmented radio group: visible labels over visually-hidden radios. */
+.segmented {
+  position: relative;
+  display: inline-flex;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.seg-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.seg-label {
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  border-inline-start: 1px solid var(--border-subtle);
+  transition: background var(--transition), color var(--transition);
+}
+
+.seg-label:first-of-type {
+  border-inline-start: none;
+}
+
+.seg-label:hover {
+  background: var(--bg-hover);
+}
+
+.seg-input:checked + .seg-label,
+.seg-input:checked + .seg-label:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.seg-input:disabled + .seg-label,
+.seg-input:disabled + .seg-label:hover {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: transparent;
+}
+
+/* Keyboard focus on the (hidden) radio shows on its label. */
+.seg-input:focus-visible + .seg-label {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
