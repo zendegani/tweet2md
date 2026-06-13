@@ -59,8 +59,11 @@ describe('buildCsvRow', () => {
     expect(cols[5]).toBe('5'); // likes
     expect(cols[6]).toBe('2'); // reposts
     expect(cols[7]).toBe(''); // replies absent
-    // The trailing `text` column carries the post body, not just metadata.
-    expect(csv).toContain('Hello bold and a link (https://example.com)');
+    // The trailing `text` column carries the post body only — not the author
+    // header or the Source/Date footer (those already have their own columns).
+    expect(row.endsWith('"Hello, world"')).toBe(true);
+    expect(csv).not.toContain('Source:');
+    expect(csv).not.toContain('Date:');
   });
 
   it('honors per-field toggles', () => {

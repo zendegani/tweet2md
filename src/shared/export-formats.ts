@@ -13,6 +13,7 @@
 
 import type { ExtractedContent } from '../types/messages';
 import { renderPdfHtml } from '../ast/render-pdf-html';
+import { renderMarkdownBody } from '../ast/render-markdown';
 import {
   FRONTMATTER_FIELDS_DEFAULT,
   FRONTMATTER_FIELDS_OBSIDIAN,
@@ -125,10 +126,18 @@ export function buildCsvTable(rows: ExtractedContent[], opts: FormatOptions = {}
   const header = [...columns, 'text'].map(csvEscape).join(',');
   const lines = rows.map((data) => {
     const values = columns.map((key) => fieldValue(key, data, opts));
-    values.push(markdownToPlainText(data.markdown).trim());
+    values.push(csvBodyText(data));
     return values.map(csvEscape).join(',');
   });
   return [header, ...lines].join('\n') + '\n';
+}
+
+// Just the post content for the `text` column — no author header or Source/Date
+// footer (those already have their own columns). Falls back to the full body
+// markdown if the AST isn't on the wire (older producers).
+function csvBodyText(data: ExtractedContent): string {
+  const md = data.body ? renderMarkdownBody(data.body) : data.markdown;
+  return markdownToPlainText(md).trim();
 }
 
 function fieldValue(key: string, data: ExtractedContent, opts: FormatOptions): string {
